@@ -256,6 +256,18 @@
         <div class="script"><span class="lbl">🎤 口頭講稿（約 30 秒）</span>我主力是 React 跟 Vue 3，搭配 TypeScript；狀態管理 React 端用 Redux、React Query，Vue 端用 Pinia。樣式我用 SCSS 跟 Tailwind，也熟切版跟 RWD。型別安全的部分我會用 Zod 跟 ts-rest 做前後端契約。工具鏈像 Vite、ESLint、Jest、Cypress、Git 都是日常。簡單說，從框架、型別、樣式到測試跟工具我都能獨立 cover。</div>
       </div>
     </details>
+    <details class="qa">
+      <summary>你的興趣是什麼？</summary>
+      <div class="answer">
+        <p>誠實回答即可，重點是<strong>展現特質並（自然地）連結到工作</strong>，不用硬凹。可帶到：</p>
+        <ul>
+          <li>能體現<strong>持續學習／鑽研</strong>的興趣（看技術文章、做 side project、玩新工具）。</li>
+          <li>能體現<strong>邏輯／專注／團隊合作</strong>的興趣（桌遊、運動、樂器）。</li>
+          <li>真正的生活興趣（旅遊、攝影、料理）也很好，讓對話自然、展現你是立體的人。</li>
+        </ul>
+        <div class="tip"><b>提醒：</b>這是「軟性破冰題」，答得自然、有熱情比答得「正確」重要；若能順勢連到自己的 side project（例如旅遊地圖網站）更加分。</div>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 2. 經歷與行為面試題 ============ -->
@@ -453,6 +465,46 @@
         <p><strong>最快報到日：</strong>在職者回「需依勞基法／合約交接，約需 X 週」；待業者可回「可盡快，約 1 週內」。誠實但展現彈性。</p>
       </div>
     </details>
+    <details class="qa">
+      <summary>你會用 AI 輔助工具（Copilot / Cursor / Claude Code）嗎？通常在什麼階段用？</summary>
+      <div class="answer">
+        <p>會，已是日常工作流的一部分。重點是表達「<strong>把 AI 當加速器、但自己對產出負責</strong>」，而非無腦複製。常用階段：</p>
+        <ul>
+          <li><strong>撰寫初稿／樣板：</strong>產生重複性程式（CRUD、表單、型別、測試骨架）、補 boilerplate。</li>
+          <li><strong>除錯：</strong>貼錯誤訊息與堆疊，請它定位可能原因、給排查方向。</li>
+          <li><strong>查語法／API：</strong>取代翻文件的時間（仍會回去核對官方文件）。</li>
+          <li><strong>重構／Code Review：</strong>請它指出壞味道、提出簡化或補邊界情況。</li>
+          <li><strong>讀不熟的程式碼：</strong>快速摘要、解釋一段 legacy code。</li>
+        </ul>
+        <div class="tip"><b>加分（很多面試官在意）：</b>強調「<strong>產出一定自己讀懂、測過、為正確性負責</strong>」，敏感／機密程式碼不外貼，並理解它會幻覺、需驗證——展現你會「用」也會「管控」AI。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>有沒有在專案導入新技術的經驗？是什麼情境、怎麼跟同事推廣？</summary>
+      <div class="answer">
+        <p>用「<strong>情境 → 評估 → 小範圍驗證 → 推廣</strong>」的脈絡講，展現你不是為新而新：</p>
+        <ul>
+          <li><strong>情境（為什麼導入）：</strong>遇到什麼痛點（型別不安全、重複樣板、打包太慢），現有做法解不掉。</li>
+          <li><strong>評估：</strong>比較選項、看社群活躍度／維護成本／團隊學習曲線，先確認「划算」。</li>
+          <li><strong>小範圍驗證（PoC）：</strong>先在一個小模組導入、<strong>量化效益</strong>（bug 減少、build 時間縮短），降低風險。</li>
+          <li><strong>推廣：</strong>寫一份簡短導入文件／範例、開一次分享、訂規範與 lint，並<strong>陪同事一起改第一個案例</strong>，而不是丟一句「改用這個」。</li>
+        </ul>
+        <div class="tip"><b>重點：</b>面試官要看的是「<strong>說服力與協作</strong>」——用數據與小步驗證說服團隊、文件＋示範＋陪跑降低抗拒，而非單純技術炫技。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>有金流串接經驗嗎？前端在金流上的角色是什麼？</summary>
+      <div class="answer">
+        <p>誠實「做過什麼就講什麼」。我接案做過全端網站，串過<strong>綠界、藍新</strong>，主要在<strong>後端</strong>實作較多，前端相對少。</p>
+        <ul>
+          <li><strong>後端：</strong>建立訂單、產生付款參數並<strong>簽章（CheckMacValue／雜湊）</strong>、導向金流頁、接收<strong>付款結果通知（server-to-server 的 notify / callback）</strong>並驗章、更新訂單狀態。金鑰只放後端。</li>
+          <li><strong>前端：</strong>多半是「<strong>照廠商文件把提供的表單／元件套進去</strong>」、導去付款頁、顯示結果頁；不碰金鑰、不在前端決定金額。</li>
+        </ul>
+        <div class="tip"><b>提醒：</b>金流安全重點在後端——<strong>金額與簽章一定在後端產生與驗證</strong>，且以非同步 notify 為準（不能只信前端導回的結果），避免被竄改。</div>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 3. 開發流程與團隊協作 ============ -->
@@ -514,6 +566,19 @@
       <div class="answer">
         <p>可聚焦在「<strong>制度／流程面</strong>」而非情緒抱怨，例如：部分舊專案<strong>缺乏 CI/CD、文件不齊全</strong>，以及<strong>後端技術不統一</strong>造成串接成本高。</p>
         <div class="tip"><b>面試提醒：</b>講現職不滿時要中性、對事不對人，並馬上轉成「所以我希望找到一個流程更成熟、能讓我發揮的環境」。避免抱怨同事或主管。</div>
+      </div>
+    </details>
+    <details class="qa">
+      <summary>有沒有寫過文件？（例如要把工作交接給後進／兼職人員）</summary>
+      <div class="answer">
+        <p>有。當需要把工作交給新進或兼職同事執行時，文件就是「<strong>讓別人不靠我也能上手</strong>」的關鍵。我會包含：</p>
+        <ul>
+          <li><strong>環境與啟動：</strong>如何 clone、安裝、跑起來（含 <code>.env</code> 範例、常見坑）。</li>
+          <li><strong>架構與流程：</strong>資料夾結構、主要模組職責、資料流／API 約定。</li>
+          <li><strong>任務 SOP：</strong>把要交付的工作拆成可照做的步驟、<strong>驗收標準</strong>、PR 規範。</li>
+          <li><strong>FAQ／常見問題</strong>與聯絡窗口，降低來回打擾。</li>
+        </ul>
+        <div class="tip"><b>重點：</b>文件要「<strong>以讀者為中心</strong>」——假設對方沒有背景知識也能照著做；尤其同時交給多位兼職時，清楚的 SOP 與驗收標準能大幅降低溝通成本與錯誤。</div>
       </div>
     </details>
   </section>
@@ -1929,6 +1994,30 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
         <div class="script"><span class="lbl">🎤 口頭講稿（約 35 秒）</span>我會先確認「真正共用的部分」是什麼，盤點哪些地方會用、共同點跟差異點，避免太早抽象。接著設計 API：用 props 控制行為、給合理預設值，再用 slots 或 children 保留彈性，狀態看要做受控還是非受控。我傾向把元件拆小、用組合的方式，而不是做一個 props 爆炸的萬能元件；樣式上用 scoped 或 CSS 變數隔離，只開放必要的客製點。最後一定補上 TypeScript 型別、Storybook 文件跟單元測試，放進共用 package 給團隊用。因為共用元件牽一髮動全身，我改之前一定先盤點有哪些地方在用、再用測試擋風險。</div>
       </div>
     </details>
+    <details class="qa">
+      <summary>前端專案的檔案架構你會怎麼設計？</summary>
+      <div class="answer">
+        <p>沒有唯一解，原則是<strong>高內聚、低耦合、好擴充、好找東西</strong>。兩種常見取向：</p>
+        <ul>
+          <li><strong>依「類型」分（layer-based）：</strong><code>components / pages / hooks / services / store / utils</code>。小專案直覺，但功能一變要動很多資料夾。</li>
+          <li><strong>依「功能／領域」分（feature-based）：</strong>每個 feature 自帶它的 component / hook / api / store。大專案更好維護、刪功能乾淨——較推薦。</li>
+        </ul>
+        <p>其他通則：抽出共用 <code>shared/ui</code>、API 集中在 <code>services/api</code>、型別放 <code>types</code>、用路徑別名（<code>@/</code>）避免 <code>../../../</code>、設定與環境變數集中管理。</p>
+        <div class="tip"><b>重點：</b>講出「<strong>按功能切（feature-based）＋共用層抽離</strong>」並能說明取捨（小專案 layer-based 即可、大專案 feature-based 較好擴充）就很完整。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>React 的 CSR 與 SSR 差異？各自優缺點與適用情境？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>CSR（用戶端渲染）：</strong>瀏覽器下載空殼 HTML + JS，再由 JS 抓資料、產生畫面。<strong>優點：</strong>互動順、伺服器負擔小、適合 app 型介面。<strong>缺點：</strong>首屏較慢（要等 JS）、<strong>SEO 較弱</strong>（爬蟲拿到空殼）。</li>
+          <li><strong>SSR（伺服器渲染）：</strong>伺服器先產生完整 HTML 回傳，瀏覽器再 hydrate 接上互動。<strong>優點：</strong><strong>首屏快、SEO 好</strong>（爬蟲直接讀到內容）。<strong>缺點：</strong>伺服器負擔大、每次請求要算、需處理 hydration。</li>
+        </ul>
+        <p>延伸：<strong>SSG</strong>（建置時就產生靜態頁，最快、適合不常變的行銷／部落格）、<strong>ISR</strong>（靜態＋定期/按需再生）。Next.js 可依頁面混用。</p>
+        <div class="tip"><b>適用情境：</b>SEO／首屏重要的內容站（電商、官網、部落格）→ SSR/SSG；登入後的後台、互動密集的 app → CSR 即可。實務常<strong>混搭</strong>。相關 hydration 議題見 React 分類。</div>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 13. 版本控制 ============ -->
@@ -2266,6 +2355,20 @@ document.querySelectorAll('img[data-src]').forEach(img =&gt; io.observe(img));</
         <p>immutable 指物件建立後<strong>不可被改變</strong>，要更新就<strong>建立新副本</strong>而非改原值。好處：狀態可預測、容易做淺比較（React/Redux 依此判斷是否更新）、避免意外副作用。實作上用展開運算子、<code>Object.freeze</code>、或 Immer 等。</p>
       </div>
     </details>
+    <details class="qa">
+      <summary>有沒有用設計模式在後端／資料庫設計上的經驗可以分享？</summary>
+      <div class="answer">
+        <p>有，常見幾個：</p>
+        <ul>
+          <li><strong>Repository（倉儲）：</strong>把資料存取邏輯封裝起來，service 層不直接碰 ORM／SQL，方便抽換資料源與寫測試。</li>
+          <li><strong>Singleton（單例）：</strong>資料庫連線池、設定物件全應用共用一個實例。</li>
+          <li><strong>Factory：</strong>依條件建立不同物件／策略（如不同金流、不同通知管道）。</li>
+          <li><strong>DTO / Mapper：</strong>分離 DB entity 與對外回傳格式，避免欄位外洩。</li>
+          <li><strong>Strategy：</strong>同一介面、可替換的演算法（不同排序／計價規則）。</li>
+        </ul>
+        <div class="tip"><b>提醒：</b>NestJS 這類框架本身就大量用模式（DI、Module、Provider＝IoC 容器）。回答時舉「<strong>解決了什麼問題</strong>」比背名詞重要，例如「用 Repository 讓 service 不綁死 ORM、好測試」。</div>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 17. 資料結構與演算法 ============ -->
@@ -2347,6 +2450,21 @@ function flattenIter(arr) {
         <div class="tip"><b>面試重點：</b>用兩個 hash（child→parent、parent→子數）一次掃描即可，<strong>O(n)</strong>。講清楚三條件（單一父、最多兩子、唯一根）就答完；Coderbyte 輸入帶括號 <code>(1,2)</code>，記得先 <code>replace</code> 去掉再 <code>split</code>。</div>
       </div>
     </details>
+    <details class="qa">
+      <summary>給一串字串（如 '1276589'），判斷 0~9 是否都出現過</summary>
+      <div class="answer">
+        <p>把出現過的數字字元丟進 <code>Set</code>，最後看不重複的數字是不是剛好 10 個（0~9）。<strong>O(n)</strong>、一次掃描。</p>
+        <pre><code>function hasAllDigits(str) {
+  const seen = new Set();
+  for (const ch of str)
+    if (ch &gt;= '0' &amp;&amp; ch &lt;= '9') seen.add(ch);
+  return seen.size === 10;
+}
+hasAllDigits('1276589');     // false（缺 0,3,4）
+hasAllDigits('01234567890'); // true</code></pre>
+        <div class="tip"><b>變體：</b><code>new Set(str.match(/\d/g) || []).size === 10</code>（先抓出所有數字再去重）。若要回報「缺哪幾個」：<code>'0123456789'.split('').filter(d =&gt; !str.includes(d))</code>。</div>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 18. 資料庫 ============ -->
@@ -2377,7 +2495,113 @@ function flattenIter(arr) {
     </details>
   </section>
 
-  <!-- ============ 19. SEO ============ -->
+  <!-- ============ 19. 認證 / 資安 ============ -->
+  <section id="c-auth">
+    <h2 class="cat"><span class="ic"></span>認證 / 資安</h2>
+
+    <details class="qa">
+      <summary>JWT 的實現方式（結構與驗證流程）？</summary>
+      <div class="answer">
+        <p>JWT 由三段用 <code>.</code> 連接、各自 <strong>Base64URL</strong> 編碼：<code>header.payload.signature</code>。</p>
+        <ul>
+          <li><strong>Header：</strong>演算法與型別（如 <code>{ alg: "HS256", typ: "JWT" }</code>）。</li>
+          <li><strong>Payload：</strong>claims（<code>sub</code>、<code>iat</code>、<code>exp</code> 與自訂欄位）。<strong>注意：只是編碼、不是加密</strong>，任何人都能解開，<strong>別放機密</strong>。</li>
+          <li><strong>Signature：</strong><code>HMAC(base64(header)+"."+base64(payload), secret)</code>（HS256）或用 RSA 私鑰簽（RS256），用來<strong>驗證沒被竄改</strong>。</li>
+        </ul>
+        <p><strong>流程：</strong>登入成功後後端<strong>簽發</strong> token → 前端隨請求帶 <code>Authorization: Bearer &lt;token&gt;</code> → 後端用 secret／公鑰<strong>驗簽＋檢查 exp</strong>，通過就放行。好處是<strong>無狀態（stateless）</strong>，伺服器不必存 session。</p>
+        <div class="tip"><b>提醒：</b>無狀態也代表<strong>難以即時撤銷</strong>；常見做法是 access token 短效＋refresh token，或維護黑名單。簽章金鑰務必只在後端。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>JWT token 通常放哪？前端會直接讀到嗎？（localStorage vs HttpOnly Cookie）</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>localStorage / sessionStorage：</strong>前端讀寫方便、好帶 header；但 <strong>JS 讀得到 → 怕 XSS</strong>（被注入的腳本可偷走 token）。</li>
+          <li><strong>HttpOnly Cookie：</strong><strong>JS 讀不到 → 擋掉 XSS 竊取</strong>；但 cookie 會自動隨請求送出 → <strong>怕 CSRF</strong>（需搭配 <code>SameSite=Lax/Strict</code> ＋ <code>Secure</code>，必要時加 CSRF token）。</li>
+        </ul>
+        <p><strong>較佳實務：</strong>access token 短效（放記憶體）、refresh token 放 <strong>HttpOnly ＋ Secure ＋ SameSite</strong> cookie；盡量<strong>不讓前端直接操作機密 token</strong>。</p>
+        <div class="tip"><b>前端要顯示使用者資訊怎麼辦？</b>通常由後端在<strong>登入成功時另外回傳</strong>非機密的使用者資料，或解析 JWT payload 裡的非敏感欄位——而不是讓前端直接讀那把機密 token。核心是 <strong>XSS ↔ CSRF 的權衡</strong>。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 RBAC？前端怎麼實作角色權限控管？</summary>
+      <div class="answer">
+        <p><strong>RBAC（Role-Based Access Control，角色權限控管）：</strong>把權限綁到「角色」，使用者再被指派角色（admin／editor／viewer），用角色決定能做什麼，比一個個指派權限好維護。</p>
+        <p><strong>前端實作層次：</strong></p>
+        <ul>
+          <li><strong>路由層：</strong>route meta 標記需要的角色＋導航守衛／<code>&lt;ProtectedRoute&gt;</code>，沒權限就導去 403／登入。</li>
+          <li><strong>元件層：</strong>用自訂 Hook（<code>usePermission()</code>）、<code>&lt;Can&gt;</code> 元件或 HOC（<code>withPermission</code>）控制按鈕／區塊顯示與否、disable。</li>
+          <li><strong>與後端同步：</strong>登入後向後端拿目前使用者的角色／權限清單，存進全域狀態驅動上述判斷。</li>
+        </ul>
+        <div class="tip"><b>關鍵：</b>前端權限<strong>只是 UX（藏 UI、改善體驗），不是安全邊界</strong>——使用者可繞過前端。<strong>真正的權限檢查一定要在後端 API 再做一次</strong>。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>不同網域的多個站點要用同一帳號登入（SSO），怎麼做？</summary>
+      <div class="answer">
+        <p>目標是「登入一次，多站皆通」。依網域關係有不同做法：</p>
+        <ul>
+          <li><strong>同主網域的子網域</strong>（a.example.com、b.example.com）：把 cookie 設在父網域 <code>Domain=.example.com</code> 即可共用。</li>
+          <li><strong>不同網域（標準解）：</strong>用<strong>中央認證伺服器（IdP）＋ OAuth2 / OIDC</strong>（或 CAS、SAML）：各站把使用者導去中央登入，登入後帶 token／ticket 導回，各站憑此換到自己的 session。這是業界標準 SSO。</li>
+        </ul>
+        <p><strong>面試官提的「iframe」解法：</strong>在 A 站用 <code>iframe</code> 嵌入 B 站，透過 <code>postMessage</code> 或在 iframe 內把登入資訊寫進 <strong>B 站自己的 cookie／storage</strong>，讓 B 站也認得這個使用者、自動登入，免得重打帳密。</p>
+        <div class="tip"><b>重要前提：</b>iframe 寫的是 B 站的 cookie ＝<strong>第三方 cookie</strong>，現代瀏覽器（SameSite 預設、Safari ITP、Chrome 逐步封鎖第三方 cookie）會擋，<strong>可靠性越來越差</strong>。正式系統建議走 <strong>OIDC/OAuth 的重導流程</strong>，而非靠網址帶參數或偷寫第三方 cookie。</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 20. 系統設計 / 後端 ============ -->
+  <section id="c-system">
+    <h2 class="cat"><span class="ic"></span>系統設計 / 後端</h2>
+
+    <details class="qa">
+      <summary>系統遇到高負載（流量暴增）你會怎麼處理？</summary>
+      <div class="answer">
+        <p>先<strong>定位瓶頸</strong>（CPU／DB／I-O／網路），再分層處理：</p>
+        <ul>
+          <li><strong>快取：</strong>熱資料放 Redis／記憶體；靜態資源走 <strong>CDN</strong>；HTTP 快取。能擋掉大量重複請求。</li>
+          <li><strong>水平擴展＋負載平衡：</strong>多台無狀態服務＋LB 分流；可<strong>自動擴縮（autoscaling）</strong>。</li>
+          <li><strong>資料庫：</strong>讀寫分離（讀副本）、加索引／優化慢查詢、連線池，必要時分庫分表。</li>
+          <li><strong>削峰填谷：</strong>用<strong>訊息佇列（MQ）</strong>把尖峰請求非同步化、<strong>限流（rate limit）</strong>保護後端。</li>
+          <li><strong>降級／熔斷：</strong>過載時關掉次要功能、回退簡化版，保住核心；搭配監控告警。</li>
+        </ul>
+        <div class="tip"><b>重點：</b>講出「<strong>快取 → 水平擴展 → DB 優化 → 佇列/限流 → 降級</strong>」這條由淺到深的脈絡，並強調<strong>先量測找瓶頸再優化</strong>，就很完整。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>有沒有碰過微服務（microservices）？優缺點是什麼？</summary>
+      <div class="answer">
+        <p>把單體（monolith）依<strong>業務領域</strong>拆成多個可獨立部署的服務，各自有自己的資料庫，彼此用 REST／gRPC／訊息佇列溝通。</p>
+        <ul>
+          <li><strong>優點：</strong>可<strong>獨立部署與擴展</strong>、技術選型自由、故障隔離、團隊各自負責。</li>
+          <li><strong>缺點：</strong><strong>分散式複雜度</strong>（網路延遲、最終一致性）、<strong>跨服務交易難</strong>（要用 Saga）、可觀測性與維運成本高、除錯較難。</li>
+          <li><strong>配套：</strong>API Gateway、服務發現、集中設定、分散式追蹤（tracing）、CI/CD。</li>
+        </ul>
+        <div class="tip"><b>提醒：</b>不是越微越好——小團隊／早期產品用<strong>單體更省事</strong>，等規模與團隊長大、邊界清楚再拆。前端對應概念有 <strong>BFF（Backend for Frontend）</strong>與微前端。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>怎麼設計系統避免「最後一件商品被兩個人同時買到」（只差幾毫秒）？</summary>
+      <div class="answer">
+        <p>這是典型的<strong>並發競爭（race condition）／超賣</strong>問題：兩個請求同時讀到庫存 1、各自都認為「還有貨」。重點是讓「檢查＋扣庫存」變成<strong>原子操作</strong>。常見解法：</p>
+        <ul>
+          <li><strong>原子條件更新（最常用、最簡單）：</strong>一句 SQL <code>UPDATE products SET stock = stock - 1 WHERE id = ? AND stock &gt; 0</code>，看<strong>影響筆數</strong>——只有一個請求會更新成功（1 筆），另一個是 0 筆＝沒搶到。DB 行鎖保證原子性。</li>
+          <li><strong>樂觀鎖：</strong>加 <code>version</code> 欄位，更新時 <code>WHERE version = ?</code>，版本不符就重試。</li>
+          <li><strong>悲觀鎖：</strong>交易內 <code>SELECT ... FOR UPDATE</code> 鎖住該列再扣。</li>
+          <li><strong>Redis：</strong>用 <code>DECR</code>／Lua 腳本原子扣庫存，或分散式鎖（Redlock），高併發秒殺常用。</li>
+          <li><strong>佇列：</strong>把同一商品的下單請求序列化處理。</li>
+        </ul>
+        <div class="tip"><b>核心觀念：</b>不要「先 SELECT 查庫存、再 UPDATE 扣」（中間有空檔會超賣），而是用<strong>單一原子操作</strong>（條件式 UPDATE／鎖／Redis 原子指令）讓兩個並發請求只有一個能成功。</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 21. SEO ============ -->
   <section id="c-seo">
     <h2 class="cat"><span class="ic"></span>SEO</h2>
 

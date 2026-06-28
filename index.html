@@ -427,6 +427,33 @@
     </details>
 
     <details class="qa">
+      <summary>你具備設計背景，這對前端工程師的工作有什麼幫助？</summary>
+      <div class="answer">
+        <p>我把設計背景當成<strong>跨部門溝通的武器</strong>：</p>
+        <ul>
+          <li><strong>對設計師：</strong>懂設計邏輯，能用共通語言溝通，並在設計初期就先看出潛在實作瓶頸（極端狀態、RWD 斷點、空狀態），大幅減少來回改稿成本。</li>
+          <li><strong>對後端：</strong>能從使用者體驗角度回推，協助規劃更合理的 API 結構與資料形狀。</li>
+          <li><strong>對成品：</strong>UI 還原度高、對細節（間距、互動、一致性）敏銳，交付品質更穩。</li>
+        </ul>
+        <div class="tip"><b>面試提醒：</b>可連到現職——「也因為這個底子，我在跟設計、硬韌體團隊對接時，比較能快速把抽象需求轉成可實作的介面。」</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>在大型專案中，你如何決定技術選型與架構規劃？</summary>
+      <div class="answer">
+        <p>我不為了用新技術而用，而是看 <strong>trade-off</strong>，主要評估四個維度：<strong>團隊熟悉度、可維護／可擴充性、效能需求、生態成熟度</strong>。舉幾個實際決策：</p>
+        <ul>
+          <li><strong>狀態／快取：</strong>CMS 重構時評估 SWR、React Query 後選 <strong>ahooks</strong>，因為更貼合當時團隊習慣又能強化快取。</li>
+          <li><strong>型別契約：</strong>用 <strong>ts-rest + Zod</strong> 做 Contract-first，把前後端型別收斂到單一來源，把錯誤擋在編譯期。</li>
+          <li><strong>專案結構：</strong>用 <strong>Monorepo</strong> 讓前後端同步迭代、共用型別。</li>
+          <li><strong>流程／工具：</strong>把 <strong>AI 輔助開發（Claude Code）</strong>導入團隊日常、重構技術文件，提升交付效率。</li>
+        </ul>
+        <div class="tip"><b>面試提醒：</b>強調「我會先評估團隊與專案脈絡再選型，而不是為了用新技術而用」。</div>
+      </div>
+    </details>
+
+    <details class="qa">
       <summary>團隊開發經驗？</summary>
       <div class="answer">
         <p>我有完整的 <strong>Vue 與 React</strong> 雙棧團隊經驗：早期用 Vue 開發多語系電商與區塊鏈手機版產品，後來在前一間公司主導多個 React 後台，現職則回到 Vue 3 (Pinia) 主導車隊系統前端，並與 NestJS 後端、硬韌體團隊協作。我習慣以 Scrum 運作，重視介面契約與共用元件的建立。</p>

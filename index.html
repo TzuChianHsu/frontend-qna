@@ -1126,6 +1126,21 @@ Promise.resolve().then(() =&gt; console.log('F')); // 微任務
 console.log('G');
 // 輸出：D, A, C, G, B, F, E</code></pre>
         <p>追蹤重點：同步先跑（D、A、C、G）→ 清微任務佇列（B、F）→ 才取宏任務（E）。<code>await async2()</code> 會<strong>同步執行 async2 的本體</strong>（印 C），但 await 後面的 <code>console.log('B')</code> 被排進微任務。</p>
+        <p><strong>完整規則範例（微任務佇列要「整個清空」＋微任務中又排微任務＋宏任務 FIFO）：</strong></p>
+        <pre><code>console.log('1');
+setTimeout(() =&gt; {
+  console.log('2');
+  Promise.resolve().then(() =&gt; console.log('3')); // 宏任務裡排的微任務
+}, 0);
+setTimeout(() =&gt; console.log('4'), 0);
+Promise.resolve().then(() =&gt; {
+  console.log('5');
+  queueMicrotask(() =&gt; console.log('6'));          // 微任務裡又排微任務
+});
+console.log('7');
+// 輸出：1, 7, 5, 6, 2, 3, 4</code></pre>
+        <p>拆解：<strong>同步</strong> → <code>1, 7</code>；接著<strong>把微任務佇列整個清空</strong>（<code>5</code>，且它排出的 <code>6</code> 也在<strong>同一輪</strong>清掉）；再取<strong>第一個宏任務</strong> <code>2</code>，它排出的微任務 <code>3</code> 會<strong>在下一個宏任務之前</strong>立刻清掉；最後才第二個宏任務 <code>4</code>。</p>
+        <div class="tip"><b>關鍵心法：</b>「<strong>一個宏任務 → 清空所有微任務 → 才下一個宏任務</strong>」。陷阱：在 <code>.then</code> 裡 <code>return</code> 一個 Promise（thenable）會<strong>多花幾個微任務 tick</strong> 才落定（常見考古題的坑）；Node 的 <code>process.nextTick</code> 優先於一般微任務；瀏覽器渲染（rAF）排在微任務之後、下次繪製前。</p>
       </div>
     </details>
 
@@ -1181,6 +1196,16 @@ const o = {
 function say(greet){ return greet + ', ' + this.name; }
 const bound = say.myBind({ name: 'Alex' });
 bound('Hi'); // 'Hi, Alex'</code></pre>
+        <p><strong>更多邊界情況：</strong></p>
+        <ul>
+          <li><strong>箭頭函式的 this 改不了：</strong>對箭頭函式用 <code>call/apply/bind</code> 無效（它根本沒有自己的 this，只沿用定義時外層）。</li>
+          <li><strong>鏈式呼叫看「最後一個點」：</strong><code>a.b.c.fn()</code> 的 this 是 <code>a.b.c</code>（呼叫點前面那個物件），不是 a。</li>
+          <li><strong>方法被「拆下來」當 callback 會掉 this：</strong><code>setTimeout(obj.fn)</code>、<code>arr.forEach(obj.fn)</code>、React <code>onClick={this.handle}</code>（未 bind）都會讓 this 不再是 obj——用箭頭包起來、<code>bind</code>、或 class 屬性箭頭函式解決。</li>
+          <li><strong>forEach / map 的 thisArg：</strong>這些陣列方法的<strong>第二個參數</strong>可指定 callback 內的 this。</li>
+          <li><strong>class 方法是嚴格模式：</strong>掉了 this 時是 <code>undefined</code>（不是 window），存取 <code>this.x</code> 會直接報錯。</li>
+          <li><strong>DOM 事件處理：</strong><code>addEventListener</code> 用一般 function，this＝觸發事件的元素；用箭頭函式則沿用外層 this。</li>
+          <li><strong>new 的回傳規則：</strong>建構式 <code>return</code> 一個<strong>物件</strong>會取代 new 出來的實例；<code>return</code> 原始值則被忽略、仍回傳實例。</li>
+        </ul>
       </div>
     </details>
 

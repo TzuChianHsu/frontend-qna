@@ -889,6 +889,18 @@ watchEffect(() =&gt; console.log(count.value, name.value));</code></pre>
         </ul>
       </div>
     </details>
+    <details class="qa">
+      <summary>如何安全地開啟外部連結（target="_blank" 的風險）？</summary>
+      <div class="answer">
+        <p>用 <code>target="_blank"</code> 開新分頁時，新頁面可透過 <code>window.opener</code> 反向操控原頁面（把原分頁導去釣魚頁，稱 <strong>reverse tabnabbing</strong>），也會洩漏 referrer。</p>
+        <pre><code>&lt;a href="https://other.com" target="_blank" rel="noopener noreferrer"&gt;外部連結&lt;/a&gt;</code></pre>
+        <ul>
+          <li><strong>noopener：</strong>切斷 <code>window.opener</code>，新頁動不了原頁。</li>
+          <li><strong>noreferrer：</strong>不送 <code>Referer</code>（也隱含 noopener）。</li>
+        </ul>
+        <div class="tip"><b>現況：</b>現代瀏覽器對 <code>target="_blank"</code> 已<strong>預設 noopener</strong>，但為相容與明確性仍建議手動加上。</div>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 7. CSS ============ -->
@@ -1391,6 +1403,46 @@ async function runInOrder(tasks) {
         <div class="tip"><b>延伸：</b>若要「序列執行」（前一個完成才跑下一個）則用 <code>for...of</code> + <code>await run(t)</code>，但總耗時會是各 delay 相加（180ms）。要並行又保序就用 <code>allSettled</code>；若硬要「先全部發出再依序 await」，記得<strong>立刻為每個 promise 接上 <code>.catch</code></strong>，否則同樣會 unhandled rejection。</div>
       </div>
     </details>
+    <details class="qa">
+      <summary>Map / Set 是什麼？跟物件、陣列差在哪？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>Map：</strong>鍵值對集合，<strong>key 可以是任意型別（含物件）</strong>、保留插入順序、有 <code>size</code>、好迭代（<code>for...of</code>、<code>.forEach</code>）。物件的 key 只能是字串／Symbol。</li>
+          <li><strong>Set：</strong>值不重複的集合，最常用來<strong>去重</strong>：<code>[...new Set(arr)]</code>。</li>
+          <li><strong>WeakMap / WeakSet：</strong>key 必須是物件、<strong>弱引用</strong>（不阻止垃圾回收），適合存「附加在物件上、物件消失就該清掉」的資料。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>JavaScript 的模組化系統（ESM vs CommonJS）？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>ES Modules（ESM）：</strong><code>import</code> / <code>export</code>，<strong>靜態</strong>結構（編譯期可分析 → 支援 <strong>tree-shaking</strong>）、瀏覽器原生支援、非同步載入。現代標準。</li>
+          <li><strong>CommonJS（CJS）：</strong><code>require</code> / <code>module.exports</code>，<strong>同步</strong>載入、執行期動態，Node.js 傳統用法。</li>
+          <li>更早還有 AMD／UMD（瀏覽器非同步／通用包裝）。</li>
+        </ul>
+        <div class="tip"><b>差異重點：</b>ESM 靜態分析利於 tree-shaking 與打包優化；CJS 是動態的、可在條件式裡 <code>require</code>。現在前端／工具鏈以 ESM 為主。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>new 運算子做了哪些事？</summary>
+      <div class="answer">
+        <p><code>new Fn()</code> 背後做四件事：</p>
+        <ol>
+          <li>建立一個空物件。</li>
+          <li>把它的原型（<code>__proto__</code>）連到 <code>Fn.prototype</code>。</li>
+          <li>以該物件為 <code>this</code> 執行建構式 <code>Fn</code>。</li>
+          <li>若建構式<strong>沒有回傳物件</strong>，就回傳這個新物件（有回傳物件則回傳那個）。</li>
+        </ol>
+        <pre><code>function myNew(Fn, ...args) {
+  const obj = Object.create(Fn.prototype);
+  const ret = Fn.apply(obj, args);
+  return (ret instanceof Object) ? ret : obj;
+}</code></pre>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 9. TypeScript ============ -->
@@ -1721,6 +1773,38 @@ getLength(123);    // ❌ number 沒有 length</code></pre>
   );
 }</code></pre>
         <div class="tip"><b>加分：</b>用 <code>setOn(prev =&gt; !prev)</code> 而非 <code>setOn(!on)</code>——函式更新較安全、不依賴 render 當下的閉包值（連點/批次更新也正確）；用 <code>aria-pressed</code> 提升無障礙；若狀態要由父層掌控，可改成<strong>受控元件</strong>（props 傳入 <code>on</code> 與 <code>onChange</code>）。</div>
+      </div>
+    </details>
+    <details class="qa">
+      <summary>什麼是 React Server Components（RSC）？</summary>
+      <div class="answer">
+        <p>在<strong>伺服器</strong>執行、產生結果再送到瀏覽器的元件（Next.js App Router 預設）。特點：</p>
+        <ul>
+          <li><strong>不送自己的 JS 到瀏覽器</strong> → 減少 bundle 體積。</li>
+          <li>可<strong>直接存取後端資源</strong>（DB、檔案、密鑰），不必另開 API。</li>
+          <li><strong>不能用</strong> state／effect／事件／瀏覽器 API——那些要放 Client Component（<code>'use client'</code>）。</li>
+        </ul>
+        <div class="tip"><b>和 SSR 的差別：</b>SSR 是把整棵元件渲染成 HTML 後仍要 hydrate；RSC 是「某些元件根本只在伺服器跑、不送 JS、不水合」，再和 Client Component 組合。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Virtual DOM 與 React Fiber 是什麼？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>Virtual DOM：</strong>用 JS 物件描述 UI。state 變動時先在記憶體算出新樹、和舊樹 <strong>diff（reconciliation）</strong>，求出最小變更再<strong>批次</strong>更新真實 DOM——避免直接、頻繁操作昂貴的 DOM。</li>
+          <li><strong>Fiber：</strong>React 16 重寫的協調引擎，把渲染工作切成<strong>小單元</strong>，可<strong>中斷／恢復／排優先級</strong>。讓高優先更新（如使用者輸入）不會被一個大渲染卡住，是 Concurrent 特性的基礎。</li>
+        </ul>
+        <div class="tip"><b>釐清：</b>Virtual DOM 不是「一定比較快」，而是「<strong>把多次 DOM 操作合併、且讓你用宣告式寫法</strong>」。Fiber 解決的是「渲染可被打斷、能排程」。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>React Portal 是什麼？什麼時候用？</summary>
+      <div class="answer">
+        <p><code>ReactDOM.createPortal(child, container)</code> 把子元素<strong>渲染到父元件 DOM 樹之外</strong>的節點（通常掛到 <code>document.body</code>），但<strong>事件仍沿 React 元件樹冒泡</strong>、context 也照常運作。</p>
+        <pre><code>ReactDOM.createPortal(&lt;Modal/&gt;, document.body)</code></pre>
+        <div class="tip"><b>用途：</b>Modal、Tooltip、Dropdown——避免被父層的 <code>overflow:hidden</code>、<code>z-index</code> 或 <code>transform</code> 限制住而被裁切／蓋住。</div>
       </div>
     </details>
   </section>
@@ -2382,6 +2466,43 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
   }
 }, { rootMargin: '200px' });             // 提前 200px 先載
 document.querySelectorAll('img[data-src]').forEach(img =&gt; io.observe(img));</code></pre>
+      </div>
+    </details>
+    <details class="qa">
+      <summary>Preload、Prefetch、Preconnect 的差別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>preload：</strong><code>&lt;link rel="preload"&gt;</code>——<strong>當前頁面</strong>很快會用到的關鍵資源，<strong>高優先</strong>提前載（字型、首屏大圖、關鍵 JS）。</li>
+          <li><strong>prefetch：</strong><code>&lt;link rel="prefetch"&gt;</code>——<strong>預測下一頁</strong>可能用到的資源，<strong>低優先</strong>、瀏覽器閒置時才載。</li>
+          <li><strong>preconnect / dns-prefetch：</strong>提前對第三方網域<strong>建立連線／做 DNS 解析</strong>，縮短之後請求的等待。</li>
+        </ul>
+        <div class="tip"><b>一句話：</b>preload =「這頁馬上要、先載」；prefetch =「下一頁可能要、有空再載」。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>will-change 是什麼？怎麼用？</summary>
+      <div class="answer">
+        <p>CSS <code>will-change</code> 提示瀏覽器「某屬性即將變動」，讓它<strong>提前把元素提升為合成層（GPU 硬體加速）</strong>，動畫時更順、減少 reflow/repaint。</p>
+        <pre><code>.card { will-change: transform; }</code></pre>
+        <div class="tip"><b>別濫用：</b>提升合成層會<strong>吃記憶體</strong>；只在「即將動畫」時加、動畫結束後移除，別對一堆元素長期掛著。搭配只動 <code>transform/opacity</code> 效果最好。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>requestAnimationFrame 是什麼？做動畫為何比 setTimeout 好？</summary>
+      <div class="answer">
+        <p><code>requestAnimationFrame(cb)</code> 在瀏覽器<strong>下次重繪前</strong>執行回呼，<strong>與螢幕更新率同步</strong>（通常 60fps，每幀約 16.7ms）。</p>
+        <ul>
+          <li>不像 <code>setTimeout</code> 要自己猜間隔、容易和重繪不同步而<strong>掉幀</strong>。</li>
+          <li>分頁切到背景時會<strong>自動暫停</strong>，省效能與電。</li>
+          <li>適合動畫，也適合把大量 DOM 讀寫<strong>對齊到一幀</strong>處理。</li>
+        </ul>
+        <pre><code>function loop() {
+  // 更新動畫狀態...
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);</code></pre>
       </div>
     </details>
   </section>

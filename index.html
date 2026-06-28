@@ -69,8 +69,11 @@
   .core-badge{display:inline-block;margin-left:8px;padding:1px 7px;border-radius:10px;
     background:#fff3e0;color:#d2691e;border:1px solid #f3c98b;font-size:11px;font-weight:700;
     vertical-align:middle;white-space:nowrap}
+  .core-badge::after{content:"🔥 必考"}
   #favOnly.on{background:#fff7df;border-color:#f5b301;color:#a9760a}
   #favCount{font-weight:700}
+  #coreOnly.on{background:#fff3e0;border-color:#f3c98b;color:#b5500a}
+  #coreCount{font-weight:700}
   .answer{padding:2px 18px 16px;border-top:1px solid #f0f0f0;color:#333}
   .answer p{margin:8px 0}
   .answer ul,.answer ol{margin:8px 0 8px 22px}
@@ -4396,7 +4399,6 @@ async redirects() {
     if (d.getAttribute('data-core') === '1') {
       var badge = document.createElement('span');
       badge.className = 'core-badge';
-      badge.textContent = '🔥 必考';
       sum.appendChild(badge);
     }
   });
@@ -4457,7 +4459,7 @@ async redirects() {
       sec.style.display = shown ? '' : 'none';
     });
     noresult.style.display = ((q || favMode || coreMode) && visible === 0) ? 'block' : 'none';
-    kwOut.textContent = q ? search.value : (coreMode ? '必考' : '收藏');
+    kwOut.textContent = q ? search.value : (favMode ? '收藏' : '必考');
     countEl.textContent = q ? ('找到 ' + visible + ' 題')
                           : (favMode ? ('收藏 ' + visible + ' 題')
                           : (coreMode ? ('必考 ' + visible + ' 題')

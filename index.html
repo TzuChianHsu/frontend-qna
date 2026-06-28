@@ -1576,6 +1576,41 @@ getLength(123);    // ❌ number 沒有 length</code></pre>
         <p>用過（含 Redux Toolkit）。Redux 解決<strong>大型應用的狀態管理複雜性</strong>與<strong>跨元件/跨層級通訊</strong>——不必把資料一層層往下傳。它提供<strong>單一資料來源、可預測的單向資料流（action → reducer → store）</strong>，便於測試與除錯。代價是有些樣板程式碼（RTK 已大幅簡化）。</p>
       </div>
     </details>
+    <details class="qa">
+      <summary>遇過 Next.js 的 Hydration 問題嗎？成因與解法？</summary>
+      <div class="answer">
+        <p><strong>Hydration</strong> 是把 SSR 產生的靜態 HTML 在瀏覽器端「接上」React 的事件與狀態。React 假設「用戶端第一次 render 的結果」要跟伺服器送來的 HTML <strong>完全一致</strong>，不一致就是 <strong>hydration mismatch</strong>（警告 <code>Text content does not match server-rendered HTML</code>），React 18 會丟掉該段伺服器 HTML 改由用戶端重畫，造成閃爍、CLS。</p>
+        <p><strong>常見成因：</strong></p>
+        <ul>
+          <li>render 期間用了只在某一端存在/會變的值：<code>typeof window</code>、<code>localStorage</code>、<code>Date.now()</code>、<code>new Date()</code>（時區/locale）、<code>Math.random()</code>。</li>
+          <li>日期/數字依 locale、時區格式化，伺服器與瀏覽器結果不同。</li>
+          <li>不合法的 HTML 巢狀（<code>&lt;p&gt;</code> 裡放 <code>&lt;div&gt;</code>），瀏覽器自動修正 DOM。</li>
+          <li>瀏覽器擴充功能在 hydrate 前改了 DOM。</li>
+        </ul>
+        <p><strong>解法：</strong>把「只有用戶端才知道的東西」延後到掛載後再渲染（<code>useEffect</code> + 旗標）、用 <code>useSyncExternalStore</code> 訂閱用戶端狀態、純用戶端元件用 <code>next/dynamic</code> 的 <code>{ ssr:false }</code>，確定無害才用 <code>suppressHydrationWarning</code>。</p>
+        <pre><code>function Width() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() =&gt; setMounted(true), []);
+  if (!mounted) return &lt;span&gt;--&lt;/span&gt;;   // 伺服器與首次 render 一致
+  return &lt;span&gt;{window.innerWidth}&lt;/span&gt;; // 掛載後才補真實值
+}</code></pre>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>沒有 props 變化，元件畫面有可能還是更新嗎？</summary>
+      <div class="answer">
+        <p><strong>會。</strong>props 沒變不代表不會 re-render，觸發來源不只 props：</p>
+        <ul>
+          <li><strong>自身 state 改變：</strong><code>useState</code>／<code>useReducer</code> 的 setter 被呼叫。</li>
+          <li><strong>訂閱的 Context 改變：</strong><code>useContext</code> 的 Provider value 變了，所有消費者都重渲染。</li>
+          <li><strong>父元件 re-render：</strong>預設子元件會跟著重渲染（即使 props 值一樣），除非用 <code>React.memo</code> 擋。</li>
+          <li><strong>訂閱外部 store：</strong><code>useSyncExternalStore</code>、Redux <code>useSelector</code>、Zustand 等。</li>
+          <li><strong>強制更新：</strong>class 的 <code>forceUpdate</code>、<code>key</code> 改變導致重建；開發期 StrictMode 也會多跑一次。</li>
+        </ul>
+        <p><strong>關鍵區分：</strong><code>re-render</code>（重跑 render 函式）≠ <code>DOM 實際更新</code>。props 沒變仍可能 re-render；但若輸出相同，reconciliation 後不一定真的改 DOM。優化方向是減少不必要的 re-render（memo／狀態下放／拆 Context），而不是只看 props。</p>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 11. Vue ============ -->
@@ -1964,6 +1999,38 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
         </ul>
       </div>
     </details>
+    <details class="qa">
+      <summary>畫面很慢，怎麼判斷是 server 問題還是網路問題？</summary>
+      <div class="answer">
+        <p>看單一請求的 <strong>Timing 分解</strong>（DevTools → Network → 點請求 → Timing）：</p>
+        <ul>
+          <li><strong>DNS / Connection / SSL 大：</strong>連線層（建立連線、TLS、CDN）。</li>
+          <li><strong>Waiting (TTFB) 大：</strong>多半是<strong>伺服器處理慢</strong>（DB 查詢、運算、外部 API），但也可能是 RTT 大（地理距離／行動網路）。</li>
+          <li><strong>Content Download 大：</strong><strong>網路</strong>問題——回傳 payload 太大或頻寬不足。</li>
+        </ul>
+        <p><strong>把 server 與網路切開的方法：</strong>伺服器回傳 <code>Server-Timing</code> header 把後端內部耗時攤在 DevTools；用 <code>curl</code> 量各階段避開瀏覽器排隊；換網路/地區比較（網路問題會變、伺服器處理時間不會）；後端接 APM/trace 直接看內部耗時。</p>
+        <pre><code>curl -o /dev/null -s -w \
+ "dns:%{time_namelookup} connect:%{time_connect} ttfb:%{time_starttransfer} total:%{time_total}\n" \
+ https://example.com/api/list
+# ttfb 高、connect 低 → 伺服器慢；total 遠大於 ttfb → 下載慢（網路/payload）</code></pre>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>前端存資料，除了 Cookie 和 Storage 還有哪些地方？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>Cookie：</strong>~4KB，每次同源請求自動帶上（適合 token/session，會增加請求量）。</li>
+          <li><strong>localStorage / sessionStorage：</strong>~5–10MB，同步、字串 key-value；session 隨分頁關閉清除。</li>
+          <li><strong>IndexedDB：</strong>數百 MB 以上，<strong>非同步</strong>、交易式、可存物件與 <code>Blob</code>/<code>File</code>，適合離線/大量快取。</li>
+          <li><strong>Cache Storage API：</strong>搭配 Service Worker，以 Request/Response 為單位，PWA 離線核心。</li>
+          <li><strong>記憶體：</strong>JS 變數／元件 state／全域 store，最快但重整即消失。</li>
+          <li><strong>URL / History state：</strong>query、hash、<code>history.pushState</code> 的 state，可分享、可前進後退。</li>
+          <li><strong>File System Access API / OPFS：</strong>經授權讀寫真實檔案、或源私有高效能檔案儲存。</li>
+        </ul>
+        <div class="tip"><b>注意：</b>Web SQL 已廢棄勿用；敏感資料/token 別放 localStorage（易受 XSS），優先用 <code>HttpOnly</code> + <code>Secure</code> + <code>SameSite</code> Cookie。</div>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 15. 效能優化 ============ -->
@@ -2053,6 +2120,72 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
         </ul>
       </div>
     </details>
+    <details class="qa">
+      <summary>PM／使用者反應「畫面很卡」，你會怎麼處理？</summary>
+      <div class="answer">
+        <p><strong>先把「卡」變成可量測的問題，別憑感覺優化。</strong></p>
+        <ul>
+          <li><strong>釐清類型：</strong>載入慢（看 LCP/TTFB）、操作延遲（看 INP、主執行緒長任務）、還是動畫/捲動掉幀（看 FPS）。</li>
+          <li><strong>量化定位：</strong>DevTools Performance 看 Long Task 與是 Scripting/Rendering/Painting；Lighthouse/Web Vitals 抓體感；React Profiler 看哪個元件 render 太多/太久。</li>
+        </ul>
+        <p><strong>常見成因 → 對策：</strong></p>
+        <ul>
+          <li>過度 re-render → <code>memo</code>/<code>useMemo</code>/<code>useCallback</code>、狀態下放、拆元件。</li>
+          <li>長列表整包渲染 → 虛擬滾動。</li>
+          <li>同步長任務阻塞主執行緒 → 時間分片（<code>requestIdleCallback</code>/scheduler）、丟 Web Worker。</li>
+          <li>Layout thrashing（讀寫 DOM 交錯）→ 批次讀、批次寫、<code>requestAnimationFrame</code>。</li>
+          <li>動畫卡 → 只動 <code>transform</code>/<code>opacity</code>（走合成層）。</li>
+          <li>圖片/資源過大 → 壓縮、lazy load、適當尺寸、CDN。</li>
+        </ul>
+        <div class="tip"><b>提醒：</b>別只在自己高階機器測，務必用低階手機 + 弱網驗證，並上線後用 RUM 持續觀察。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>要做一個「圖片很多」的系統，你會怎麼處理？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>載入策略：</strong>非首屏圖 lazy load；超長清單用虛擬滾動或分頁/無限捲動；首屏 LCP 圖反而要 <code>eager</code> + <code>fetchpriority="high"</code> 甚至 preload。</li>
+          <li><strong>格式與尺寸：</strong>用 WebP/AVIF；響應式 <code>srcset</code>/<code>sizes</code> 或 <code>&lt;picture&gt;</code> 給「剛好的尺寸」，別用 4000px 原圖顯示 300px。</li>
+          <li><strong>CDN 處理：</strong>走 CDN + 動態縮圖（Cloudinary/imgix/Next Image）按需裁切壓縮。</li>
+          <li><strong>版面穩定：</strong>給 <code>width/height</code> 或 <code>aspect-ratio</code> 先佔位，配 LQIP/BlurHash 模糊佔位，避免 CLS。</li>
+          <li><strong>快取：</strong>檔名加 content hash + <code>Cache-Control: immutable</code>；<code>decoding="async"</code> 避免解碼卡主執行緒。</li>
+        </ul>
+        <pre><code>&lt;img src="/cover-800.webp"
+  srcset="/cover-400.webp 400w, /cover-800.webp 800w, /cover-1200.webp 1200w"
+  sizes="(max-width:600px) 100vw, 600px"
+  width="800" height="600" loading="lazy" decoding="async" alt=""&gt;</code></pre>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Lazy loading 的原理是什麼？</summary>
+      <div class="answer">
+        <p>核心是<strong>延後載入目前用不到的資源，直到它即將被需要（通常是快進入視口）才載</strong>，縮短首屏時間、省頻寬。三種層次：</p>
+        <ul>
+          <li><strong>原生 <code>loading="lazy"</code>：</strong>瀏覽器內建，依元素與視口距離自動決定何時載，最省事、首選。</li>
+          <li><strong>IntersectionObserver（手動）：</strong>真正網址先藏在 <code>data-src</code>，用 observer 監測元素是否與視口交叉；進視口才把 <code>data-src</code> 寫進 <code>src</code> 觸發載入，載完 <code>unobserve</code>。</li>
+          <li><strong>早期作法：</strong><code>scroll</code> 事件 + <code>getBoundingClientRect()</code> 算位置；但 scroll 觸發頻繁、<code>getBoundingClientRect</code> 會強制 reflow，效能差需 throttle——IntersectionObserver 正是為取代它而生。</li>
+        </ul>
+        <p>延伸：<strong>程式碼分割</strong>（<code>React.lazy</code> + <code>Suspense</code>、<code>import()</code> 動態載入）也是 lazy loading。配套：佔位保留尺寸避免 CLS、<code>rootMargin</code> 提前載、載完解除監測。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>承上：怎麼取得畫面上「目前需要載入」的圖片有哪些？</summary>
+      <div class="answer">
+        <p>主流且正確答案是 <strong>IntersectionObserver</strong>：對每張待載圖 <code>observe</code>，瀏覽器會<strong>非同步</strong>通知哪些元素與視口（或指定 <code>root</code>）交叉，<code>entry.isIntersecting</code> 為 true 即「需要載入」；載入後 <code>unobserve</code>，用 <code>rootMargin</code> 提前載。</p>
+        <p>為什麼不用 scroll：scroll 觸發極頻繁、<code>getBoundingClientRect()</code> 會強制同步 reflow，整批計算在主執行緒易掉幀，需 throttle；IntersectionObserver 交給瀏覽器底層非同步完成，不佔主執行緒。</p>
+        <pre><code>const io = new IntersectionObserver((entries, obs) =&gt; {
+  for (const e of entries) {
+    if (!e.isIntersecting) continue;     // 還沒進視口
+    e.target.src = e.target.dataset.src; // 進視口才載
+    obs.unobserve(e.target);
+  }
+}, { rootMargin: '200px' });             // 提前 200px 先載
+document.querySelectorAll('img[data-src]').forEach(img =&gt; io.observe(img));</code></pre>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 16. 設計方法 / 模式 ============ -->
@@ -2107,6 +2240,56 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
       <div class="answer">
         <p>常見可準備：反轉字串、判斷回文、字元計數、去重、找最長不重複子字串等；型別轉換注意 <code>Number()</code> / <code>parseInt()</code> 差異、隱式轉型（<code>+</code> 與字串、truthy/falsy）、<code>String()</code> 與模板字串。建議實際手寫幾題並能說明時間複雜度。</p>
         <p class="ref">參考：字串處理 / 型別轉換筆記（HackMD、Vocus）</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 17. SEO ============ -->
+  <section id="c-seo">
+    <h2 class="cat"><span class="ic"></span>SEO</h2>
+
+    <details class="qa">
+      <summary>SEO 要好，HTML 的 &lt;head&gt; 需要加哪些東西？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>基本：</strong><code>&lt;title&gt;</code>（每頁唯一）、<code>&lt;meta name="description"&gt;</code>、<code>&lt;meta name="viewport"&gt;</code>、<code>&lt;meta charset&gt;</code>、<code>&lt;html lang&gt;</code>。</li>
+          <li><strong>canonical：</strong><code>&lt;link rel="canonical"&gt;</code> 指定正規網址，避免重複內容稀釋權重。</li>
+          <li><strong>robots：</strong><code>&lt;meta name="robots" content="index, follow"&gt;</code>。</li>
+          <li><strong>社群分享：</strong>Open Graph（<code>og:title/description/image/url/type</code>）、Twitter Card。</li>
+          <li><strong>多語言：</strong><code>&lt;link rel="alternate" hreflang="..."&gt;</code>。</li>
+          <li><strong>結構化資料：</strong>JSON-LD（schema.org，如 Article），爭取 rich result。</li>
+        </ul>
+        <div class="tip"><b>注意：</b><code>meta keywords</code> 已被忽略；<code>robots.txt</code>/<code>sitemap.xml</code> 放網站根目錄而非 <code>&lt;head&gt;</code>。SEO 不只標籤——SSR/SSG 讓爬蟲讀得到內容、語意化 HTML、<code>img alt</code> 與 Core Web Vitals 都很重要。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>想讓某些頁面不要被機器人爬到，該怎麼做？</summary>
+      <div class="answer">
+        <p><strong>先分清楚目標：</strong></p>
+        <ul>
+          <li><strong>不被搜尋引擎「索引」：</strong><code>robots.txt</code> 的 <code>Disallow</code>（君子協定）、頁面 <code>&lt;meta name="robots" content="noindex"&gt;</code>、或 <code>X-Robots-Tag</code> HTTP header（對 PDF/圖片也有效，最可靠）。</li>
+          <li><strong>真的「擋住存取」：</strong><code>robots.txt</code> 擋不住惡意爬蟲，要靠伺服器端——身分驗證、rate limiting、WAF/bot 偵測（Cloudflare）、CAPTCHA。</li>
+        </ul>
+        <div class="tip"><b>陷阱：</b>被 <code>Disallow</code> 的頁面爬蟲讀不到 <code>noindex</code>，反而可能因外部連結被「列出網址」；要確實不被索引就讓它能讀到 <code>noindex</code>。<code>robots.txt</code> 是公開檔案，別把敏感路徑列上去等於洩漏。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>路徑改了（例如 /article → /stories），SEO 怎麼處理？</summary>
+      <div class="answer">
+        <p>對每個舊網址做 <strong>301 永久導向</strong>到對應的新網址，<strong>逐筆對應</strong>（<code>/article/123 → /stories/123</code>），讓既有排名與外部連結權重（link equity）轉移過去。</p>
+        <ul>
+          <li>用 <strong>301（永久）</strong>，不要用 302（暫時）做永久搬遷。</li>
+          <li>不要把舊頁全導到首頁（會被當 soft 404，浪費權重）。</li>
+          <li>同步更新 <code>sitemap.xml</code>、站內內部連結、各頁 canonical 為新網址。</li>
+          <li>導向保留夠久（數週～數月）讓搜尋引擎重新收錄；用 Search Console 監控。</li>
+        </ul>
+        <pre><code>// Next.js next.config.js
+async redirects() {
+  return [{ source: '/article/:slug*', destination: '/stories/:slug*', permanent: true }];
+}
+// Nginx：location ~ ^/article/(.*)$ { return 301 /stories/$1; }</code></pre>
       </div>
     </details>
   </section>

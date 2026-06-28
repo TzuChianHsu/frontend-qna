@@ -901,6 +901,44 @@ watchEffect(() =&gt; console.log(count.value, name.value));</code></pre>
         <div class="tip"><b>現況：</b>現代瀏覽器對 <code>target="_blank"</code> 已<strong>預設 noopener</strong>，但為相容與明確性仍建議手動加上。</div>
       </div>
     </details>
+
+    <details class="qa">
+      <summary>&lt;script&gt; 的 async 與 defer 有什麼不同？</summary>
+      <div class="answer">
+        <p>三種載入方式影響「下載」與「執行」時機（HTML 解析是否被阻塞）：</p>
+        <ul>
+          <li><strong>無屬性：</strong>遇到 <code>&lt;script&gt;</code> 立刻下載並執行，<strong>阻塞 HTML 解析</strong>。</li>
+          <li><strong>async：</strong>非同步下載，<strong>下載完立即執行</strong>（執行時仍中斷解析）；多支誰先下載完誰先跑，<strong>不保證順序</strong>。適合獨立、無依賴的腳本（如埋點分析）。</li>
+          <li><strong>defer：</strong>非同步下載，但<strong>延後到 HTML 解析完成後、DOMContentLoaded 之前</strong>才執行，且<strong>保證依出現順序執行</strong>。適合有依賴、需操作 DOM 的腳本。</li>
+        </ul>
+        <p>兩者都只對<strong>外部腳本（有 src）</strong>有效。現代常見做法是放 <code>&lt;head&gt;</code> 配 <code>defer</code>。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>如何在 HTML 中載入 CSS？三種方式與優先順序？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>外部樣式表：</strong><code>&lt;link rel="stylesheet" href="..."&gt;</code>，可快取、可重用，最推薦。</li>
+          <li><strong>內部樣式：</strong>放在 <code>&lt;style&gt;</code> 內，僅作用於當前頁面。</li>
+          <li><strong>行內樣式：</strong>元素的 <code>style</code> 屬性，作用範圍最小。</li>
+        </ul>
+        <p><strong>優先級（不含 !important）：</strong>行內 &gt; ID &gt; class／屬性／偽類 &gt; 標籤，跟選擇器權重一致；<code>style</code> 屬性相當於最高權重。<code>!important</code> 會凌駕一般規則、<strong>應少用</strong>；同權重時「後寫的覆蓋先寫的」。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>前端圖片格式怎麼選：JPG / PNG / WebP / SVG？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>JPG：</strong>有損壓縮、檔案小，<strong>不支援透明</strong>。適合照片、色彩豐富的圖。</li>
+          <li><strong>PNG：</strong>無損、<strong>支援透明</strong>，檔案較大。適合透明背景或銳利邊緣（icon、去背）。</li>
+          <li><strong>WebP：</strong>同時支援<strong>有損／無損與透明</strong>，體積比 JPG／PNG 小 25～35%，是<strong>網頁優化首選</strong>，可用 <code>&lt;picture&gt;</code> 做 fallback。</li>
+          <li><strong>SVG：</strong>向量格式，<strong>放大不失真、檔案小</strong>，可用 CSS／JS 操作。適合 logo、icon、圖表，不適合照片。</li>
+        </ul>
+        <p>近年還有 <strong>AVIF</strong>（壓縮率更佳）可評估。</p>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 7. CSS ============ -->
@@ -1063,6 +1101,28 @@ watchEffect(() =&gt; console.log(count.value, name.value));</code></pre>
           <li><strong>偽元素（pseudo-element，雙冒號 <code>::</code>）：</strong>建立／選取元素的<strong>一部分或虛擬內容</strong>。如 <code>::before</code>、<code>::after</code>（搭配 <code>content</code>）、<code>::first-line</code>、<code>::placeholder</code>、<code>::selection</code>。</li>
         </ul>
         <p>一句話：偽類選「處於某狀態的元素」，偽元素選／造「元素的某個部分」。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>display: inline、block、inline-block 差在哪？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>block：</strong>獨佔一行，可設 <code>width</code>/<code>height</code> 與上下左右 margin/padding。如 <code>div</code>、<code>p</code>。</li>
+          <li><strong>inline：</strong>不換行、隨內容寬度，<strong>設不了 width/height</strong>，上下 margin/padding 不影響排版。如 <code>span</code>、<code>a</code>。</li>
+          <li><strong>inline-block：</strong>像 inline 不換行，但<strong>可設 width/height 與完整 margin/padding</strong>，兼具兩者特性。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>display:none、visibility:hidden、opacity:0 差在哪？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>display:none：</strong><strong>不渲染、不佔空間</strong>，子元素也消失，觸發 reflow，無法綁定事件。</li>
+          <li><strong>visibility:hidden：</strong>看不見但<strong>仍佔空間</strong>，只觸發 repaint，無法點擊。</li>
+          <li><strong>opacity:0：</strong>完全透明但<strong>佔空間且仍可互動（可點擊、可觸發事件）</strong>，可做過渡動畫，會建立新的堆疊上下文。</li>
+        </ul>
       </div>
     </details>
   </section>
@@ -1468,6 +1528,143 @@ async function runInOrder(tasks) {
 }</code></pre>
       </div>
     </details>
+
+    <details class="qa">
+      <summary>null、undefined 與 undeclared 的區別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>undefined：</strong>變數已宣告但<strong>尚未賦值</strong>，<code>typeof</code> 為 <code>"undefined"</code>。</li>
+          <li><strong>null：</strong>開發者<strong>主動賦予的「空值」</strong>，代表刻意沒有值。<code>typeof null === "object"</code>（歷史包袱）。</li>
+          <li><strong>undeclared：</strong>變數<strong>從未宣告</strong>，直接讀取丟 <code>ReferenceError</code>（但 <code>typeof</code> 一個 undeclared 變數不報錯、回 <code>"undefined"</code>）。</li>
+        </ul>
+        <p><code>null == undefined</code> 為 <code>true</code>，但 <code>null === undefined</code> 為 <code>false</code>。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>0.1 + 0.2 為什麼不等於 0.3？怎麼避免？</summary>
+      <div class="answer">
+        <p>JS 數字採 <strong>IEEE 754 雙精度浮點數</strong>，0.1 與 0.2 在二進位無法精確表示，相加得 <code>0.30000000000000004</code>。這是所有用 IEEE 754 的語言共同問題。</p>
+        <ul>
+          <li><strong>比較：</strong><code>Math.abs(a - b) &lt; Number.EPSILON</code>。</li>
+          <li><strong>顯示：</strong><code>(0.1 + 0.2).toFixed(2)</code> → <code>"0.30"</code>。</li>
+          <li><strong>金額：</strong>先<strong>轉成整數（最小單位，如「分」）</strong>再算，或用 decimal.js / big.js。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>嚴格模式（use strict）有什麼用？</summary>
+      <div class="answer">
+        <p>在檔案或函式開頭加 <code>'use strict';</code>，用更嚴謹的規則執行，<strong>把靜默錯誤變成丟例外</strong>：</p>
+        <ul>
+          <li>禁用<strong>未宣告</strong>的變數（不再自動變全域）。</li>
+          <li>一般函式呼叫的 <code>this</code> 為 <code>undefined</code>（非嚴格是 <code>window</code>）。</li>
+          <li>禁止重複參數名、禁止對唯讀屬性賦值（會報錯）。</li>
+        </ul>
+        <p>ES6 的 <strong>module 與 class 內部預設就是嚴格模式</strong>，現代開發多半不必手動加。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>JavaScript 的 sort 怎麼排序？(a,b) =&gt; b - a 是升冪還是降冪？</summary>
+      <div class="answer">
+        <p><code>sort</code> <strong>預設把元素轉字串、依 Unicode 排序</strong>，所以 <code>[10, 9, 1].sort()</code> 會得到 <code>[1, 10, 9]</code>（陷阱）。排數字必須傳比較函式：</p>
+        <ul>
+          <li>回傳<strong>負數</strong>→ a 在前；<strong>正數</strong>→ b 在前；0 → 不變。</li>
+          <li><code>(a, b) =&gt; a - b</code> → <strong>升冪</strong>（小到大）。</li>
+          <li><code>(a, b) =&gt; b - a</code> → <strong>降冪</strong>（大到小）。</li>
+        </ul>
+        <p>補充：<code>sort</code> <strong>原地修改</strong>原陣列；現代引擎為<strong>穩定排序</strong>。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 IIFE（立即調用函式）？優缺點？</summary>
+      <div class="answer">
+        <p>IIFE（Immediately Invoked Function Expression）是<strong>定義後立即執行</strong>的函式：</p>
+        <pre><code>(function(){ /* ... */ })();
+(() =&gt; { /* ... */ })();</code></pre>
+        <ul>
+          <li><strong>優點：</strong>建立<strong>獨立作用域</strong>，避免污染全域；可實作模組化與私有變數（ES6 前常用）。</li>
+          <li><strong>缺點：</strong>可讀性較差；有了 <code>let</code>/<code>const</code> 區塊作用域與 ES Module 後使用情境大減。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是高階函式（Higher-Order Function）？</summary>
+      <div class="answer">
+        <p>滿足任一條件的函式：<strong>接收函式作為參數</strong>，或<strong>回傳一個函式</strong>。</p>
+        <ul>
+          <li>接收函式：<code>map</code>、<code>filter</code>、<code>reduce</code>、<code>addEventListener</code>。</li>
+          <li>回傳函式：柯里化（currying）、防抖／節流、各種裝飾器（HOC、middleware）。</li>
+        </ul>
+        <pre><code>const withLog = (fn) =&gt; (...args) =&gt; {
+  console.log('call', args);
+  return fn(...args);
+};</code></pre>
+        <p>好處：抽象重複邏輯、組合行為，是函式式程式設計的基礎。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>call、apply、bind 的差別與用法？</summary>
+      <div class="answer">
+        <p>三者都用來<strong>指定函式執行時的 this</strong>：</p>
+        <ul>
+          <li><strong>call：</strong><code>fn.call(thisArg, a, b)</code>——立即執行，參數<strong>逐個</strong>傳。</li>
+          <li><strong>apply：</strong><code>fn.apply(thisArg, [a, b])</code>——立即執行，參數用<strong>陣列</strong>傳。</li>
+          <li><strong>bind：</strong><code>fn.bind(thisArg)</code>——<strong>不立即執行</strong>，回傳 this 已綁定的新函式。</li>
+        </ul>
+        <pre><code>function greet(g){ return g + ', ' + this.name; }
+const o = { name: 'Amy' };
+greet.call(o, 'Hi');        // 'Hi, Amy'
+greet.apply(o, ['Hello']);  // 'Hello, Amy'
+const fn = greet.bind(o);
+fn('Hey');                  // 'Hey, Amy'</code></pre>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>ES6 的 class 與建構函式（constructor function）差在哪？</summary>
+      <div class="answer">
+        <p><code>class</code> 是建構函式 + 原型繼承的<strong>語法糖</strong>，底層仍是原型鏈，但有差異：</p>
+        <ul>
+          <li><strong>不會提升：</strong>class 有 TDZ，宣告前使用報錯；函式宣告式建構函式會提升。</li>
+          <li><strong>強制 new：</strong>class 必須用 <code>new</code> 呼叫，否則報錯。</li>
+          <li><strong>內部為嚴格模式</strong>，方法<strong>不可列舉</strong>。</li>
+          <li>語法更直覺：<code>extends</code>、<code>super</code>、<code>static</code>、getter/setter、私有欄位 <code>#x</code>。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>spread 與 rest 運算子（...）的差別？</summary>
+      <div class="answer">
+        <p>符號都是 <code>...</code>，但作用相反，看用在哪：</p>
+        <ul>
+          <li><strong>spread（展開）：</strong>把陣列／物件<strong>攤開</strong>。<code>[...a, ...b]</code>、<code>{...obj, x: 1}</code>、<code>fn(...args)</code>。</li>
+          <li><strong>rest（收集）：</strong>把多個值<strong>收成陣列／物件</strong>。<code>function f(...args){}</code>、<code>const [first, ...rest] = arr</code>。</li>
+        </ul>
+        <p>注意：物件 spread 是<strong>淺拷貝</strong>。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>ES6 有哪些常用的新特性？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>變數：</strong><code>let</code>/<code>const</code>（區塊作用域）。</li>
+          <li><strong>函式：</strong>箭頭函式、預設參數、rest/spread。</li>
+          <li><strong>解構賦值</strong>、<strong>樣板字串</strong>。</li>
+          <li><strong>Promise</strong>、<strong>Class</strong>、<strong>Module</strong>（import/export）。</li>
+          <li><strong>新資料結構：</strong>Map、Set、Symbol。</li>
+          <li>物件簡寫、<code>for...of</code>、Generator/Iterator。</li>
+        </ul>
+        <p>ES6（ES2015）是現代 JS 分水嶺，之後每年小幅迭代（如 ES2017 async/await、ES2020 可選鏈 <code>?.</code> 與 <code>??</code>）。</p>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 9. TypeScript ============ -->
@@ -1832,6 +2029,49 @@ getLength(123);    // ❌ number 沒有 length</code></pre>
         <div class="tip"><b>用途：</b>Modal、Tooltip、Dropdown——避免被父層的 <code>overflow:hidden</code>、<code>z-index</code> 或 <code>transform</code> 限制住而被裁切／蓋住。</div>
       </div>
     </details>
+
+    <details class="qa">
+      <summary>什麼是 JSX？為什麼要用 JSX？</summary>
+      <div class="answer">
+        <p>JSX 是<strong>在 JS 裡寫類似 HTML 的語法糖</strong>，會被 Babel 編譯成 <code>React.createElement(...)</code>（React 17+ 為 <code>jsx()</code>）呼叫，回傳描述 UI 的物件。</p>
+        <ul>
+          <li><strong>好處：</strong>結構與邏輯放一起更直覺；可在 <code>{}</code> 內嵌任意 JS 運算式。</li>
+          <li><strong>注意：</strong>用 <code>className</code> 取代 <code>class</code>、屬性駝峰（<code>onClick</code>）；需單一根節點（或用 Fragment <code>&lt;&gt;&lt;/&gt;</code>）；標籤要閉合。</li>
+        </ul>
+        <pre><code>const el = &lt;h1 className="title"&gt;Hi {name}&lt;/h1&gt;;
+// 編譯後 ≈ React.createElement('h1', {className:'title'}, 'Hi ', name)</code></pre>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是純函式？為什麼 React 函式元件應該是純函式？</summary>
+      <div class="answer">
+        <p><strong>純函式：</strong>相同輸入永遠得到相同輸出，且<strong>沒有副作用</strong>（不改外部變數、不發 API、不操作 DOM）。</p>
+        <p>React 期望元件在 render 階段是純的——<strong>相同 props/state 渲染出相同結果</strong>。原因：</p>
+        <ul>
+          <li>可預測、好測試與除錯。</li>
+          <li>React 才能安全地<strong>快取、跳過、重跑或並行</strong>渲染（StrictMode 故意 render 兩次就是在抓不純的副作用）。</li>
+        </ul>
+        <p>副作用應放在 <strong>event handler</strong> 或 <code>useEffect</code>，而非 render 期間。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>為什麼更新 React state 要用 immutable 的寫法？</summary>
+      <div class="answer">
+        <p>React 判斷 state 是否改變是用 <strong>Object.is 做淺比較（比參考）</strong>。若<strong>原地修改</strong>物件／陣列，參考沒變，React 會<strong>認為沒更新而不重新渲染</strong>。</p>
+        <pre><code>// ❌ 直接改原物件，參考不變
+state.list.push(item); setState(state.list);
+// ✅ 產生新參考
+setState([...state.list, item]);
+setState(prev =&gt; ({ ...prev, count: prev.count + 1 }));</code></pre>
+        <ul>
+          <li>確保 re-render 正確觸發。</li>
+          <li>讓 <code>memo</code>/<code>useMemo</code> 的淺比較可靠。</li>
+          <li>巢狀很深時可用 Immer 簡化不可變更新。</li>
+        </ul>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 11. Vue ============ -->
@@ -2127,6 +2367,42 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
         <div class="tip"><b>適用情境：</b>SEO／首屏重要的內容站（電商、官網、部落格）→ SSR/SSG；登入後的後台、互動密集的 app → CSR 即可。實務常<strong>混搭</strong>。相關 hydration 議題見 React 分類。</div>
       </div>
     </details>
+
+    <details class="qa">
+      <summary>Webpack 的 loader 與 plugin 差在哪？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>loader：</strong>負責<strong>轉換單一檔案</strong>。Webpack 預設只懂 JS，loader 讓它能處理其他類型——如 <code>babel-loader</code>、<code>css-loader</code>、<code>ts-loader</code>。可串接，<strong>從右到左</strong>執行。</li>
+          <li><strong>plugin：</strong>作用在<strong>整個打包流程</strong>，透過掛載 Webpack 生命週期 hook 做更廣的事——如 <code>HtmlWebpackPlugin</code>、<code>MiniCssExtractPlugin</code>、<code>DefinePlugin</code>。</li>
+        </ul>
+        <p>一句話：<strong>loader 處理「檔案層級轉換」，plugin 處理「打包層級任務」</strong>。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Bun 是什麼？解決了 Node.js 的哪些問題？</summary>
+      <div class="answer">
+        <p>Bun 是用 <strong>Zig</strong> 寫、基於 <strong>JavaScriptCore</strong> 引擎的 JS 執行環境，定位「<strong>all-in-one</strong>」工具鏈。</p>
+        <ul>
+          <li><strong>快：</strong>啟動與執行明顯快於 Node。</li>
+          <li><strong>整合：</strong>內建<strong>套件管理（bun install，極快）、打包器、測試執行器、.env 與 TypeScript／JSX 原生支援</strong>，不必再裝一堆工具。</li>
+          <li>相容大部分 Node API 與 npm 生態。</li>
+        </ul>
+        <p>對比：Node 生態成熟穩定；Bun 主打開發體驗與效能，部分相容性仍在補齊。同類還有 <strong>Deno</strong>。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>為什麼 pnpm 比 npm 快又省空間？</summary>
+      <div class="answer">
+        <p>關鍵在<strong>全域 content-addressable store + 硬連結（hard link）</strong>：</p>
+        <ul>
+          <li>所有套件在磁碟<strong>全域存一份</strong>，各專案 <code>node_modules</code> 用<strong>硬連結／符號連結</strong>指過去 → <strong>多專案不重複佔空間</strong>，安裝也因可重用而更快。</li>
+          <li><strong>非扁平化 node_modules</strong>：只有 package.json 宣告的依賴能被存取，<strong>杜絕「幽靈依賴」</strong>。</li>
+        </ul>
+        <p>對比：npm/yarn 會把依賴<strong>扁平化複製</strong>到每個專案，重複又佔空間。pnpm 也天然適合 monorepo。</p>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 13. 版本控制 ============ -->
@@ -2336,6 +2612,52 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
           <li><strong>Secure：</strong>只在 HTTPS 連線送出。</li>
           <li><strong>SameSite：</strong><code>Strict</code>／<code>Lax</code>（預設）／<code>None</code> → 控制跨站時要不要帶 cookie，<strong>防 CSRF</strong>（<code>None</code> 必須搭 <code>Secure</code>）。</li>
         </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>e.target 與 e.currentTarget 的區別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>e.target：</strong>實際<strong>觸發事件的元素</strong>（冒泡的源頭，可能是子元素）。</li>
+          <li><strong>e.currentTarget：</strong><strong>綁定該監聽器的元素</strong>（等同處理函式裡的 <code>this</code>）。</li>
+        </ul>
+        <p>事件委派時特別重要：監聽掛在父層 <code>ul</code>，點到子層 <code>li</code> 時 <code>currentTarget</code> 是 <code>ul</code>、<code>target</code> 是被點的 <code>li</code>。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>HTTP 快取機制？強快取 vs 協商快取？</summary>
+      <div class="answer">
+        <p>瀏覽器快取分兩層，<strong>先看強快取、未命中再走協商快取</strong>：</p>
+        <ul>
+          <li><strong>強快取(不發請求)：</strong>由 <code>Cache-Control: max-age=...</code>（優先）或舊的 <code>Expires</code> 決定，命中直接用本地快取，顯示 <code>200 (from disk/memory cache)</code>。</li>
+          <li><strong>協商快取(發請求驗證)：</strong>強快取過期後帶 <code>If-None-Match</code>（對應 <code>ETag</code>）或 <code>If-Modified-Since</code>（對應 <code>Last-Modified</code>）問伺服器；沒變回 <strong>304 Not Modified</strong>，用本地快取且不回傳 body。</li>
+        </ul>
+        <p><strong>ETag 比 Last-Modified 精準</strong>。常見策略：HTML 走協商快取、帶 hash 的靜態資源用長 <code>max-age</code> 強快取。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Web Worker 是什麼？用在哪？</summary>
+      <div class="answer">
+        <p>JS 在瀏覽器是<strong>單執行緒</strong>，繁重運算會卡 UI。Web Worker 讓你把工作<strong>丟到背景執行緒</strong>，與主執行緒透過 <code>postMessage</code> / <code>onmessage</code> 傳訊息溝通。</p>
+        <ul>
+          <li><strong>用途：</strong>大量運算、影像／檔案處理、加解密、解析大型 JSON，避免畫面凍結。</li>
+          <li><strong>限制：</strong><strong>不能存取 DOM、window</strong>；資料以<strong>複製</strong>傳遞（或用 Transferable／SharedArrayBuffer）。</li>
+          <li><strong>其他：</strong>Service Worker（攔截請求、離線快取、推播）、Shared Worker。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>TCP 與 UDP 的差別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>TCP：</strong><strong>連線導向</strong>（三次握手），<strong>可靠</strong>——保證送達、按序、自動重傳與壅塞控制；較慢、開銷大。用於 HTTP、檔案傳輸、Email。</li>
+          <li><strong>UDP：</strong><strong>無連線</strong>，不保證送達或順序，<strong>速度快、延遲低</strong>、開銷小。用於即時影音、線上遊戲、DNS、WebRTC。</li>
+        </ul>
+        <p>一句話：<strong>TCP 求穩、UDP 求快</strong>。（HTTP/3 的 QUIC 建在 UDP 之上、自行實作可靠性。）</p>
       </div>
     </details>
   </section>
@@ -2577,6 +2899,17 @@ requestAnimationFrame(loop);</code></pre>
         <div class="tip"><b>提醒：</b>NestJS 這類框架本身就大量用模式（DI、Module、Provider＝IoC 容器）。回答時舉「<strong>解決了什麼問題</strong>」比背名詞重要，例如「用 Repository 讓 service 不綁死 ORM、好測試」。</div>
       </div>
     </details>
+
+    <details class="qa">
+      <summary>MVVM 是什麼？跟 MVC 差在哪？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>MVC：</strong>Model（資料）、View（畫面）、Controller（處理輸入、協調兩者）。View 與 Controller 較緊耦合。</li>
+          <li><strong>MVVM：</strong>Model、View、<strong>ViewModel</strong>。ViewModel 透過<strong>雙向資料綁定</strong>連接 View 與 Model——資料變畫面自動更新、畫面操作自動寫回資料，<strong>開發者不用手動操作 DOM</strong>。</li>
+        </ul>
+        <p>Vue、Angular 是 MVVM 思想代表（<code>data</code> ↔ 畫面自動同步）；React 嚴格說偏單向資料流，不算典型 MVVM。MVVM 好處是<strong>關注點分離、View 與邏輯解耦、好測試</strong>。</p>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 17. 資料結構與演算法 ============ -->
@@ -2807,6 +3140,19 @@ hasAllDigits('01234567890'); // true</code></pre>
           <li><strong>絕不</strong>用字串拼接組 SQL。</li>
         </ul>
         <div class="tip"><b>提醒：</b>這一定在<strong>後端</strong>防（前端擋不住，可繞過），但前端工程師要懂原理與分工；和 XSS 一樣都是「不可信輸入」造成的注入類漏洞。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 DDoS 攻擊？如何防範？</summary>
+      <div class="answer">
+        <p><strong>DDoS（分散式阻斷服務）：</strong>用大量分散機器（殭屍網路）同時湧入請求，<strong>耗盡伺服器頻寬／資源</strong>，讓正常使用者無法存取。</p>
+        <ul>
+          <li><strong>CDN／WAF</strong>（如 Cloudflare）吸收與過濾流量。</li>
+          <li><strong>Rate Limiting</strong>（限流）、IP 黑名單、人機驗證（CAPTCHA）。</li>
+          <li>自動擴展（auto-scaling）、負載平衡分散流量。</li>
+        </ul>
+        <p>前端能做的有限，主要靠後端與網路層；但前端可避免設計出易被放大的昂貴請求。</p>
       </div>
     </details>
   </section>

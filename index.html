@@ -1641,6 +1641,23 @@ getLength(123);    // ❌ number 沒有 length</code></pre>
         <p><strong>關鍵區分：</strong><code>re-render</code>（重跑 render 函式）≠ <code>DOM 實際更新</code>。props 沒變仍可能 re-render；但若輸出相同，reconciliation 後不一定真的改 DOM。優化方向是減少不必要的 re-render（memo／狀態下放／拆 Context），而不是只看 props。</p>
       </div>
     </details>
+    <details class="qa">
+      <summary>用 React 實作一個「切換狀態」的按鈕（toggle）</summary>
+      <div class="answer">
+        <p>用 <code>useState</code> 存布林狀態，點擊時用<strong>函式更新</strong> <code>setOn(prev =&gt; !prev)</code> 翻轉。</p>
+        <pre><code>function ToggleButton() {
+  const [on, setOn] = useState(false);
+  return (
+    &lt;button
+      aria-pressed={on}
+      onClick={() =&gt; setOn(prev =&gt; !prev)}&gt;
+      {on ? 'ON' : 'OFF'}
+    &lt;/button&gt;
+  );
+}</code></pre>
+        <div class="tip"><b>加分：</b>用 <code>setOn(prev =&gt; !prev)</code> 而非 <code>setOn(!on)</code>——函式更新較安全、不依賴 render 當下的閉包值（連點/批次更新也正確）；用 <code>aria-pressed</code> 提升無障礙；若狀態要由父層掌控，可改成<strong>受控元件</strong>（props 傳入 <code>on</code> 與 <code>onChange</code>）。</div>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 11. Vue ============ -->
@@ -2304,9 +2321,63 @@ function flattenIter(arr) {
         <div class="tip"><b>面試重點：</b>能講出「原生 <code>flat(Infinity)</code> / 遞迴 / 迭代(stack)」三種，並說明<strong>遞迴在超深陣列可能爆 call stack</strong>、迭代版較安全；以及 <code>depth</code> 控制攤平層數，就很完整。</div>
       </div>
     </details>
+    <details class="qa">
+      <summary>判斷給定的邊陣列是不是合法的樹（Coderbyte：Tree Constructor）</summary>
+      <div class="answer">
+        <p>輸入是一堆 <code>(child, parent)</code> 配對（如 <code>["1,2","2,4",...]</code>），判斷能否組成合法的二元樹。三個條件：</p>
+        <ul>
+          <li><strong>一個節點只能有一個父：</strong>同個 child 出現第二次 → false。</li>
+          <li><strong>每個父最多兩個子（二元樹）：</strong>某 parent 的子數 &gt; 2 → false。</li>
+          <li><strong>恰好一個根：</strong>「是別人的父、但自己沒有父」的節點剛好一個（0 個＝有環、&gt;1 個＝不連通/多棵樹）。</li>
+        </ul>
+        <pre><code>function TreeConstructor(strArr) {
+  const parent = {}, childCount = {};
+  for (const pair of strArr) {
+    const [c, p] = pair.replace(/[()\s]/g, '').split(',');
+    if (parent[c] !== undefined) return false;  // 不能有兩個父
+    parent[c] = p;
+    childCount[p] = (childCount[p] || 0) + 1;
+    if (childCount[p] &gt; 2) return false;        // 父最多兩個子
+  }
+  let roots = 0;
+  for (const p of new Set(Object.values(parent)))
+    if (parent[p] === undefined) roots++;        // 沒有父 = 根
+  return roots === 1;                            // 恰好一個根
+}</code></pre>
+        <div class="tip"><b>面試重點：</b>用兩個 hash（child→parent、parent→子數）一次掃描即可，<strong>O(n)</strong>。講清楚三條件（單一父、最多兩子、唯一根）就答完；Coderbyte 輸入帶括號 <code>(1,2)</code>，記得先 <code>replace</code> 去掉再 <code>split</code>。</div>
+      </div>
+    </details>
   </section>
 
-  <!-- ============ 18. SEO ============ -->
+  <!-- ============ 18. 資料庫 ============ -->
+  <section id="c-db">
+    <h2 class="cat"><span class="ic"></span>資料庫</h2>
+
+    <details class="qa">
+      <summary>MongoDB Aggregation：把使用者資料轉成只留 name 與 roles 的 type</summary>
+      <div class="answer">
+        <p>原始 user 文件有很多欄位、且 <code>roles</code> 是物件陣列（每個 role 有多個欄位）。要輸出只保留 <code>name</code> 與 <code>roles</code> 裡的 <code>type</code>。用 <code>$project</code> + <code>$map</code>：</p>
+        <pre><code>db.users.aggregate([
+  {
+    $project: {
+      _id: 0,
+      name: 1,
+      roles: {
+        $map: {
+          input: "$roles",
+          as: "r",
+          in: { type: "$$r.type" }   // 每個 role 只保留 type
+        }
+      }
+    }
+  }
+])</code></pre>
+        <div class="tip"><b>補充：</b>若只要 type 的字串陣列（非物件），可直接用點記法 <code>roles: "$roles.type"</code>（得 <code>["admin","user"]</code>）；<code>$map</code> 則保留 <code>{ type }</code> 物件結構。記得加 <code>_id: 0</code> 才不會多回傳 <code>_id</code>。</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 19. SEO ============ -->
   <section id="c-seo">
     <h2 class="cat"><span class="ic"></span>SEO</h2>
 

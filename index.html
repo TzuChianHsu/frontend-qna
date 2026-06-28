@@ -1448,6 +1448,37 @@ getLength(123);    // ❌ number 沒有 length</code></pre>
     </details>
 
     <details class="qa">
+      <summary>Vue 3 的生命週期 hooks／Composition API 常用函式有哪些？</summary>
+      <div class="answer">
+        <p><strong>響應式核心：</strong></p>
+        <ul>
+          <li><code>ref</code>（包裝基本型別，存取用 <code>.value</code>）、<code>reactive</code>（包裝物件）。</li>
+          <li><code>computed</code>（衍生值，會快取）、<code>watch</code> / <code>watchEffect</code>（偵聽副作用）。</li>
+          <li><code>toRefs</code> / <code>storeToRefs</code>（解構仍保留響應式）。</li>
+        </ul>
+        <p><strong>生命週期 hooks（在 <code>setup</code> 內呼叫）：</strong></p>
+        <ul>
+          <li><code>onBeforeMount</code> / <code>onMounted</code></li>
+          <li><code>onBeforeUpdate</code> / <code>onUpdated</code></li>
+          <li><code>onBeforeUnmount</code> / <code>onUnmounted</code></li>
+          <li><code>onErrorCaptured</code>、<code>onActivated</code> / <code>onDeactivated</code>（搭配 keep-alive）</li>
+        </ul>
+        <p><strong>對照 Vue 2 Options：</strong><code>setup</code> 執行於 beforeCreate 與 created 之間，所以 <strong>created 的邏輯直接寫在 setup 即可</strong>（沒有 onCreated）；mounted → <code>onMounted</code>、updated → <code>onUpdated</code>、beforeDestroy / destroyed → <code>onBeforeUnmount</code> / <code>onUnmounted</code>。</p>
+        <p><strong>其他常用：</strong><code>provide</code> / <code>inject</code>（跨層傳值）、<code>nextTick</code>，以及 <code>&lt;script setup&gt;</code> 的 <code>defineProps</code> / <code>defineEmits</code> / <code>defineExpose</code>。可複用邏輯抽成 <strong>use 開頭的 composable</strong>。</p>
+        <pre><code>&lt;script setup&gt;
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+const count = ref(0)
+const double = computed(() =&gt; count.value * 2)
+watch(count, (n, o) =&gt; console.log(n, o))
+let timer
+onMounted(() =&gt; { timer = setInterval(() =&gt; count.value++, 1000) })
+onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
+&lt;/script&gt;</code></pre>
+        <div class="script"><span class="lbl">🎤 口頭講稿（約 30 秒）</span>Vue 3 Composition API 我最常用的，響應式有 ref 包基本型別、reactive 包物件、computed 做衍生值、watch 跟 watchEffect 偵聽。生命週期就是把 Vue 2 的 options 換成 hook：mounted 變 onMounted、destroyed 變 onUnmounted，beforeUpdate、updated 也都有對應。比較特別的是 created 的邏輯不用 hook，直接寫在 setup 裡就好，因為 setup 本身就在 created 前後執行。然後我會把可重複用的邏輯抽成 use 開頭的 composable，這也是 Composition API 最大的好處——邏輯能乾淨地複用。</div>
+      </div>
+    </details>
+
+    <details class="qa">
       <summary>雙向數據綁定的原理？</summary>
       <div class="answer">
         <p><strong>Vue 2：</strong>用 <code>Object.defineProperty</code> 對 data 的每個屬性設 getter/setter，做依賴收集與派發更新。</p>
@@ -1639,6 +1670,25 @@ getLength(123);    // ❌ number 沒有 length</code></pre>
       <summary>什麼是 Monorepo？你怎麼用？</summary>
       <div class="answer">
         <p>Monorepo 是把多個關聯專案/套件放在<strong>同一個 repo</strong> 管理（用 pnpm workspace / Turborepo / Nx 等）。好處：<strong>共用型別與工具鏈、跨套件原子化提交、依賴一致</strong>。我在現職的車隊系統用 Monorepo 與 NestJS 後端共構，前後端共享 ts-rest 合約與型別，能<strong>同步迭代</strong>、不再因介面定義反覆對齊。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>如果要做一個共用元件，你會怎麼設計？</summary>
+      <div class="answer">
+        <p>我的思路大致是「<strong>先確認真正共用的部分 → 設計好 API → 保留彈性 → 補文件與測試</strong>」：</p>
+        <ol>
+          <li><strong>釐清需求與情境：</strong>先盤點哪些頁面要用、共同點與差異點，抽出真正共用的部分，<strong>避免過早抽象</strong>（只有一處用就先不抽）。</li>
+          <li><strong>API 設計：</strong>用 <code>props</code> 控制行為與外觀並給合理預設值；保留彈性用 <strong>slots（Vue）/ children、render props（React）</strong>；對外溝通用 <code>emit</code> / callback。</li>
+          <li><strong>受控 vs 非受控：</strong>明確狀態是內部管理，還是由外部傳入（<code>value</code> + <code>onChange</code>）。</li>
+          <li><strong>可組合 &gt; 巨大設定：</strong>拆成小元件互相組合，而不是一個 props 爆炸的萬能元件。</li>
+          <li><strong>樣式隔離與客製：</strong>用 CSS Modules / scoped / Tailwind 隔離；只開放必要的覆蓋點（<code>class</code>、CSS 變數），不要全開。</li>
+          <li><strong>型別與契約：</strong>用 TypeScript 定義 props 型別、標明必填／選填。</li>
+          <li><strong>無障礙與 i18n：</strong>鍵盤操作、aria 屬性、文案可由外部傳入。</li>
+          <li><strong>文件與測試：</strong>用 <strong>Storybook</strong> 展示各種狀態、補單元測試；放進共用 package／Monorepo 供團隊沿用。</li>
+          <li><strong>改動前盤點 caller：</strong>共用元件牽一髮動全身，改前先確認使用範圍、用測試把風險擋住。</li>
+        </ol>
+        <div class="script"><span class="lbl">🎤 口頭講稿（約 35 秒）</span>我會先確認「真正共用的部分」是什麼，盤點哪些地方會用、共同點跟差異點，避免太早抽象。接著設計 API：用 props 控制行為、給合理預設值，再用 slots 或 children 保留彈性，狀態看要做受控還是非受控。我傾向把元件拆小、用組合的方式，而不是做一個 props 爆炸的萬能元件；樣式上用 scoped 或 CSS 變數隔離，只開放必要的客製點。最後一定補上 TypeScript 型別、Storybook 文件跟單元測試，放進共用 package 給團隊用。因為共用元件牽一髮動全身，我改之前一定先盤點有哪些地方在用、再用測試擋風險。</div>
       </div>
     </details>
   </section>

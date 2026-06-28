@@ -2167,6 +2167,68 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
         <div class="tip"><b>注意：</b>Web SQL 已廢棄勿用；敏感資料/token 別放 localStorage（易受 XSS），優先用 <code>HttpOnly</code> + <code>Secure</code> + <code>SameSite</code> Cookie。</div>
       </div>
     </details>
+    <details class="qa">
+      <summary>在瀏覽器輸入網址到看到網頁，中間發生了什麼？</summary>
+      <div class="answer">
+        <ol>
+          <li><strong>DNS 解析：</strong>把網域名稱查成 IP（先看瀏覽器/系統/路由器快取，再問 DNS）。</li>
+          <li><strong>建立連線：</strong>TCP 三次握手；HTTPS 再做 <strong>TLS 握手</strong>（交換憑證、協商金鑰）。</li>
+          <li><strong>送出 HTTP 請求</strong> → 伺服器處理 → 回應（可能命中 CDN／快取、301 轉址）。</li>
+          <li><strong>瀏覽器渲染：</strong>解析 HTML 建 <strong>DOM</strong>、解析 CSS 建 <strong>CSSOM</strong> → 合成 <strong>Render Tree</strong> → <strong>Layout</strong>（算位置大小）→ <strong>Paint</strong> → <strong>Composite</strong>。其間遇到 JS 可能阻塞解析、子資源（圖片/JS/CSS）再發請求。</li>
+        </ol>
+        <div class="tip"><b>追問常考：</b>關鍵渲染路徑（CRP）、為何 CSS 放 <code>&lt;head&gt;</code>、JS 用 <code>defer/async</code>，以及各層快取（瀏覽器、DNS、CDN）。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>HTTP 與 HTTPS 的差異？</summary>
+      <div class="answer">
+        <p><strong>HTTPS = HTTP over TLS/SSL</strong>，在傳輸層加密。差異：</p>
+        <ul>
+          <li><strong>加密：</strong>HTTP 明文（可被竊聽／竄改／中間人攻擊）；HTTPS 加密傳輸。</li>
+          <li><strong>身分驗證：</strong>HTTPS 用 CA 憑證驗證伺服器身分。</li>
+          <li><strong>埠號：</strong>HTTP 80、HTTPS 443；HTTPS 有握手成本但現代硬體影響很小。</li>
+        </ul>
+        <div class="tip"><b>提醒：</b>瀏覽器、SEO 都偏好 HTTPS，HTTP/2 實務上也需要 TLS。現在是標配。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>HTTP/1.1 與 HTTP/2 的差異？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>HTTP/1.1：</strong>文字協定、一條連線同時間一個請求，要靠開<strong>多條 TCP 連線</strong>並行，且有<strong>隊頭阻塞（HOL blocking）</strong>。</li>
+          <li><strong>HTTP/2：</strong><strong>多路複用</strong>（一條連線並行多請求）、<strong>二進位分幀</strong>、<strong>header 壓縮（HPACK）</strong>、Server Push。解決應用層 HOL，少了開多連線的成本。</li>
+        </ul>
+        <div class="tip"><b>延伸：</b>HTTP/2 仍受 <strong>TCP 層</strong>的 HOL 影響；<strong>HTTP/3 改用 QUIC（基於 UDP）</strong>，連線建立更快、徹底解決 TCP HOL。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>常見的 HTTP 狀態碼有哪些？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>2xx 成功：</strong>200 OK、201 Created、204 No Content。</li>
+          <li><strong>3xx 重導：</strong>301 永久、302 暫時、304 Not Modified（命中快取）。</li>
+          <li><strong>4xx 用戶端錯誤：</strong>400 Bad Request、401 未認證、403 無權限、404 找不到、429 Too Many Requests。</li>
+          <li><strong>5xx 伺服器錯誤：</strong>500 Internal Error、502 Bad Gateway、503 Service Unavailable、504 Gateway Timeout。</li>
+        </ul>
+        <div class="tip"><b>易混：</b>401（沒登入／憑證無效）vs 403（登入了但沒權限）；301（永久）vs 302（暫時）。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Cookie 有哪些重要屬性？（HttpOnly / Secure / SameSite…）</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>Domain / Path：</strong>cookie 的作用範圍。</li>
+          <li><strong>Expires / Max-Age：</strong>有設＝持久 cookie；沒設＝session cookie（關瀏覽器就清）。</li>
+          <li><strong>HttpOnly：</strong>JS 讀不到（<code>document.cookie</code> 拿不到）→ 防 XSS 偷 cookie。</li>
+          <li><strong>Secure：</strong>只在 HTTPS 連線送出。</li>
+          <li><strong>SameSite：</strong><code>Strict</code>／<code>Lax</code>（預設）／<code>None</code> → 控制跨站時要不要帶 cookie，<strong>防 CSRF</strong>（<code>None</code> 必須搭 <code>Secure</code>）。</li>
+        </ul>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 15. 效能優化 ============ -->
@@ -2549,6 +2611,56 @@ hasAllDigits('01234567890'); // true</code></pre>
         </ul>
         <p><strong>面試官提的「iframe」解法：</strong>在 A 站用 <code>iframe</code> 嵌入 B 站，透過 <code>postMessage</code> 或在 iframe 內把登入資訊寫進 <strong>B 站自己的 cookie／storage</strong>，讓 B 站也認得這個使用者、自動登入，免得重打帳密。</p>
         <div class="tip"><b>重要前提：</b>iframe 寫的是 B 站的 cookie ＝<strong>第三方 cookie</strong>，現代瀏覽器（SameSite 預設、Safari ITP、Chrome 逐步封鎖第三方 cookie）會擋，<strong>可靠性越來越差</strong>。正式系統建議走 <strong>OIDC/OAuth 的重導流程</strong>，而非靠網址帶參數或偷寫第三方 cookie。</div>
+      </div>
+    </details>
+    <details class="qa">
+      <summary>什麼是 XSS（跨站腳本）攻擊？怎麼防？</summary>
+      <div class="answer">
+        <p><strong>XSS：</strong>攻擊者把惡意 JavaScript 注入頁面，在<strong>其他使用者的瀏覽器</strong>執行，藉此偷 cookie/token、冒充操作。類型：</p>
+        <ul>
+          <li><strong>Stored（儲存型）：</strong>惡意碼存進 DB（如留言），別人載入就中。</li>
+          <li><strong>Reflected（反射型）：</strong>惡意碼放在 URL／參數，誘使點擊後反射回頁面執行。</li>
+          <li><strong>DOM-based：</strong>前端用 <code>innerHTML</code> 等把不可信資料寫進 DOM 觸發。</li>
+        </ul>
+        <p><strong>防禦：</strong>輸出時<strong>跳脫／編碼</strong>（用框架預設的跳脫，不要 <code>innerHTML</code> 直接塞、改用 <code>textContent</code>）、<strong>CSP</strong>、敏感 cookie 設 <code>HttpOnly</code>、輸入驗證、避免 <code>eval</code>。</p>
+        <div class="tip"><b>核心：</b>「不要相信任何使用者輸入」，所有要進 DOM／HTML 的不可信資料都要先處理。本頁的程式碼範例就是用 <code>&amp;lt;</code> 跳脫來防這件事。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 CSRF（跨站請求偽造）？怎麼防？</summary>
+      <div class="answer">
+        <p><strong>CSRF：</strong>誘使<strong>已登入</strong>使用者的瀏覽器，對目標網站發出<strong>非預期的請求</strong>——因為瀏覽器會自動帶上該站 cookie，伺服器以為是本人操作（如偷偷轉帳、改密碼）。</p>
+        <p><strong>防禦：</strong></p>
+        <ul>
+          <li><strong>CSRF Token：</strong>表單／請求帶一個伺服器發的隨機 token，第三方拿不到。</li>
+          <li><strong>SameSite Cookie：</strong>設 <code>Strict/Lax</code>，跨站就不帶 cookie（現代主力防線）。</li>
+          <li>檢查 <code>Origin</code> / <code>Referer</code>；敏感操作要二次驗證。</li>
+        </ul>
+        <div class="tip"><b>對比：</b>XSS 是「執行惡意腳本」（防線在跳脫／CSP）；CSRF 是「冒用你的登入狀態發請求」（防線在 token／SameSite）。token 放 HttpOnly cookie 擋 XSS、但要另防 CSRF——兩者要一起考量。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 CSP（Content Security Policy）？</summary>
+      <div class="answer">
+        <p>用 <code>Content-Security-Policy</code> 這個 HTTP header（或 meta）<strong>白名單控制頁面能載入／執行哪些來源的資源</strong>（<code>script-src</code>、<code>style-src</code>、<code>img-src</code>…），是 <strong>XSS 的縱深防禦</strong>：就算有注入，未授權來源的腳本也跑不起來。</p>
+        <pre><code>Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.example.com</code></pre>
+        <div class="tip"><b>實務：</b>可禁掉 inline script（或改用 <code>nonce</code>／hash 放行特定區塊）。設太嚴會擋到自己的資源，通常先用 <code>Content-Security-Policy-Report-Only</code> 觀察再上線。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 SQL 注入？怎麼防？（前端工程師也要懂）</summary>
+      <div class="answer">
+        <p><strong>SQL Injection：</strong>把惡意 SQL 片段塞進輸入，若後端用<strong>字串拼接</strong>組查詢，就可能被竄改邏輯、竊取或刪除資料（經典如 <code>' OR '1'='1</code>）。</p>
+        <p><strong>防禦：</strong></p>
+        <ul>
+          <li><strong>參數化查詢 / Prepared Statement</strong>（最重要）——讓輸入只當「值」、不會被當 SQL 執行。</li>
+          <li>用 <strong>ORM</strong>（底層即參數化）、最小權限的 DB 帳號、輸入驗證。</li>
+          <li><strong>絕不</strong>用字串拼接組 SQL。</li>
+        </ul>
+        <div class="tip"><b>提醒：</b>這一定在<strong>後端</strong>防（前端擋不住，可繞過），但前端工程師要懂原理與分工；和 XSS 一樣都是「不可信輸入」造成的注入類漏洞。</div>
       </div>
     </details>
   </section>

@@ -2293,6 +2293,127 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
         </ul>
       </div>
     </details>
+
+    <details class="qa">
+      <summary>Vue 3 的響應式底層原理？跟 Vue 2 的 Object.defineProperty 有什麼本質差別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>核心：</strong>Vue 3 改用 ES6 <strong>Proxy</strong> 代理整個物件，取代 Vue 2 的 <code>Object.defineProperty</code>。</li>
+          <li><strong>依賴結構：</strong>系統維護一個全域的依賴對應表 <code>WeakMap&lt;target, Map&lt;key, Set&lt;effect&gt;&gt;&gt;</code>。最外層用 <strong>WeakMap</strong>，是為了讓元件銷毀後能被 GC 正常回收、防止記憶體洩漏。</li>
+          <li><strong>收集與觸發：</strong>讀取資料時觸發 <code>track()</code> 收集當前的 <code>activeEffect</code>；修改資料時觸發 <code>trigger()</code>，把該 key 對應的 effect Set 取出來重新執行。</li>
+          <li><strong>Vue 2 痛點：</strong><code>defineProperty</code> 只能攔「已存在」的屬性，所以物件新增／刪除屬性、用索引改陣列偵測不到（要靠 <code>$set</code>／<code>splice</code>）；而且初始化要遞迴遍歷所有屬性，物件一大就慢。</li>
+          <li><strong>Vue 3 優勢：</strong>Proxy 能攔整個物件（含新增／刪除），而且是<strong>惰性（lazy）</strong>的——只有真的讀取到深層物件時，才把那一層包成 Proxy，不必一開始就全部遞迴。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Vue 3 在編譯階段做了哪些效能優化，讓更新比傳統 Virtual DOM 快？</summary>
+      <div class="answer">
+        <p>Vue 3 最大的突破是「<strong>編譯時（Compile-time）協同執行時（Runtime）</strong>」：</p>
+        <ul>
+          <li><strong>Block Tree：</strong>編譯器分析 template，把動態節點收進一個一維陣列（Block）。更新時只比對這個動態陣列，把 diff 從「與模板大小成正比」降到「與動態節點數成正比」。</li>
+          <li><strong>PatchFlags（動態標記）：</strong>編譯時給動態節點打上位元標記（如純文字／class／props 變動）。執行時 diff 看到標記就只更新對應部分，完全跳過靜態屬性。</li>
+          <li><strong>Static Hoisting（靜態提升）：</strong>純靜態節點被提到 render 函式外只建立一次，之後再怎麼重渲染都共用同一份引用。</li>
+          <li><strong>cacheHandlers：</strong>內聯事件處理器會被快取，避免每次渲染都產生新函式。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>寫 Vue 3 Composables 時遇過最難處理的雷或 memory leak 是什麼？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>非同步上下文遺失（async context loss）：</strong><code>onMounted</code>／<code>onUnmounted</code> 必須在 <code>setup</code> 的<strong>同步階段</strong>註冊。如果寫在 <code>await</code> 之後，此時 <code>currentInstance</code> 已不是當前元件，註冊會失效。解法是把生命週期註冊放在 await 之前的同步段（或先用 <code>getCurrentInstance</code> 綁好）。</li>
+          <li><strong>事件未解綁：</strong>在 composable 裡 <code>addEventListener</code>／<code>setInterval</code>／開 WebSocket，卻沒在 <code>onUnmounted</code>／<code>onScopeDispose</code> 移除，當這個 Hook 被多個元件呼叫時就會 leak。所以 composable 內一定要自己清理。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>後端一次塞 5 萬筆多層嵌套資料，存進 ref 後畫面凍結，不准改後端怎麼解？</summary>
+      <div class="answer">
+        <p>依序動用效能武器庫：</p>
+        <ul>
+          <li><strong>剝奪響應性：</strong>純展示資料嚴禁用 <code>ref()</code> 做深層劫持，改用 <strong><code>shallowRef</code></strong>，避免 5 萬筆遞迴包 Proxy。</li>
+          <li><strong><code>v-memo</code>：</strong>快取列表的每一行，只有該行依賴的值（如 id／價格）變動時才重繪。</li>
+          <li><strong>虛擬列表（Virtual Scroller）：</strong>只渲染可視範圍的 DOM——超過 1 萬筆 DOM 本身就是反模式。</li>
+          <li><strong>運算剝離：</strong>把整流／排序的雜工丟給 <strong>Web Workers</strong>；極端情況直接用 <code>&lt;canvas&gt;</code> 原生繪製，脫離 Vue 渲染管線。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>為什麼官方用 Pinia 取代 Vuex？Pinia 解決了什麼歷史包袱？</summary>
+      <div class="answer">
+        <p>從工程團隊協作的角度：</p>
+        <ul>
+          <li><strong>去除 Mutations：</strong>Vuex 為了 devtools 的時光機，強制「同步寫 Mutation、非同步寫 Action」，工程實踐上很累贅；Pinia 證實單一 Action 就能同時兼顧同步與非同步。</li>
+          <li><strong>消滅 Magic String 與 TS 噩夢：</strong>Vuex 要寫 <code>store.dispatch('user/fetchData')</code>，字串打錯編譯不會報錯；Pinia 是函式導向、原生符合 TypeScript 型別推導。</li>
+          <li><strong>拋棄 Nested Modules：</strong>Vuex 樹狀嵌套 module 讓型別極難推導；Pinia 改採「扁平化、互相 import」的 store 設計，天然支援 Code Splitting。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 Hydration Mismatch（水合不一致）？遇到時你的排查路徑？</summary>
+      <div class="answer">
+        <p>（SSR／Nuxt 場景）Server 端生成的 HTML 傳到 Client 後，Vue 執行 JS 去綁定事件與檢查結構時，發現瀏覽器當下算出的 DOM 樹，跟 Server 給的長得不一樣。</p>
+        <p><strong>四大凶手：</strong></p>
+        <ul>
+          <li>渲染時用了瀏覽器專屬 API（如直接讀 <code>window</code>／<code>document</code>）。</li>
+          <li>渲染時間相關資料（如 <code>new Date()</code>），Server 與 Client 算出的時間有落差。</li>
+          <li>使用了 <code>Math.random()</code>。</li>
+          <li>非法的 HTML 巢狀（如 <code>&lt;p&gt;</code> 裡包 <code>&lt;div&gt;</code>），瀏覽器解析時會自動閉合 <code>&lt;p&gt;</code>，導致 Client 拿到的 DOM 被偷改，與 Server 的 VDOM 撕裂。</li>
+        </ul>
+        <div class="tip"><b>排查：</b>看 console warning 指到的節點，把瀏覽器專屬或不穩定的邏輯移到 <code>onMounted</code>／client-only 階段執行。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>ref 與 reactive 的差異與使用時機？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>用途：</strong><code>ref</code> 處理基本型別（也能包物件，存取要 <code>.value</code>，template 中會自動解包）；<code>reactive</code> 只能用在物件／陣列。</li>
+          <li><strong>底層：</strong><code>ref</code> 包物件時，內部其實也是呼叫 <code>reactive</code>。</li>
+          <li><strong>陷阱：</strong>解構 <code>reactive</code> 物件會<strong>失去響應性</strong>（拿到的是當下的值）→ 要用 <code>toRefs</code>／<code>toRef</code> 解構才能保留。</li>
+          <li><strong>時機：</strong>基本型別、或需要整個重新賦值時用 <code>ref</code>；一組相關狀態用 <code>reactive</code>；很多團隊會統一用 <code>ref</code> 讓風格一致。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Vue 3 的 Composables 跟 Vue 2 的 Mixins 有什麼不同？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>資料來源明確：</strong>Composables 透過 ES6 模組引入並解構，變數是從哪個 <code>useXxx</code> 來的一清二楚；Mixins 是黑盒子，引入多個就難追溯來源。</li>
+          <li><strong>無命名衝突：</strong>在組件內解構回傳值可以直接改名（<code>const { data: userData } = useUser()</code>）；Mixins 之間同名的 data／method 會互相覆蓋。</li>
+          <li><strong>高度彈性：</strong>Composable 本質是函式，可以把一個的回傳值當參數傳給另一個，跨邏輯組合很容易；Mixins 之間難以互相傳參。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>provide／inject 與 &lt;Teleport&gt; 各自解決什麼問題？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>provide／inject：</strong>用於跨多層級組件溝通，免去 props 一層層往下傳（Props Drilling）。資深做法是結合 composable 封裝成 <code>useXxxContext</code>（例如 Tabs 父子狀態同步）。</li>
+          <li><strong>&lt;Teleport&gt;：</strong>把一段 DOM 渲染到指定節點（常是 <code>body</code>）。用在 Modal／Dropdown 時，可避免深層巢狀造成的 <code>z-index</code> 疊放問題，或被父層 <code>overflow:hidden</code> 裁切。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>你用過／寫過哪些 Hook／Composable？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>React 端：</strong>主要用 <strong>ahooks</strong>——<code>useRequest</code> 處理資料獲取與 loading／error、<code>useDebounce</code> 做搜尋框自動完成、<code>useThrottle</code> 降低滾動運算負擔。</li>
+          <li><strong>Vue 端：</strong>引入 <strong>VueUse</strong> 的現成 hook（如 <code>useLocalStorage</code>、<code>useClickOutside</code>）。</li>
+          <li><strong>取捨：</strong>自己手寫 composable 我在正式專案比較少做（傾向用成熟套件），但我清楚封裝原理——把 loading／error／狀態一起封裝，並在生命週期清除事件監聽以避免 memory leak。</li>
+        </ul>
+        <div class="script"><span class="lbl">🎤 口頭講稿（約 30 秒）</span>我在 React 專案主要是用 ahooks，像 useRequest 管資料獲取跟 loading、error，搜尋框用 useDebounce 減少請求，滾動或縮放用 useThrottle。Vue 這邊我會引入 VueUse 的現成 hook，例如 useLocalStorage、useClickOutside。自己從頭手刻 composable 我在正式專案做得比較少，因為我傾向「不重複造輪子」，把成熟、被社群驗證過的套件拿來用，精力放在核心業務上；但我懂它的封裝原理，知道要把 loading、error 一起包進去，也要在元件卸載時清掉事件監聽避免記憶體外洩。</div>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 12. React + Vue 共同 ============ -->

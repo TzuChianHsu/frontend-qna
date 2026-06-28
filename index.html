@@ -2601,7 +2601,307 @@ hasAllDigits('01234567890'); // true</code></pre>
     </details>
   </section>
 
-  <!-- ============ 21. SEO ============ -->
+  <!-- ============ 21. 手寫題 (Coding) ============ -->
+  <section id="c-coding">
+    <h2 class="cat"><span class="ic"></span>手寫題 (Coding)</h2>
+
+    <details class="qa">
+      <summary>實作 curry（柯里化）函數</summary>
+      <div class="answer">
+        <p>把 <code>fn(a,b,c)</code> 變成可以 <code>fn(a)(b)(c)</code> 或 <code>fn(a,b)(c)</code> 分次帶入；參數收滿（達到 <code>fn.length</code>）才真正執行。</p>
+        <pre><code>function curry(fn) {
+  return function curried(...args) {
+    if (args.length &gt;= fn.length) return fn.apply(this, args);
+    return (...rest) =&gt; curried.apply(this, [...args, ...rest]);
+  };
+}
+const add = curry((a, b, c) =&gt; a + b + c);
+add(1)(2)(3);   // 6
+add(1, 2)(3);   // 6</code></pre>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>實作 debounce（防抖）</summary>
+      <div class="answer">
+        <p>事件停止觸發後過了 <code>delay</code> 才執行一次；每次觸發都重設計時器。用於搜尋輸入、resize。</p>
+        <pre><code>function debounce(fn, delay) {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() =&gt; fn.apply(this, args), delay);
+  };
+}</code></pre>
+        <div class="tip"><b>延伸：</b>可加 <code>immediate</code> 參數做「首次立即執行」；要能取消就回傳帶 <code>cancel()</code> 的函式。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>實作 throttle（節流）</summary>
+      <div class="answer">
+        <p>固定時間內最多執行一次，不論觸發多頻繁。用於 scroll、滑鼠移動、頻繁送 request。</p>
+        <pre><code>function throttle(fn, interval) {
+  let last = 0;
+  return function (...args) {
+    const now = Date.now();
+    if (now - last &gt;= interval) {
+      last = now;
+      fn.apply(this, args);
+    }
+  };
+}</code></pre>
+        <div class="tip"><b>差異：</b>debounce 是「停下來才做」、throttle 是「固定頻率做」。也可用 <code>setTimeout</code> 版實作（保留最後一次）。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>手寫陣列 filter</summary>
+      <div class="answer">
+        <pre><code>Array.prototype.myFilter = function (cb, thisArg) {
+  const res = [];
+  for (let i = 0; i &lt; this.length; i++) {
+    if (i in this &amp;&amp; cb.call(thisArg, this[i], i, this)) res.push(this[i]);
+  }
+  return res;
+};
+[1, 2, 3, 4].myFilter(x =&gt; x % 2 === 0);   // [2, 4]</code></pre>
+        <div class="tip"><b>重點：</b>callback 收 <code>(value, index, array)</code>，回傳真值才保留；<code>i in this</code> 跳過稀疏陣列的空洞，行為才跟原生一致。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>手寫 Promise.all</summary>
+      <div class="answer">
+        <p>全部成功才 resolve（結果<strong>依輸入順序</strong>），任一失敗就立刻 reject。</p>
+        <pre><code>function promiseAll(promises) {
+  return new Promise((resolve, reject) =&gt; {
+    const res = [];
+    let count = 0;
+    if (promises.length === 0) return resolve(res);
+    promises.forEach((p, i) =&gt; {
+      Promise.resolve(p).then(v =&gt; {
+        res[i] = v;                        // 用 index 放，保序
+        if (++count === promises.length) resolve(res);
+      }, reject);                          // 任一 reject 直接失敗
+    });
+  });
+}</code></pre>
+        <div class="tip"><b>相關：</b><code>Promise.allSettled</code> 不會短路（回傳每筆 status）；<code>Promise.race</code> 取最快落定的一個。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>實作 Promise Pool（並發控制 / 限制同時數量）</summary>
+      <div class="answer">
+        <p>一次最多跑 <code>limit</code> 個任務，有人完成才補下一個——避免一次發太多請求打爆後端。</p>
+        <pre><code>async function promisePool(tasks, limit) {
+  const results = [];
+  const executing = new Set();
+  for (let i = 0; i &lt; tasks.length; i++) {
+    const p = Promise.resolve().then(() =&gt; tasks[i]());
+    results.push(p);
+    executing.add(p);
+    p.then(() =&gt; executing.delete(p), () =&gt; executing.delete(p));
+    if (executing.size &gt;= limit) await Promise.race(executing); // 滿了就等一個完成
+  }
+  return Promise.all(results);
+}
+// tasks 是「回傳 promise 的函式」陣列（不能先呼叫，否則就同時啟動了）</code></pre>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>實作限時 Promise（逾時就失敗）</summary>
+      <div class="answer">
+        <p>用 <code>Promise.race</code> 讓「原任務」和「計時器」賽跑，誰先落定算誰的。</p>
+        <pre><code>function withTimeout(promise, ms) {
+  const timeout = new Promise((_, reject) =&gt;
+    setTimeout(() =&gt; reject(new Error('timeout')), ms));
+  return Promise.race([promise, timeout]);
+}
+withTimeout(fetch('/api'), 3000);   // 超過 3 秒就 reject('timeout')</code></pre>
+        <div class="tip"><b>注意：</b>逾時只是「不再等結果」，原本的請求其實還在跑——必要時搭配 <code>AbortController</code> 真正取消。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>手寫簡化版 JSON.stringify</summary>
+      <div class="answer">
+        <pre><code>function jsonStringify(value) {
+  if (value === null) return 'null';
+  const t = typeof value;
+  if (t === 'number' || t === 'boolean') return String(value);
+  if (t === 'string') return '"' + value + '"';
+  if (t === 'undefined' || t === 'function') return undefined; // 會被略過
+  if (Array.isArray(value)) {
+    const items = value.map(v =&gt; {
+      const s = jsonStringify(v);
+      return s === undefined ? 'null' : s;     // 陣列裡的 undefined → null
+    });
+    return '[' + items.join(',') + ']';
+  }
+  const props = [];
+  for (const k of Object.keys(value)) {
+    const s = jsonStringify(value[k]);
+    if (s !== undefined) props.push('"' + k + '":' + s); // 物件裡 undefined 整個略過
+  }
+  return '{' + props.join(',') + '}';
+}</code></pre>
+        <div class="tip"><b>面試重點：</b>能講出坑——<strong>undefined / function</strong> 在物件中被略過、在陣列中變 <code>null</code>；真正的 <code>JSON.stringify</code> 還要處理 <code>toJSON</code>、字元跳脫，循環引用會丟錯。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>實作 Memoize（記憶化快取）</summary>
+      <div class="answer">
+        <p>把參數對應的結果快取起來，相同參數第二次直接回傳，省掉重算。</p>
+        <pre><code>function memoize(fn) {
+  const cache = new Map();
+  return function (...args) {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) return cache.get(key);
+    const result = fn.apply(this, args);
+    cache.set(key, result);
+    return result;
+  };
+}</code></pre>
+        <div class="tip"><b>取捨：</b>用 <code>JSON.stringify</code> 當 key 簡單但不適合函式／物件參考；快取會佔記憶體，必要時用 <code>WeakMap</code> 或設上限（LRU）。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>實作 Promise sleep（延遲 / 等待）</summary>
+      <div class="answer">
+        <pre><code>const sleep = ms =&gt; new Promise(resolve =&gt; setTimeout(resolve, ms));
+
+async function demo() {
+  console.log('start');
+  await sleep(1000);   // 等 1 秒
+  console.log('after 1s');
+}</code></pre>
+        <div class="tip"><b>提醒：</b>JS 沒有同步 sleep（會卡死主執行緒），只能用 <code>await</code> 非同步等待。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>實作陣列分塊 chunk</summary>
+      <div class="answer">
+        <pre><code>function chunk(arr, size) {
+  const res = [];
+  for (let i = 0; i &lt; arr.length; i += size) {
+    res.push(arr.slice(i, i + size));
+  }
+  return res;
+}
+chunk([1, 2, 3, 4, 5], 2);   // [[1,2],[3,4],[5]]</code></pre>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>手寫深拷貝（處理巢狀與循環引用）</summary>
+      <div class="answer">
+        <p>遞迴複製物件／陣列；用 <code>WeakMap</code> 記住「已複製過的物件」來<strong>避免循環引用無限遞迴</strong>。</p>
+        <pre><code>function deepClone(obj, map = new WeakMap()) {
+  if (obj === null || typeof obj !== 'object') return obj; // 基本型別直接回
+  if (map.has(obj)) return map.get(obj);                   // 已複製過 → 防循環
+  const clone = Array.isArray(obj) ? [] : {};
+  map.set(obj, clone);
+  for (const key of Object.keys(obj)) {
+    clone[key] = deepClone(obj[key], map);
+  }
+  return clone;
+}</code></pre>
+        <div class="tip"><b>進階：</b>完整版還要處理 <code>Date</code>、<code>RegExp</code>、<code>Map</code>、<code>Set</code>。純 JSON 資料可用原生 <code>structuredClone()</code>，或 <code>JSON.parse(JSON.stringify(x))</code>（但會丟失 function/undefined、不支援循環）。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>實作發布訂閱（EventEmitter / Pub-Sub）</summary>
+      <div class="answer">
+        <p>用一個物件存「事件名 → 回呼陣列」；<code>emit</code> 時把該事件的回呼都叫一遍。</p>
+        <pre><code>class EventEmitter {
+  constructor() { this.events = {}; }
+  on(name, cb) { (this.events[name] ||= []).push(cb); return this; }
+  off(name, cb) {
+    this.events[name] = (this.events[name] || []).filter(f =&gt; f !== cb);
+    return this;
+  }
+  emit(name, ...args) {
+    (this.events[name] || []).forEach(f =&gt; f(...args));
+    return this;
+  }
+  once(name, cb) {
+    const wrap = (...args) =&gt; { cb(...args); this.off(name, wrap); };
+    return this.on(name, wrap);
+  }
+}</code></pre>
+        <div class="tip"><b>概念：</b>這就是觀察者／發布訂閱模式——Node 的 <code>EventEmitter</code>、DOM 的 <code>addEventListener</code>、Vue 事件匯流排都是這個思路。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>手寫 Promise（簡化版：狀態與 then）</summary>
+      <div class="answer">
+        <p>Promise 有三狀態（pending / fulfilled / rejected），只能從 pending 轉一次；<code>then</code> 註冊回呼，resolve/reject 後用微任務觸發。簡化版：</p>
+        <pre><code>class MyPromise {
+  constructor(executor) {
+    this.state = 'pending';
+    this.value = undefined;
+    this.cbs = [];                          // pending 時先存起來的回呼
+    const settle = (state, value) =&gt; {
+      if (this.state !== 'pending') return; // 只能轉一次
+      this.state = state; this.value = value;
+      this.cbs.forEach(run =&gt; run());
+    };
+    const resolve = v =&gt; settle('fulfilled', v);
+    const reject = e =&gt; settle('rejected', e);
+    try { executor(resolve, reject); } catch (e) { reject(e); }
+  }
+  then(onOk, onErr) {
+    return new MyPromise((resolve, reject) =&gt; {
+      const run = () =&gt; queueMicrotask(() =&gt; {
+        try {
+          if (this.state === 'fulfilled') resolve(onOk ? onOk(this.value) : this.value);
+          else reject(onErr ? onErr(this.value) : this.value);
+        } catch (e) { reject(e); }
+      });
+      this.state === 'pending' ? this.cbs.push(run) : run();
+    });
+  }
+}</code></pre>
+        <div class="tip"><b>面試重點：</b>講出<strong>三狀態、只能轉一次、then 用微任務、pending 先存回呼</strong>就抓到核心；完整 A+ 規格還要處理「then 回傳 thenable 要展開」等，複雜很多。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>實作自訂 useFetch Hook（資料獲取 + loading / error / UI 更新）</summary>
+      <div class="answer">
+        <p>把「抓資料 + 三狀態（loading / data / error）」封裝成可重用 hook；切換 url 重抓，卸載時用 <code>AbortController</code> 取消，避免設定到已卸載的元件。</p>
+        <pre><code>function useFetch(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() =&gt; {
+    const controller = new AbortController();
+    setLoading(true); setError(null);
+    fetch(url, { signal: controller.signal })
+      .then(res =&gt; { if (!res.ok) throw new Error(res.status); return res.json(); })
+      .then(setData)
+      .catch(err =&gt; { if (err.name !== 'AbortError') setError(err); })
+      .finally(() =&gt; setLoading(false));
+    return () =&gt; controller.abort();    // 清理：切換 url / 卸載時取消
+  }, [url]);
+
+  return { data, loading, error };
+}
+// UI：loading ? &lt;Spinner/&gt; : error ? &lt;Err/&gt; : &lt;List data={data}/&gt;</code></pre>
+        <div class="tip"><b>重點：</b>三狀態驅動 UI、依賴 <code>[url]</code> 重抓、<strong>cleanup 取消請求</strong>避免 race／記憶體問題。實務更建議用 React Query / SWR（內建快取、重試、去重）。</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 22. SEO ============ -->
   <section id="c-seo">
     <h2 class="cat"><span class="ic"></span>SEO</h2>
 

@@ -1,0 +1,1936 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>前端工程師面試 Q&A</title>
+<style>
+  :root{
+    --green:#1aa71b; --green-d:#127c13; --ink:#222; --gray:#555; --line:#e6e6e6;
+    --bg:#f4f6f4; --card:#fff; --chip:#eef6ee; --tip:#fff8e1; --tip-b:#ffe08a;
+    --badge:#fde7e7; --badge-t:#c0392b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif;
+    color:var(--ink); background:var(--bg); line-height:1.75; font-size:15px;
+  }
+  a{color:var(--green-d);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  /* top bar */
+  .topbar{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--line);
+    box-shadow:0 1px 6px rgba(0,0,0,.05)}
+  .topbar-inner{max-width:1000px;margin:0 auto;padding:12px 20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .brand{font-weight:700;font-size:17px;color:var(--ink);white-space:nowrap}
+  .brand .accent{color:var(--green)}
+  #search{flex:1;min-width:180px;padding:9px 14px;border:1px solid var(--line);border-radius:22px;
+    font-size:14px;outline:none}
+  #search:focus{border-color:var(--green)}
+  .btn{padding:8px 14px;border:1px solid var(--line);background:#fff;border-radius:20px;cursor:pointer;
+    font-size:13px;color:var(--gray);white-space:nowrap}
+  .btn:hover{border-color:var(--green);color:var(--green-d)}
+  .count{font-size:12px;color:#999;white-space:nowrap}
+
+  /* category nav */
+  .nav{max-width:1000px;margin:0 auto;padding:10px 20px 0;display:flex;flex-wrap:wrap;gap:7px}
+  .nav a{font-size:12.5px;background:var(--chip);color:var(--green-d);padding:5px 11px;border-radius:14px;
+    border:1px solid transparent}
+  .nav a:hover{border-color:var(--green);text-decoration:none}
+
+  .wrap{max-width:1000px;margin:0 auto;padding:18px 20px 80px}
+
+  .intro{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:22px}
+  .intro h1{font-size:21px;margin-bottom:6px}
+  .intro p{color:var(--gray);font-size:13.5px}
+  .intro .meta{margin-top:8px;font-size:12.5px;color:#999}
+
+  section{margin-bottom:30px;scroll-margin-top:120px}
+  h2.cat{font-size:19px;color:var(--ink);padding:8px 0 10px;border-bottom:2px solid var(--green);
+    margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  h2.cat .ic{width:8px;height:20px;background:var(--green);border-radius:3px;display:inline-block}
+
+  details.qa{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:9px;
+    overflow:hidden}
+  details.qa[open]{box-shadow:0 2px 10px rgba(0,0,0,.06);border-color:#d5e8d5}
+  details.qa>summary{cursor:pointer;padding:13px 44px 13px 16px;font-weight:600;font-size:15px;
+    position:relative;list-style:none;color:var(--ink)}
+  details.qa>summary::-webkit-details-marker{display:none}
+  details.qa>summary::after{content:"+";position:absolute;right:16px;top:11px;font-size:20px;color:var(--green);
+    font-weight:700;transition:transform .15s}
+  details.qa[open]>summary::after{content:"–"}
+  details.qa>summary:hover{background:#fafdfa}
+  .answer{padding:2px 18px 16px;border-top:1px solid #f0f0f0;color:#333}
+  .answer p{margin:8px 0}
+  .answer ul,.answer ol{margin:8px 0 8px 22px}
+  .answer li{margin:4px 0}
+  .answer strong{color:var(--ink)}
+  .answer code{background:#f3f3f3;padding:1px 6px;border-radius:4px;font-size:13px;
+    font-family:"SF Mono",Consolas,monospace;color:#c0392b}
+  .answer pre{background:#1e1e1e;color:#eaeaea;padding:12px 14px;border-radius:8px;overflow:auto;
+    font-size:12.5px;line-height:1.6;margin:8px 0}
+  .answer pre code{background:none;color:inherit;padding:0}
+  .hl{color:var(--green-d);font-weight:700}
+
+  .badge{display:inline-block;background:var(--badge);color:var(--badge-t);font-size:11px;font-weight:700;
+    padding:1px 8px;border-radius:10px;margin-left:8px;vertical-align:middle}
+  .tip{background:var(--tip);border:1px solid var(--tip-b);border-radius:8px;padding:9px 13px;margin:10px 0 2px;
+    font-size:13px;color:#7a5b00}
+  .tip b{color:#5c4400}
+  .script{background:#eef4fb;border-left:4px solid #2a78c2;border-radius:0 8px 8px 0;padding:10px 14px;
+    margin:12px 0 2px;font-size:13.5px;color:#1f3147;line-height:1.85}
+  .script .lbl{display:block;font-weight:700;color:#1c5d99;font-size:12.5px;margin-bottom:3px}
+  .ref{font-size:12.5px;color:#888;margin-top:8px}
+
+  .versions{display:flex;flex-direction:column;gap:10px}
+  .vbox{border-left:3px solid var(--green);background:#fafdfa;padding:8px 14px;border-radius:0 8px 8px 0}
+  .vbox h4{font-size:13.5px;color:var(--green-d);margin-bottom:4px}
+
+  .noresult{display:none;text-align:center;color:#999;padding:40px;font-size:15px}
+  mark{background:#fff2a8;padding:0 1px;border-radius:2px}
+  .toTop{position:fixed;right:18px;bottom:18px;background:var(--green);color:#fff;width:42px;height:42px;
+    border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;
+    box-shadow:0 3px 10px rgba(0,0,0,.2);opacity:0;pointer-events:none;transition:opacity .2s;z-index:40}
+  .toTop.show{opacity:1;pointer-events:auto}
+
+  @media (max-width:560px){
+    .brand{font-size:15px}
+    details.qa>summary{font-size:14px}
+  }
+  @media print{
+    .topbar,.nav,.toTop,.controls{display:none}
+    details.qa{break-inside:avoid;border-color:#ccc}
+    details.qa>summary::after{display:none}
+    .answer{display:block!important}
+    details.qa>.answer{display:block}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">📘 <span class="accent">前端面試 Q&amp;A</span></div>
+    <input id="search" type="search" placeholder="🔍 搜尋題目或關鍵字（例：closure、useEffect、Pinia、Zod）">
+    <div class="controls">
+      <button class="btn" id="expandAll">展開全部</button>
+      <button class="btn" id="collapseAll">收合全部</button>
+    </div>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="nav" id="nav"></div>
+</div>
+
+<div class="wrap">
+
+  <div class="intro">
+    <h1>前端工程師面試 Q&amp;A 準備</h1>
+    <p>一份給前端工程師的面試題庫與準備筆記，涵蓋觀念題、程式碼分析範例與口頭回答講稿。主軸技術：Vue 3 / React / TypeScript、Monorepo + NestJS、ts-rest + Zod Contract-first、AI 輔助開發。</p>
+    <p class="intro meta">📌 標示 <span class="badge">需替換公司</span> 的題目，請依當次應徵的公司名稱與文化內容調整。最後更新：2026-06-28</p>
+  </div>
+
+  <div id="qaroot">
+
+  <!-- ============ 1. 自我介紹與求職動機 ============ -->
+  <section id="c-intro">
+    <h2 class="cat"><span class="ic"></span>自我介紹與求職動機</h2>
+
+    <details class="qa" open>
+      <summary>能請你簡單自我介紹嗎？（完整版 / 精簡版）</summary>
+      <div class="answer">
+        <div class="versions">
+          <div class="vbox">
+            <h4>完整版（約 1 分鐘）</h4>
+            <p>您好，我是一名資深前端工程師，目前任職於一間<strong>科技公司</strong>，累積<strong>近 10 年</strong>前端開發經驗。技術主軸是 <strong>Vue 3、React Hooks 與 TypeScript</strong>，擅長把複雜的業務邏輯拆解成可維護的前端架構，也常在跨團隊協作中扮演技術整合與溝通的橋樑。</p>
+            <p>現職主要參與<strong>智能車隊管理系統</strong>的前端建立，主導 <strong>Vue 3 (Pinia)</strong> 核心開發，並在 <strong>Monorepo</strong> 架構下與 <strong>NestJS</strong> 後端共構；我們以 <strong>ts-rest + Zod</strong> 推行 Contract-first API，把前後端型別契約收斂到單一來源——後端 schema 一改動，前端在編譯期就會被攔截，大幅降低串接溝通成本與 runtime 錯誤。另外我也獨立負責 <strong>AMR/AGV 無人搬運車</strong>多階段 POC 的戶外定位校正介面與導航 UI。</p>
+            <p>在這之前我在 <strong>前一間公司</strong>待了 7 年，主導多個內部後台從 0 到 1，經歷完整的技術棧演進：從早期 React + Redux + Ant Design 3，一路推進到 React Hooks、TypeScript、Ant Design Pro、Tailwind，並導入 Jest、React Query + Zod 建立型別契約與測試基礎。</p>
+            <p>作為資深工程師，我很重視團隊的技術升級與知識累積：會定期帶新技術導讀、輔導初階工程師釐清任務切分與技術選型，最近也把 <strong>AI 輔助開發工具（Claude Code）</strong>導入團隊日常，並把機器自走車教學手冊重構成以操作流程為主軸的結構化技術文件。未來希望往<strong>前端架構師／Tech Lead</strong> 發展，並補強 WebGL／Three.js 在 3D 場景（自動化倉儲、車隊路徑視覺化）的應用。</p>
+          </div>
+          <div class="vbox">
+            <h4>精簡版（約 30 秒）</h4>
+            <p>您好，我是一名資深前端工程師，近 10 年經驗，主軸是 Vue 3、React 與 TypeScript。目前在現職公司主導一套智能車隊管理系統的前端，用 Vue 3 + Pinia 開發，並在 Monorepo 下以 ts-rest + Zod 跟 NestJS 後端做 Contract-first 串接，也負責 AMR/AGV 無人搬運車的定位校正與導航 UI。先前在前一間公司任職 7 年，主導多個後台從 0 到 1 並推動技術棧現代化。我擅長把複雜邏輯拆成可維護的架構，也習慣用型別系統與測試把錯誤擋在前面。</p>
+          </div>
+        </div>
+        <div class="tip"><b>面試提醒：</b>結尾可加一句連結到應徵公司，例如「我很期待能在像〔公司名〕這樣重視〔技術／產品方向〕的團隊發展」。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>你的求職動機是什麼？<span class="badge">需替換公司</span></summary>
+      <div class="answer">
+        <p>我的求職動機主要有兩個方面：第一，我希望加入一個<strong>制度完善、開發流程成熟</strong>的團隊，能在穩定且有節奏的環境裡發揮專長、持續成長；第二，我很重視能不能<strong>持續接觸並掌握新技術</strong>。在研究貴公司的產品與技術棧後，我發現有不少地方跟我累積的方向（型別系統、Monorepo、AI 輔助開發、3D 視覺化）很契合，也有我想深入學習的部分，這讓我很期待能加入。</p>
+        <div class="tip"><b>面試提醒：</b>務必加入「對該公司的具體觀察」——產品、技術部落格、團隊文化、近期專案等，越具體越顯誠意。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>選擇就職公司時，前三項考量依序是什麼？</summary>
+      <div class="answer">
+        <p>依序是：<strong>1. 團隊氛圍／友善的工作環境</strong>、<strong>2. 公司制度</strong>、<strong>3. 開發流程</strong>。</p>
+        <p>對我來說，好的團隊氛圍能讓技術討論與 code review 良性運作；完善的制度讓人能安心長期投入；成熟的開發流程（需求拆分、測試、CI/CD）則直接影響交付品質與成長速度。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>你對三年後有什麼職涯規劃？未來想走技術職還是主管職？</summary>
+      <div class="answer">
+        <p>未來 2~3 年，我希望往<strong>前端架構師／Tech Lead</strong> 方向發展，深化大型專案的模組化、型別系統與跨團隊協作能力。技術上計畫補強 <strong>WebGL／Three.js</strong> 在 3D 場景的應用（對應自動化倉儲、車隊路徑視覺化），並持續深化 <strong>AI Agent 工具</strong>在開發流程中的整合。</p>
+        <p>路線上我偏向「<strong>以技術為底、再承接團隊責任</strong>」——希望在資深專業之上，同時兼顧團隊培育與架構規劃，產出能長期維運的前端基礎建設。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>想成為主管嗎？</summary>
+      <div class="answer">
+        <p>我對成為主管持<strong>開放態度</strong>，特別是如果這能讓我更好地支持團隊、提升整體專案的品質與效率。我在技術層面已累積足夠經驗，也能協助團隊解決複雜問題；同時我也清楚，管理不只是技術上的領導，更是關於如何激勵與支持團隊成員、營造良好的工作氛圍。我願意持續學習與成長，以便將來能更好地承擔這樣的責任。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>你期望這份工作／這家公司能給你什麼？什麼情況下會讓你想離職？</summary>
+      <div class="answer">
+        <p><strong>期望：</strong>能持續接觸新技術與有挑戰的專案、清楚的成長路徑，以及尊重專業、能良性討論的團隊；若有國際化／跨團隊合作的機會更好。</p>
+        <p><strong>會讓我考慮離開的情況：</strong>長期缺乏成長空間、技術債無法被正視、或團隊溝通與制度持續無法改善。我習慣先主動溝通、嘗試推動改善，把離職當成最後選項。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>對這份工作有什麼期望或規劃？</summary>
+      <div class="answer">
+        <p>短期希望快速融入團隊與既有架構，把手上的功能穩定交付；中期希望能在型別系統、Monorepo 與測試流程上貢獻經驗，協助團隊把開發基底打穩；長期則期望有機會參與架構決策，並爭取<strong>國際化／跨團隊合作</strong>的機會。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>假如錄取後偶爾需要你支援其他任務，你會排斥嗎？</summary>
+      <div class="answer">
+        <p>不會排斥。我本來就習慣跨域協作——目前工作就需要與硬體／韌體團隊對接，也曾擔任團建負責人、主動把 AI 工具導入團隊。只要任務有助於專案或團隊，我很樂意支援；唯一會留意的是<strong>排序與時程</strong>，會先跟 PM 確認優先級，避免影響本來該交付的關鍵工作。</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 2. 經歷與行為面試題 ============ -->
+  <section id="c-behavior">
+    <h2 class="cat"><span class="ic"></span>經歷與行為面試題</h2>
+
+    <details class="qa">
+      <summary>過去在學習前端上有遇到什麼挫折嗎？怎麼克服的？</summary>
+      <div class="answer">
+        <p>有兩個比較深刻的：</p>
+        <ul>
+          <li><strong>前期沒自信、容易鑽牛角尖：</strong>剛當資深時，常擔心自己的判斷是否正確。後來透過<strong>固定的 code review 與技術分享會</strong>建立自信——把想法攤開來讓大家檢視，反而更快確認方向；同時靠<strong>單元測試</strong>多做驗證，讓「對不對」有客觀依據，而不是憑感覺焦慮。</li>
+          <li><strong>導入 TypeScript 的陣痛：</strong>在某代理平台後台第一次替團隊導入 TypeScript + Jest 時，初期型別報錯多、團隊抗拒。我的做法是<strong>漸進式導入</strong>（先 <code>any</code> 過渡、再逐步收斂型別）、把常見型別寫成範例與文件、並在分享會帶大家實作，最後成為後續多個專案沿用的基底。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>請分享你做過技術上最困難的專案？</summary>
+      <div class="answer">
+        <p>有兩個代表性的：</p>
+        <p><strong>1. CMS 後台重構（多語系 + 多層級）：</strong>接手一個結構複雜、含多語系與多層級權限的後台。難點在於既有狀態管理混亂、重複請求多。我評估 SWR / React Query 後選用 <strong>ahooks</strong> 強化快取與狀態，並逐步把舊邏輯抽成共用元件，採「新舊並存、慢慢全轉」的策略，最後不只完成重構，也把先前積壓的需求一併補完。</p>
+        <p><strong>2. 智能車隊系統的 Contract-first 串接：</strong>在 Monorepo 下與 NestJS 後端共構，用 <strong>ts-rest + Zod</strong> 把前後端型別契約收斂到單一來源。難點在於前後端要同步迭代、且 AMR/AGV 的定位資料格式常變動；Contract-first 讓 schema 改動能在編譯期被攔截，大幅減少串接錯誤。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>最有成就感的專案？</summary>
+      <div class="answer">
+        <p>接手別人留下的專案，協調「<strong>新舊先共用、再慢慢全轉成新的</strong>」，過程中還把之前積壓的需求都一併做完。最有成就感的是——不只把技術債清掉，也讓團隊後續開發更順、新人能依共用元件快速上手，等於把短期交付和長期維運同時顧到。</p>
+        <div class="script"><span class="lbl">🎤 口頭講稿（約 35 秒）</span>最有成就感的，是一個我接手別人留下的後台專案。當時程式碼結構很亂、又積了不少還沒做的需求。我沒有選擇直接砍掉重寫，而是用「新舊先共用、再慢慢全轉」的策略——先把核心邏輯抽成共用元件，讓新舊版本可以並存，再分批切換。最後不只把技術債清掉、積壓的需求也都補完，團隊後續開發變順了，新人可以直接照共用元件上手。對我來說最有成就感的點，是同時顧到了短期交付跟長期維運，而不是只解一邊。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>專案的難點跟亮點是什麼？</summary>
+      <div class="answer">
+        <p><strong>難點：</strong></p>
+        <ul>
+          <li>跨<strong>硬體／韌體團隊</strong>協作，純軟與軟硬之間的對焦成本高、問題定位需要來回驗證。</li>
+          <li>AMR/AGV <strong>戶外定位校正</strong>需要貼近實機操作邏輯，測試環境取得不易。</li>
+          <li>前期公司流程不夠成熟（如部分專案缺 CI/CD、正式機接觸受限、後端技術不統一）。</li>
+        </ul>
+        <p><strong>亮點：</strong></p>
+        <ul>
+          <li>有很多<strong>共用元件</strong>要從 0 設計，可以把架構與規範一次打好。</li>
+          <li>導入 Monorepo + ts-rest + Zod 的 Contract-first，前後端可同步迭代。</li>
+          <li>把 AI 工具帶進團隊日常，並重構技術文件，提升跨部門交付效率。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>請分享一個你過去半年改善過的事？（以改善溝通／流程為例）</summary>
+      <div class="answer">
+        <p>我參與<strong>建立屬於公司的專案模板（boilerplate）</strong>，把常用的目錄結構、ESLint/Prettier/Husky、型別契約寫法、共用 hook 與元件收斂進去；新專案 setup 時間明顯縮短，團隊寫法也更一致。另外我把<strong>機器自走車教學手冊</strong>重構成以操作流程為主軸的結構化技術文件，讓跨部門交付的資訊一致、新進工程師能依文件自行演練。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>請分享一次你與團隊方向意見相左的經驗，你如何化解衝突？</summary>
+      <div class="answer">
+        <p>CMS 後台重構時，我和 PM 對「<strong>是否一次性重寫 vs. 漸進式重構</strong>」有不同看法。PM 希望快速看到成果，我則擔心一次性重寫風險高、會擋住既有需求。</p>
+        <p>我的做法是<strong>用資料和折衷方案溝通</strong>：先盤點風險與工時，提出「新舊並存、先共用核心元件、分批切換」的路線，並把里程碑拆細讓 PM 能持續看到進度。最後雙方都接受這個平衡點，既控制了風險，也維持了交付節奏。</p>
+        <div class="script"><span class="lbl">🎤 口頭講稿（約 35 秒）</span>印象最深的是 CMS 後台重構那次，我跟 PM 的方向不太一樣。PM 希望一次性重寫、快點看到成果，我則擔心一次重寫風險太高、又會擋住正在進行的需求。我沒有硬碰硬，而是用資料溝通——先盤點重寫的風險跟工時，再提出一個折衷方案：新舊並存、先把核心元件共用化、再分批切換，並把里程碑拆細，讓 PM 每個 sprint 都看得到進度。最後我們就用這個方案，既控制了風險，也維持了交付節奏。我覺得化解衝突的關鍵是對事不對人，用「目標加可行方案」取代單純反對。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>過往開發上遇到不合理的需求如何處理？</summary>
+      <div class="answer">
+        <p>我會先<strong>釐清需求背後的目標</strong>（對方真正想解決什麼），再向對方說明不合理之處——例如時程不可行、會犧牲體驗或品質、或與既有架構衝突。接著提出<strong>替代方案與取捨</strong>，協調出雙方都能接受的平衡點。重點是對事不對人，用「目標 + 可行方案」取代單純拒絕。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>開發上遇過的困難，如何解決？</summary>
+      <div class="answer">
+        <p>我的解題順序通常是：<strong>1.</strong> 自己先重現問題、縮小範圍；<strong>2.</strong> 與團隊討論、做 pair；<strong>3.</strong> 查官方文件與社群（issue、討論串）；<strong>4.</strong> 現在也會善用 <strong>AI 工具</strong>輔助（例如釐清 TypeScript 型別錯誤、梳理複雜邏輯）。找到解法後會回頭補上測試或文件，避免同樣的坑再踩一次。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>請分享一次你犯錯的經驗？</summary>
+      <div class="answer">
+        <p>可挑一個「<strong>影響可控、有學到東西</strong>」的例子，例如：曾在改動共用元件時沒考慮到其他頁面也在使用，導致連帶 bug。</p>
+        <p>處理方式：第一時間誠實回報、快速 rollback 止血，再補上回歸測試與型別約束，並在分享會提醒大家「動共用程式碼前先確認使用範圍」。我從中學到：<strong>共用程式碼的改動要先盤點 caller，並用測試把風險擋在前面</strong>。</p>
+        <div class="tip"><b>面試提醒：</b>選錯誤要「真誠但收斂」——重點放在你如何止血、修正與避免再犯，而非錯誤本身有多嚴重。</div>
+        <div class="script"><span class="lbl">🎤 口頭講稿（約 35 秒）</span>我分享一個影響還算可控、但讓我學到東西的例子。有一次我改一個共用元件，只想著我負責的那一頁，沒注意到其他頁面也在用，結果上線後連帶出現 bug。我第一時間就誠實回報、先 rollback 把影響止住，再補上回歸測試跟型別約束才重新上線。後來我也在分享會提醒大家，動共用程式碼之前一定要先盤點有哪些地方在用。這件事讓我養成一個習慣：改公用的東西之前先確認 caller，並且用測試把風險擋在前面。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>請分享一次你做超出職位範圍事情的經驗？</summary>
+      <div class="answer">
+        <p>兩個例子：<strong>1.</strong> 我擔任過<strong>團建負責人</strong>，主動規劃活動、凝聚團隊；<strong>2.</strong> 我主動把 <strong>AI 輔助開發工具（Claude Code）導入團隊日常</strong>，並重構技術文件——這些都不在原本的職務描述裡，但對團隊效率有實際幫助。我認為資深工程師的價值之一，就是看到能讓團隊更好的事，會主動承接。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>目前團隊中有什麼覺得可以敬佩的對象嗎？</summary>
+      <div class="answer">
+        <p>團隊裡有位同仁<strong>很會做技術分享</strong>——同樣的內容，他能講得有結構又吸引人，讓聽眾很容易吸收。我很欣賞這點，也希望自己未來在報告與表達上能做到一樣有感染力。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>形容一下你自己 / 別人都怎麼形容你？</summary>
+      <div class="answer">
+        <p><strong>工作上：</strong>別人常說我是「非常有責任感」的人，交付的東西會顧到品質與後續維運。</p>
+        <p><strong>個人上：</strong>我接觸的事物很多、興趣廣，算是個有趣、好相處的人，在團隊裡容易跟不同角色合作。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>你的優缺點是什麼？</summary>
+      <div class="answer">
+        <p><strong>優點：</strong>情緒穩定、擅長團隊合作、喜歡學習新知，能在跨團隊間扮演溝通橋樑。</p>
+        <p><strong>缺點：</strong>前期比較沒自信、容易鑽牛角尖。後來我靠<strong>code review 與技術分享會建立自信</strong>，並用<strong>測試多做驗證</strong>，讓判斷有客觀依據——現在能更快地下決定並對外溝通。</p>
+        <div class="tip"><b>面試提醒：</b>缺點要搭配「已採取的改善行動」，展現自我覺察與成長。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>過往專案的團隊人數、角色，自己擔任什麼角色？</summary>
+      <div class="answer">
+        <p>團隊約 <strong>9 人</strong>，組成包含 PM、後端、QA、UI／企劃與前端。我擔任<strong>資深前端</strong>，除了核心開發外，也常扮演<strong>「中間人」</strong>——對接企劃需求、協調前後端介面、並輔導初階工程師。現職還多了與硬體／韌體團隊的溝通橋樑角色。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>有沒有與設計師合作的經驗？</summary>
+      <div class="answer">
+        <p>因為近幾年多在做內部後台系統，直接與專職設計師合作的機會相對較少（多以 Axure／ClickUp 對齊 UI、企劃出規格）。不過我對與設計師合作<strong>很有興趣</strong>，也熟悉 Figma／Zeplin 的交付流程，很期待能在更重視設計的產品上深入協作。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>團隊開發經驗？</summary>
+      <div class="answer">
+        <p>我有完整的 <strong>Vue 與 React</strong> 雙棧團隊經驗：早期用 Vue 開發多語系電商與區塊鏈手機版產品，後來在前一間公司主導多個 React 後台，現職則回到 Vue 3 (Pinia) 主導車隊系統前端，並與 NestJS 後端、硬韌體團隊協作。我習慣以 Scrum 運作，重視介面契約與共用元件的建立。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>過往如何學習一個新技術？</summary>
+      <div class="answer">
+        <ul>
+          <li>加入各大技術社群、追蹤新技術動態。</li>
+          <li>先看影片／官方文件建立整體概念。</li>
+          <li>有時間就<strong>動手做小專案實作</strong>，把概念落地。</li>
+          <li>現在也會用 AI 工具加速理解與排錯。</li>
+        </ul>
+        <p>例如最近學 Three.js，就是從基礎 → React Three Fiber (R3F) → Drei 一路實作上來。</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 3. 開發流程與團隊協作 ============ -->
+  <section id="c-process">
+    <h2 class="cat"><span class="ic"></span>開發流程與團隊協作</h2>
+
+    <details class="qa">
+      <summary>通常你的開發流程是什麼？（Scrum）</summary>
+      <div class="answer">
+        <p>我們採 <strong>Scrum</strong>：企劃開會討論需求 → 開發 → 測試 → 上版。由 <strong>PM 擔任 Scrum Master</strong>，負責拆分功能、給出預估時程；每天有<strong>站立會議（stand-up）</strong>回顧昨天做的事與今天預計的事，sprint 結束做<strong>回顧（retro）</strong>持續改善。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>開發流程來不及怎麼辦？</summary>
+      <div class="answer">
+        <p>我會依序評估：<strong>1.</strong> 先同步現況，詢問是否能<strong>延期</strong>；<strong>2.</strong> 若不能延，確認是否能<strong>優先處理最緊急／最高價值的部分</strong>（切出 MVP，次要功能後補）；<strong>3.</strong> 評估是否有機會<strong>增加人力</strong>或調整範圍。重點是儘早讓 PM 知道風險，一起做取捨，而不是悶著趕到最後才爆。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>設計師、後端工程師之間如何溝通？用什麼工具？遇到的問題怎麼解決？</summary>
+      <div class="answer">
+        <p><strong>與企劃／設計：</strong>用 <strong>ClickUp</strong>（過去也用過 Axure、Trello、Asana、Notion）對齊需求與 UI 規格。</p>
+        <p><strong>與後端／團隊：</strong>用 <strong>Bruno</strong>（也用 Swagger、Postman）對接 API、共享請求集合；現職更進一步用 <strong>ts-rest + Zod 做 Contract-first</strong>，把型別契約收斂到單一來源，減少口頭對焦。</p>
+        <p><strong>常見問題與解法：</strong>後端 schema 變動造成串接錯誤 → 用 Contract-first 在編譯期攔截；跨硬韌體溝通成本高 → 我擔任溝通橋樑、把問題拆成可驗證的步驟，加速定位。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>你使用哪些協作工具？</summary>
+      <div class="answer">
+        <p><strong>專案管理：</strong>ClickUp、Trello、Asana、Notion。<strong>API 協作：</strong>Bruno、Swagger、Postman。<strong>設計協作：</strong>Figma、Zeplin、Axure。<strong>版本控制：</strong>Git、Git-flow（含 Sourcetree）。<strong>AI 輔助：</strong>Claude Code、GitHub Copilot、ChatGPT／Gemini、NotebookLM。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>過往專案團隊如何運作與分工？</summary>
+      <div class="answer">
+        <p>以 Scrum 運作，PM 負責需求與時程、QA 負責測試、後端負責 API、UI／企劃出規格，前端依功能切票認領。我作為資深前端，會協助<strong>技術選型、任務切分與 code review</strong>，並把共用邏輯抽成元件／hook 供團隊沿用。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>多語系（i18n）你怎麼做？</summary>
+      <div class="answer">
+        <p>我有兩段不同實作經驗：</p>
+        <ul>
+          <li><strong>早期專案：</strong>使用 <code>i18n</code>，命名<strong>依元件</strong>劃分 key（語意化、好定位）。</li>
+          <li><strong>近期專案：</strong>使用 <code>react-intl</code>，採<strong>六位數不重複的 ID</strong> 當 key（避免文案改動牽動 key、利於翻譯協作與機器管理）。</li>
+        </ul>
+        <p>Vue 端則用 <code>vue-i18n</code>。選擇 key 策略時，會權衡「可讀性」與「翻譯流程的可維護性」。</p>
+        <p class="ref">參考：react-intl + create-react-app 實作</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>目前任職公司最不能接受的兩個點是什麼？（為什麼想換）</summary>
+      <div class="answer">
+        <p>可聚焦在「<strong>制度／流程面</strong>」而非情緒抱怨，例如：部分舊專案<strong>缺乏 CI/CD、文件不齊全</strong>，以及<strong>後端技術不統一</strong>造成串接成本高。</p>
+        <div class="tip"><b>面試提醒：</b>講現職不滿時要中性、對事不對人，並馬上轉成「所以我希望找到一個流程更成熟、能讓我發揮的環境」。避免抱怨同事或主管。</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 4. 反問公司的問題 ============ -->
+  <section id="c-ask">
+    <h2 class="cat"><span class="ic"></span>反問公司的問題（重要）</h2>
+
+    <details class="qa" open>
+      <summary>關於公司你有什麼想問的嗎？（精選反問清單）</summary>
+      <div class="answer">
+        <p><strong>關於職務與團隊：</strong></p>
+        <ol>
+          <li>入職後首要的任務是什麼？試用期內最重要該完成的事是什麼？</li>
+          <li>這個職位主要負責的工作項目有哪些？主要合作對象有誰？</li>
+          <li>部門的組成有哪些角色？</li>
+          <li>這個職缺是怎麼產生的（新增 / 補缺）？</li>
+          <li>這份工作最大的挑戰是什麼？</li>
+          <li>要上手這份工作，有什麼是我入職前可以先學習或補強的背景知識？</li>
+          <li>工作上會需要用英語溝通嗎？</li>
+          <li>在這間公司工作最棒的一點是什麼？</li>
+        </ol>
+        <p><strong>關於流程與技術：</strong></p>
+        <ol start="9">
+          <li>開會頻率如何？目前的 Scrum 流程怎麼運作？</li>
+          <li>使用哪些協作工具？</li>
+          <li>專案是否都用 Next.js？走 App Router 還是 Pages Router？是有 SEO 需求才用 Next.js 嗎？</li>
+          <li>對於採用創新技術的權衡是什麼？是團隊一起討論，還是專案負責人決定？</li>
+          <li>未來有可能嘗試換 UI 框架嗎（例如 Ant Design ProTable 或 Shadcn UI）？</li>
+          <li>加分條件提到「跨平台應用 / AR/VR 專案開發經驗」，是指未來會有這方面的開發需求嗎？</li>
+        </ol>
+        <div class="tip"><b>面試提醒：</b>挑 3~5 題即可，依面試官角色調整（主管問願景與挑戰、工程師問技術與流程、HR 問文化與制度）。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>（技術延伸）關於 UI 框架選型可以聊的觀點</summary>
+      <div class="answer">
+        <p>若被問到 UI 框架選型，可分享我對 MUI / Tailwind / Shadcn 的觀察：</p>
+        <ul>
+          <li><strong>MUI：</strong>能快速達到風格一致，但<strong>客製化不易、缺乏彈性</strong>；MUI 與 Tailwind 樣式需分開設定，容易產生<strong>樣式衝突、不易整合管理</strong>；部分元件為付費（如 MUI X Data Grid），免費版功能較少。</li>
+          <li><strong>Shadcn UI：</strong>不是傳統 component library，而是可重用元件的「集合」，<strong>不以 dependency 出現在 package.json</strong>；原始碼直接複製進專案，可任意修改客製化，彈性高。</li>
+          <li><strong>Ant Design ProTable：</strong>後台表格場景開發效率高，與既有 Ant Design 生態整合好。</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 5. 最近學習 / 想學 ============ -->
+  <section id="c-learn">
+    <h2 class="cat"><span class="ic"></span>學習與技術趨勢</h2>
+
+    <details class="qa">
+      <summary>最近有學習什麼新的技術或知識？可以分享心得嗎？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>AI 輔助開發：</strong>把 Claude Code、Copilot 帶進日常，並研究 AI Code Editor（Cursor、Zed）。心得是 AI 很適合用來梳理複雜邏輯、加速排錯與重構文件，但要懂得驗證輸出。</li>
+          <li><strong>Contract-first API：</strong>ts-rest + Zod。也玩過用 OpenAI 的 <code>zodResponseFormat</code>（zod helper）以 Zod 定義 response format、產出結構化 JSON。</li>
+          <li><strong>Shadcn UI：</strong>元件原始碼直接放進專案、可任意客製，跟傳統元件庫的思路很不一樣。</li>
+          <li><strong>3D：</strong>Three.js 入門 → React Three Fiber (R3F) → Drei。</li>
+          <li><strong>Git 進階：</strong>更熟練 rebase 與壓縮 commit（squash），讓 commit 歷史更乾淨。</li>
+          <li><strong>TypeScript：</strong>更熟 utility types，例如 <code>Partial</code>。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>最近有對什麼還不會但有興趣學習的？（技術或工具）</summary>
+      <div class="answer">
+        <p><strong>前端：</strong>Three.js、react-spring（動畫）、WebGL。<br>
+        <strong>後端：</strong>Python、Node.js。<br>
+        <strong>其他：</strong>英文、日文。</p>
+        <p>動機是想把 3D 視覺化與動畫能力補上（對應車隊路徑、自動化倉儲場景），並具備基本後端能力，讓我在 Monorepo 共構時更能跟後端對話。</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ ⭐ 面試官最愛追問（深度題） ============ -->
+  <section id="c-deep">
+    <h2 class="cat"><span class="ic"></span>⭐ 面試官最愛追問（深度題）</h2>
+
+    <details class="qa">
+      <summary>關於這個分類</summary>
+      <div class="answer">
+        <p>這些題目整理自一位面試官的心得文〈2026 年 3 月面 20 個前端〉——都是他<strong>實際追問、而很多資深者答不出來</strong>的點。核心訊息：</p>
+        <ul>
+          <li>概念人人會背，但能不能<strong>看 code 講出輸出</strong>、<strong>手寫實作</strong>、<strong>說得出量化數據</strong>，才是差距所在。</li>
+          <li>履歷寫「效能優化 / 二次封裝表格 / Agent 開發」就一定會被追問細節，要準備到「優化前後數字、底層流程」。</li>
+        </ul>
+        <p class="ref">來源：codelove.tw〈2026年3月面 20 個前端〉</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Vue：watch 和 watchEffect 的差異？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>偵聽來源：</strong>watch 需<strong>明確指定</strong>要偵聽的來源（ref / getter / 多個來源）；watchEffect <strong>自動收集</strong>回呼裡用到的響應式依賴。</li>
+          <li><strong>執行時機：</strong>watch <strong>惰性（lazy）</strong>，預設來源變動才執行（可加 <code>immediate: true</code>）；watchEffect <strong>立即執行一次（eager）</strong>，之後依賴變動再跑。</li>
+          <li><strong>新舊值：</strong>watch 回呼能拿到 <code>(newVal, oldVal)</code>；watchEffect <strong>拿不到舊值</strong>。</li>
+          <li><strong>深度偵聽：</strong>watch 可設 <code>deep: true</code>。</li>
+        </ul>
+        <p><strong>選用：</strong>需要新舊值比較、偵聽特定來源、或要惰性執行 → <strong>watch</strong>；副作用依賴多個值、想自動追蹤、初始就要跑一次 → <strong>watchEffect</strong>。</p>
+        <pre><code>// watch：指定來源、拿得到舊值
+watch(count, (n, o) =&gt; console.log(n, o));
+// watchEffect：自動追蹤、立即執行
+watchEffect(() =&gt; console.log(count.value, name.value));</code></pre>
+        <div class="script"><span class="lbl">🎤 口頭講稿（約 30 秒）</span>兩個都是偵聽響應式資料，差別主要在三點。watch 要我自己指定偵聽的來源，預設是惰性的、資料變了才跑，而且回呼裡拿得到新值跟舊值；watchEffect 則會自動收集回呼裡用到的依賴，一開始就立即執行一次，但拿不到舊值。所以如果我需要比較新舊值、或只想針對特定來源做事，我會用 watch；如果副作用同時依賴好幾個值、又想初始就跑一次，用 watchEffect 比較省事。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Vue：父子元件的生命週期執行順序？</summary>
+      <div class="answer">
+        <p>口訣：<strong>父先開始、子先完成；父最後才 mounted</strong>。</p>
+        <ul>
+          <li><strong>掛載：</strong>父 beforeCreate → 父 created → 父 beforeMount → <strong>子 beforeCreate → 子 created → 子 beforeMount → 子 mounted</strong> → 父 mounted。</li>
+          <li><strong>更新：</strong>父 beforeUpdate → 子 beforeUpdate → 子 updated → 父 updated。</li>
+          <li><strong>卸載：</strong>父 beforeUnmount → 子 beforeUnmount → 子 unmounted → 父 unmounted。</li>
+        </ul>
+        <p>原因：父要渲染時遇到子元件，會先把子元件整個掛載完，才能完成自己的掛載。<br>（Vue 3 用 <code>beforeUnmount/unmounted</code>，Vue 2 是 <code>beforeDestroy/destroyed</code>；資料請求放 <code>created</code> 或 <code>mounted</code> 皆可，需操作 DOM 才放 mounted。）</p>
+        <div class="script"><span class="lbl">🎤 口頭講稿（約 30 秒）</span>順序的口訣是「父先開始、子先完成，父最後才 mounted」。掛載的時候，父元件會先走到 beforeMount，遇到子元件就先把子元件整個建立、掛載完，等子的 mounted 跑完之後，父的 mounted 才會觸發。更新跟卸載也是類似——父先進入、但子先結束。實務上我會把需要操作 DOM 的初始化放在 mounted，純資料請求放 created 或 mounted 都可以。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>前端記憶體洩漏：常見成因與怎麼排查？</summary>
+      <div class="answer">
+        <p><strong>常見成因：</strong></p>
+        <ul>
+          <li>未清除的 <code>setInterval</code> / <code>setTimeout</code>。</li>
+          <li>未解綁的事件監聽（addEventListener 沒 remove）、未取消的訂閱（EventBus、RxJS、WebSocket）。</li>
+          <li><strong>Detached DOM：</strong>元素從畫面移除，但 JS 變數仍引用著它。</li>
+          <li>閉包長期持有大物件；全域變數 / 無上限的快取。</li>
+          <li>元件卸載沒清理（React 沒在 <code>useEffect</code> return cleanup；Vue 沒在 <code>onUnmounted</code> 清）。</li>
+        </ul>
+        <p><strong>排查方式（Chrome DevTools）：</strong></p>
+        <ul>
+          <li><strong>Memory → Heap snapshot：</strong>操作前後各拍一張，用 Comparison 看哪類物件持續增長、找 <strong>Detached</strong> 節點。</li>
+          <li><strong>Performance / Memory timeline：</strong>反覆操作，看記憶體曲線是否<strong>只升不降</strong>（正常應在 GC 後回落）。</li>
+          <li><strong>Allocation instrumentation on timeline：</strong>定位是哪段程式碼一直配置記憶體。</li>
+        </ul>
+        <div class="script"><span class="lbl">🎤 口頭講稿（約 30 秒）</span>最常見的成因大概有幾種：沒清掉的計時器、沒解綁的事件監聽或訂閱，還有 detached DOM——就是元素從畫面移除了，但 JS 還抓著它的引用。所以我在 React 會用 useEffect 的 cleanup、Vue 在 onUnmounted 裡把這些清掉。排查的話我會用 Chrome DevTools 的 Memory 面板，操作前後各拍一張 heap snapshot 做比對，看哪類物件一直長、有沒有 detached 節點；或看 memory timeline 的曲線是不是只升不降、GC 之後沒回落。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>虛擬捲動（Virtual Scrolling）是什麼？怎麼實作？</summary>
+      <div class="answer">
+        <p>面對<strong>上萬筆的長列表</strong>，若全部渲染會產生大量 DOM 造成卡頓。虛擬捲動只渲染<strong>可視範圍 + 上下緩衝（buffer）</strong>的項目，捲動時動態替換內容。</p>
+        <p><strong>關鍵實作：</strong></p>
+        <ul>
+          <li>外層容器固定高度 + <code>overflow:auto</code>；用一個與「總高度」等高的撐高元素，讓捲軸比例正確。</li>
+          <li>監聽 <code>scrollTop</code>，依每項高度算出 <code>startIndex / endIndex</code>，只渲染這段。</li>
+          <li>用 <code>transform: translateY()</code> 或 padding-top 把可視區塊推到正確位置。</li>
+          <li>等高項目最好算；<strong>動態高度</strong>需量測或估算 + 快取每項高度。</li>
+        </ul>
+        <p><strong>常用套件：</strong>vue-virtual-scroller、react-window / react-virtualized、TanStack Virtual。</p>
+        <div class="script"><span class="lbl">🎤 口頭講稿（約 30 秒）</span>虛擬捲動是處理上萬筆長列表的方法。如果整包都渲染，DOM 太多會很卡，所以我只渲染可視範圍加上下緩衝那幾筆，其他的用一個跟總高度一樣高的元素把捲軸撐出來。捲動的時候監聽 scrollTop，算出現在該顯示哪一段，再用 transform 把它推到正確位置。等高的項目最好算，動態高度就需要量測或估算再快取。實務上我會直接用 vue-virtual-scroller 或 TanStack Virtual。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Canvas 的渲染流程？跟 DOM 渲染差在哪？</summary>
+      <div class="answer">
+        <p>Canvas 是<strong>即時模式（immediate mode）</strong>的點陣繪圖：</p>
+        <ol>
+          <li>取得 context（<code>getContext('2d')</code> 或 WebGL）。</li>
+          <li>每一幀先 <code>clearRect</code> 清空畫布。</li>
+          <li>重新計算並<strong>逐一繪製所有圖元</strong>（路徑、文字、圖片）。</li>
+          <li>用 <code>requestAnimationFrame</code> 排下一幀。</li>
+        </ol>
+        <p><strong>與 DOM 的差異：</strong></p>
+        <ul>
+          <li>DOM 是<strong>保留模式</strong>：有節點樹、瀏覽器自動重繪、自帶事件系統。</li>
+          <li>Canvas 畫完就是<strong>像素</strong>、沒有物件樹；互動要自己做<strong>命中測試（hit testing）</strong>，文字排版、狀態也都得自己管。</li>
+          <li>效能：大量圖元（表格、圖表、地圖、遊戲）用 Canvas 遠勝 DOM——例如表格庫用 Canvas 渲染，上萬列也只畫可視區、自繪格線與文字。</li>
+        </ul>
+        <div class="script"><span class="lbl">🎤 口頭講稿（約 30 秒）</span>Canvas 是即時模式的繪圖，流程是：拿到 context，每一幀先 clearRect 清空，再把所有圖元重新算、重新畫一遍，然後用 requestAnimationFrame 排下一幀。它跟 DOM 最大的差別是，DOM 有節點樹、瀏覽器會自動重繪也自帶事件；Canvas 畫完就只是像素、沒有物件，所以互動要自己做命中測試，文字排版跟狀態也都得自己管。好處是大量圖元的場景效能很高，像表格庫用 Canvas，上萬列也只畫可視區、自己畫格線跟文字，比 DOM 表格快很多。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>協同編輯的衝突如何解決？（OT vs CRDT）</summary>
+      <div class="answer">
+        <p>多人同時編輯同一份文件時，要解決<strong>並發修改衝突</strong>並維持<strong>最終一致性</strong>。兩大方案：</p>
+        <ul>
+          <li><strong>OT（Operational Transformation）：</strong>把編輯轉成 operation，透過轉換函式調整彼此 operation 的位置/索引，通常需<strong>中央伺服器</strong>協調順序。代表：Google Docs。</li>
+          <li><strong>CRDT（Conflict-free Replicated Data Type）：</strong>資料結構本身保證合併<strong>無衝突</strong>，可<strong>去中心化、支援離線</strong>後再合併。代表：Yjs、Automerge。</li>
+        </ul>
+        <p><strong>前端實務：</strong>常用 <strong>Yjs + WebSocket / WebRTC</strong> 同步文件，並用 awareness 同步游標與選取狀態；OT 實作較複雜但省頻寬，CRDT 上手快、離線友善。</p>
+        <div class="script"><span class="lbl">🎤 口頭講稿（約 30 秒）</span>多人同時改一份文件，要解決並發衝突、維持最終一致。主要有兩種方案：一種是 OT，把每個編輯轉成 operation，再透過轉換函式去調整彼此的位置，通常需要一個中央伺服器來決定順序，Google Docs 就是這種；另一種是 CRDT，它的資料結構本身就保證合併不會衝突，可以去中心化、也支援離線後再合併，像 Yjs、Automerge。前端我會偏向用 Yjs 搭 WebSocket，順便用 awareness 同步游標。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>前端該懂的 Node.js / 後端思維有哪些？</summary>
+      <div class="answer">
+        <p><strong>Node.js 基礎：</strong>模組系統（CommonJS / ESM）、事件迴圈（與瀏覽器不同，基於 libuv、有 phases）、非阻塞 I/O、Stream、Buffer、<code>process</code> / 環境變數。</p>
+        <p><strong>常見能力：</strong>用 Express / Koa / <strong>NestJS</strong> 寫 API（路由、middleware、錯誤處理）、檔案操作（fs/path）、npm scripts、寫 CLI 或 BFF（Backend for Frontend）。</p>
+        <p><strong>後端思維：</strong>RESTful 設計與狀態碼、驗證授權（JWT）、資料庫基本概念、快取、logging、設定與環境分離、基本安全（CORS / XSS / 注入概念）。</p>
+        <div class="tip"><b>可連結自身經驗：</b>現職在 <strong>Monorepo</strong> 與 <strong>NestJS</strong> 後端共構，用 ts-rest + Zod 共享 API 契約，所以對後端的 schema、路由與型別都需要實際對話，不只是「知道有 Node 這工具」。</div>
+        <div class="script"><span class="lbl">🎤 口頭講稿（約 30 秒）</span>我對 Node 不只是「知道有這工具」。基礎像模組系統、它跟瀏覽器不一樣的事件迴圈、非阻塞 I/O、Stream 這些我有概念；實務上能用 Express 或 NestJS 寫 API、處理路由跟 middleware。後端思維的部分，我懂 RESTful 設計、狀態碼、JWT 驗證、還有 CORS 這些。其實我現在的工作就是在 Monorepo 裡跟 NestJS 後端共構，用 ts-rest 加 Zod 共享 API 契約，所以後端的 schema、路由、型別我都要實際對話，不是只寫前端。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>AI Agent 的核心流程與底層邏輯是什麼？（不只是文字問答）</summary>
+      <div class="answer">
+        <p>Agent ≠ 單純的聊天問答。核心是「<strong>LLM 當決策大腦 + 工具呼叫 + 記憶 + 多步驟循環</strong>」。</p>
+        <p><strong>運作流程（ReAct：Reason + Act）：</strong></p>
+        <ol>
+          <li>接收任務 → LLM <strong>規劃（planning）</strong>下一步。</li>
+          <li>決定呼叫哪個<strong>工具（function / tool calling）</strong>，輸出結構化參數。</li>
+          <li>執行工具、拿到結果（observation），回饋給 LLM。</li>
+          <li>反覆循環，直到任務完成 → 產生最終回覆。</li>
+        </ol>
+        <p><strong>關鍵概念：</strong>System prompt、Tool/Function schema、Context window 管理、Memory（短期對話 + 長期向量檢索 RAG）、<strong>Structured output</strong>（用 Zod / JSON Schema 約束輸出）、Guardrails 與重試。</p>
+        <p><strong>前端的角色：</strong>不只做輸入框與 streaming 渲染——還要懂 prompt 設計、tool 定義、SSE 串流、用狀態機管理 agent 的多步驟與錯誤重試。</p>
+        <div class="script"><span class="lbl">🎤 口頭講稿（約 30 秒）</span>Agent 跟單純的文字問答不一樣，核心是把 LLM 當決策大腦，再加上工具呼叫、記憶跟多步驟的循環。流程上大概是：LLM 先規劃下一步，決定要呼叫哪個工具、輸出結構化的參數，工具執行完把結果回饋給它，再反覆這個 Reason 加 Act 的循環，直到任務完成。重要的概念有 function calling、context 管理、用 RAG 做長期記憶，還有用 Zod 或 JSON schema 約束輸出。前端的角色其實不只是做輸入框跟 streaming，還要懂 tool 定義、SSE 串流，跟用狀態機去管 agent 的步驟跟重試。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>效能優化怎麼講出「量化數據」？（被追問必備）</summary>
+      <div class="answer">
+        <p>履歷只要寫「負責效能優化」，面試官一定追問：<strong>優化前的指標？採用的方案？優化後的效果？</strong>所以要準備「<strong>前 → 做了什麼 → 後</strong>」的數字。</p>
+        <p><strong>常用指標：</strong>Core Web Vitals（LCP / INP / CLS）、FCP / TTI、bundle size、首屏時間、API 回應時間、長列表 FPS、記憶體用量。</p>
+        <p><strong>講法範例：</strong></p>
+        <div class="tip">「某列表頁初始 bundle 1.2MB、LCP 約 4.2s。我做了<strong>路由懶載入 + 圖片改 WebP + 長列表虛擬捲動</strong>，bundle 降到 480KB、LCP 縮到 1.8s，捲動 FPS 從 ~30 回到 60。」</div>
+        <p><strong>量測工具：</strong>Lighthouse、DevTools Performance、webpack-bundle-analyzer、後端 APM。</p>
+        <div class="script"><span class="lbl">🎤 口頭講稿（約 30 秒）</span>我講效能優化會盡量帶數字，講「優化前、做了什麼、優化後」。舉例：某個列表頁初始 bundle 大概 1.2MB、LCP 大約 4.2 秒。我做了路由懶載入、圖片改 WebP、長列表上虛擬捲動，最後 bundle 降到 480KB、LCP 縮到 1.8 秒，捲動的 FPS 也從大概 30 回到 60。量測我會用 Lighthouse、DevTools 的 Performance 面板，還有 bundle analyzer 去找哪一包太大。</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 6. HTML ============ -->
+  <section id="c-html">
+    <h2 class="cat"><span class="ic"></span>HTML</h2>
+
+    <details class="qa">
+      <summary>如果畫面有按鈕需求，你會使用什麼 HTML tag？</summary>
+      <div class="answer">
+        <p>先確認這個「按鈕」的<strong>行為與語意</strong>再決定：</p>
+        <ul>
+          <li>觸發動作（送出、開關、提交）→ 用 <code>&lt;button&gt;</code>。</li>
+          <li>導向另一個頁面 / 連結（有 href）→ 用 <code>&lt;a&gt;</code>。</li>
+        </ul>
+        <p>關鍵是<strong>語意正確</strong>，而不是只看外觀；樣式可以再用 CSS 處理成一致的外觀。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>為什麼要使用 HTML 語意化標籤？優點是什麼？</summary>
+      <div class="answer">
+        <p>語意化標籤（如 <code>&lt;header&gt;</code>、<code>&lt;nav&gt;</code>、<code>&lt;main&gt;</code>、<code>&lt;article&gt;</code>）能<strong>正確表達網頁內容的含義</strong>。優點：</p>
+        <ul>
+          <li><strong>SEO：</strong>搜尋引擎更容易理解內容結構與重點。</li>
+          <li><strong>無障礙（a11y）：</strong>螢幕閱讀器能正確解讀，對輔助技術友善。</li>
+          <li><strong>好維護：</strong>結構清楚，團隊協作可讀性高。</li>
+          <li>語意明確的標籤通常比一堆 <code>&lt;div&gt;</code> 更精簡。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary><code>&lt;script&gt;</code> 應擺在哪？<code>&lt;link&gt;</code> 又該擺哪？</summary>
+      <div class="answer">
+        <p><strong><code>&lt;script&gt;</code> 建議放在 <code>&lt;/body&gt;</code> 結束前：</strong></p>
+        <ul>
+          <li><strong>畫面更快呈現：</strong>瀏覽器先解析完整 HTML、再下載/解析 JS，使用者能更快看到內容。</li>
+          <li><strong>避免操作到尚未載入的 DOM：</strong>放在底部可確保 HTML 元素已載入，減少 script 找不到元素的錯誤。</li>
+          <li>或用 <code>defer</code>（解析完 HTML 後依序執行）/ <code>async</code>（下載完即執行）。</li>
+        </ul>
+        <p><strong><code>&lt;link&gt;</code>（CSS）放在 <code>&lt;head&gt;</code> 內：</strong>確保渲染前已載入樣式，避免使用者看到「無樣式內容閃爍（FOUC）」。</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 7. CSS ============ -->
+  <section id="c-css">
+    <h2 class="cat"><span class="ic"></span>CSS</h2>
+
+    <details class="qa">
+      <summary>CSS Specificity（優先級）怎麼算？</summary>
+      <div class="answer">
+        <p>由高到低大致為：</p>
+        <p><code>!important</code> &gt; 行內樣式（inline style）&gt; ID 選擇器 &gt; class / 偽類 / 屬性選擇器 &gt; 型態選擇器（標籤）/ 偽元素 &gt; 通用選擇器（<code>*</code>）。</p>
+        <p>計算時常用 (a, b, c) 表示：a = ID 數、b = class/屬性/偽類 數、c = 標籤/偽元素 數，逐位比較。相同時<strong>後寫的覆蓋先寫的</strong>。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>box-sizing 的 content-box 和 border-box 差別？預設值？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>content-box（預設）：</strong><code>width</code> 只算內容，padding 與 border 會<strong>額外</strong>撐大元素總寬。</li>
+          <li><strong>border-box：</strong><code>width</code> 已<strong>包含</strong> content + padding + border，總寬就是你設定的值，排版更直覺。</li>
+        </ul>
+        <p>實務上常全域設 <code>* { box-sizing: border-box; }</code>。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>寫一個顏色漸變的動畫要用什麼 property？</summary>
+      <div class="answer">
+        <p>用 <code>transition</code> 系列：</p>
+        <ul>
+          <li><code>transition-property</code>：要漸變的 CSS 屬性（如 <code>background-color</code>）。</li>
+          <li><code>transition-duration</code>：持續時間（如 <code>1000ms</code> = 1 秒）。</li>
+          <li><code>transition-timing-function</code>：漸變模式（ease、linear…）。</li>
+        </ul>
+        <p>連續/循環的漸變則用 <code>@keyframes</code> + <code>animation</code>。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 Block Formatting Context (BFC)？</summary>
+      <div class="answer">
+        <p>BFC 是一個<strong>獨立的渲染區域</strong>，內部元素的排版與浮動、清除互不影響外部。觸發 BFC（如 <code>overflow:hidden</code>、<code>display:flow-root</code>、float、絕對定位等）可以解決常見問題：</p>
+        <ul>
+          <li>清除浮動造成的<strong>高度塌陷</strong>。</li>
+          <li>避免 margin 重疊（margin collapse）。</li>
+          <li>避免元素被浮動元素覆蓋。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>SASS 的 <code>&amp;</code> 代表什麼？</summary>
+      <div class="answer">
+        <p><code>&amp;</code> 是「<strong>父選擇器引用</strong>（Parent Selector Reference）」，用來在巢狀中引用當前選擇器，方便組合修飾。例如：</p>
+        <pre><code>.btn {
+  &amp;:hover { color: green; }
+  &amp;--primary { background: green; }
+}
+/* 編譯成 .btn:hover、.btn--primary */</code></pre>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>font-size 單位 px / em / rem / % 的差別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>px：</strong>絕對單位，精準但<strong>不會隨頁面/設定縮放</strong>。</li>
+          <li><strong>em：</strong>相對單位，相對於<strong>父元素</strong>字級，會<strong>逐層繼承累乘</strong>，多層巢狀時容易混亂；適合簡單、少層級的區塊。</li>
+          <li><strong>rem：</strong>相對於<strong>根元素（html）</strong>字級，解決了 em 的繼承問題，適合做整體可縮放的排版。</li>
+          <li><strong>%：</strong>相對於父元素對應屬性的百分比。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 CSS reset？</summary>
+      <div class="answer">
+        <p>用來<strong>統一各瀏覽器的預設樣式</strong>（margin、padding、line-height 等），確保在不同瀏覽器有一致的外觀與排版起點。常見如 reset.css、normalize.css。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Flexbox 怎麼使用？常用哪些屬性？</summary>
+      <div class="answer">
+        <p>容器設 <code>display:flex</code>，常用屬性：</p>
+        <ul>
+          <li><strong>容器：</strong><code>flex-direction</code>（主軸方向）、<code>justify-content</code>（主軸對齊）、<code>align-items</code>（交叉軸對齊）、<code>flex-wrap</code>（換行）、<code>gap</code>（間距）。</li>
+          <li><strong>子項：</strong><code>flex</code>（grow/shrink/basis）、<code>align-self</code>、<code>order</code>。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>水平垂直置中的不同方法？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>Flexbox：</strong><code>display:flex; justify-content:center; align-items:center;</code></li>
+          <li><strong>Grid：</strong><code>display:grid; place-items:center;</code></li>
+          <li><strong>絕對定位 + transform：</strong><code>position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);</code></li>
+          <li><strong>行內元素：</strong><code>text-align:center</code> + <code>line-height</code> 等於高度。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>position 有哪些屬性值？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>static：</strong>預設，照文檔流。</li>
+          <li><strong>relative：</strong>相對自身原位置偏移，仍保留原空間。</li>
+          <li><strong>absolute：</strong>相對最近的「非 static 祖先」定位，脫離文檔流。</li>
+          <li><strong>fixed：</strong>相對瀏覽器視窗定位，捲動不動。</li>
+          <li><strong>sticky：</strong>在門檻內表現如 relative，超過門檻黏住如 fixed。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>知道如何使用 mixin 與 SASS/SCSS 變數嗎？</summary>
+      <div class="answer">
+        <p>會。變數用 <code>$</code> 宣告共用值；<code>@mixin</code> 定義可重用樣式片段、用 <code>@include</code> 套用，可帶參數：</p>
+        <pre><code>$primary: #1aa71b;
+@mixin flex-center { display:flex; justify-content:center; align-items:center; }
+.box { color:$primary; @include flex-center; }</code></pre>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 8. JavaScript ============ -->
+  <section id="c-js">
+    <h2 class="cat"><span class="ic"></span>JavaScript</h2>
+
+    <details class="qa">
+      <summary>什麼是作用域（scope）？作用域鏈？</summary>
+      <div class="answer">
+        <p>作用域是變數可被存取的範圍，決定其可見性與生命週期。JS 有<strong>全域、函式作用域</strong>，ES6+ 還有<strong>區塊作用域（let/const）</strong>。</p>
+        <p><strong>作用域鏈：</strong>當在函式內找變數時，會先在當前作用域找，找不到就往外層找，一路到全域為止——這條查找路徑就是作用域鏈。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 hoisting（提升）？</summary>
+      <div class="answer">
+        <p>JS 在執行前會把<strong>宣告</strong>提升到作用域頂端。<code>var</code> 宣告會被提升並初始化為 <code>undefined</code>；函式宣告（function declaration）整個被提升、可在定義前呼叫。<code>let</code>/<code>const</code> 雖也被提升，但會進入<strong>暫時死區（TDZ）</strong>，宣告前使用會報錯。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 event loop？微任務 vs 宏任務？</summary>
+      <div class="answer">
+        <p>JS 是<strong>單執行緒</strong>，靠 event loop 處理非同步。執行順序：<strong>同步程式碼</strong> → 清空所有<strong>微任務（microtask）</strong> → 取一個<strong>宏任務（macrotask）</strong> → 再清微任務…循環。</p>
+        <ul>
+          <li><strong>微任務：</strong>Promise 的 then/catch、queueMicrotask、MutationObserver。</li>
+          <li><strong>宏任務：</strong>setTimeout、setInterval、I/O、UI 事件。</li>
+        </ul>
+        <p>重點：<strong>微任務比宏任務先執行</strong>。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>setTimeout、Promise、同步 console.log 的輸出順序？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>同步</strong>立即依序執行。</li>
+          <li><strong>微任務（Promise 回呼）</strong>在當前同步結束後立即執行，優先於宏任務。</li>
+          <li><strong>宏任務（setTimeout 回呼）</strong>在同步與微任務都清空後才執行。</li>
+        </ul>
+        <pre><code>console.log(1);
+setTimeout(()=>console.log(2));
+Promise.resolve().then(()=>console.log(3));
+console.log(4);
+// 輸出：1, 4, 3, 2</code></pre>
+        <p><strong>進階版（含 async/await，面試最愛追問）：</strong></p>
+        <pre><code>async function async1(){
+  console.log('A');
+  await async2();
+  console.log('B');   // await 之後的程式碼 → 變成微任務
+}
+async function async2(){ console.log('C'); }
+
+console.log('D');
+setTimeout(() =&gt; console.log('E'));      // 宏任務
+async1();
+Promise.resolve().then(() =&gt; console.log('F')); // 微任務
+console.log('G');
+// 輸出：D, A, C, G, B, F, E</code></pre>
+        <p>追蹤重點：同步先跑（D、A、C、G）→ 清微任務佇列（B、F）→ 才取宏任務（E）。<code>await async2()</code> 會<strong>同步執行 async2 的本體</strong>（印 C），但 await 後面的 <code>console.log('B')</code> 被排進微任務。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>function declaration vs function expression 的差別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>提升：</strong>function declaration 整個被提升，定義前可呼叫；function expression 不會（賦值前是 undefined / TDZ）。</li>
+          <li><strong>語法位置：</strong>declaration 獨立存在；expression 通常賦值給變數或作為參數傳遞。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>by value vs by reference？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>基本型別（Number、String、Boolean…）</strong>按值傳遞，修改副本不影響原值。</li>
+          <li><strong>物件型別（Object、Array、Function）</strong>按引用傳遞，多個變數可指向同一物件，修改會影響所有引用。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>不同情況下 this 的指向？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>一般函式呼叫：</strong>非嚴格模式指向 <code>window</code>/global，嚴格模式為 <code>undefined</code>。</li>
+          <li><strong>物件方法呼叫：</strong>指向呼叫它的物件。</li>
+          <li><strong>建構函式（new）：</strong>指向新建立的實例。</li>
+          <li><strong>call/apply/bind：</strong>指向指定的物件。</li>
+          <li><strong>箭頭函式：</strong>沒有自己的 this，沿用<strong>定義時外層</strong>的 this。</li>
+        </ul>
+        <p><strong>看 code 講輸出（面試常考）：</strong></p>
+        <pre><code>const obj = { name: 'A', getName(){ return this.name; } };
+const fn = obj.getName;
+obj.getName();   // 'A'        ← 物件呼叫，this = obj
+fn();            // undefined  ← 一般呼叫，this 非 obj
+fn.call(obj);    // 'A'        ← call 指定 this
+
+const o = {
+  name: 'B',
+  normal(){ setTimeout(function(){ console.log(this.name); }); }, // undefined（一般函式）
+  arrow(){  setTimeout(() =&gt; console.log(this.name)); }          // 'B'（箭頭沿用外層 o）
+};</code></pre>
+        <p><strong>手寫一個改變 this 的方法（myBind）：</strong></p>
+        <pre><code>Function.prototype.myBind = function(ctx, ...preset){
+  const fn = this;
+  return function(...args){
+    return fn.apply(ctx, [...preset, ...args]);
+  };
+};
+function say(greet){ return greet + ', ' + this.name; }
+const bound = say.myBind({ name: 'Alex' });
+bound('Hi'); // 'Hi, Alex'</code></pre>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是原型鏈（prototype chain）？</summary>
+      <div class="answer">
+        <p>原型本身也是物件、也有自己的原型。存取物件屬性時，若自身沒有，會往它的原型找，找不到再往上一層原型找，直到找到或到達 <code>null</code> 為止——這條路徑就是<strong>原型鏈</strong>，終點是 null。它是 JS 繼承的核心機制。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是閉包（closure）？用途是什麼？</summary>
+      <div class="answer">
+        <p>閉包是「<strong>函式 + 其被宣告時的詞法作用域環境</strong>」的組合。白話說：內部函式能存取並<strong>記住</strong>外部函式的變數，即使外部函式已執行完畢。</p>
+        <pre><code>function outer(){
+  let a = 0;
+  return function inner(){ return ++a; };
+}
+const fn = outer();
+fn(); // 1
+fn(); // 2  ← a 的狀態被記住</code></pre>
+        <p><strong>用途：</strong>狀態保存、資料封裝（私有變數）、函式工廠、debounce/throttle 等。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Promise 熟不熟？Promise vs async/await 差別？有什麼是其中一個做得到另一個做不到的？</summary>
+      <div class="answer">
+        <p>async/await 本質是 Promise 的<strong>語法糖</strong>，讓非同步用同步邏輯書寫、更易讀，並用 try/catch 處理錯誤。</p>
+        <ul>
+          <li><strong>Promise</strong> 更適合處理<strong>多個並發</strong>或鏈式操作（<code>Promise.all</code>、<code>race</code>、<code>allSettled</code>）。</li>
+          <li><strong>async/await</strong> 更適合需要循序、可讀性高的流程。</li>
+        </ul>
+        <p>嚴格說兩者能力相同（await 等的就是 Promise），主要差在表達方式與可讀性；並發控制用 Promise 的組合方法較直覺。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Promise 和 async/await 要解決的是什麼問題？</summary>
+      <div class="answer">
+        <p>解決非同步 callback 造成的「<strong>回呼地獄（callback hell）</strong>」——深層巢狀、難讀難維護、錯誤處理複雜。Promise 用鏈式攤平流程，async/await 進一步用同步寫法表達非同步（減少 then 巢狀）。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>有用遞迴方式寫過 async/await 嗎？什麼情形會用？</summary>
+      <div class="answer">
+        <p>會用在<strong>不確定次數、需依前一次結果再決定是否繼續</strong>的場景，例如：分頁 API 一直拉到沒有下一頁、輪詢（polling）某個狀態直到完成、重試（retry）機制。每次 await 上一輪結果後，再決定要不要遞迴下一輪。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>var、let、const 的差別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>作用域：</strong>var 為函式/全域作用域；let、const 為區塊作用域。</li>
+          <li><strong>重複宣告：</strong>var 可；let、const 不可。</li>
+          <li><strong>提升：</strong>var 自動初始化為 undefined；let、const 進入 TDZ，宣告前使用會報錯。</li>
+          <li><strong>重新賦值：</strong>let 可；const 不可（但物件內容仍可變）。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>forEach / map / filter / reduce 的差別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>forEach：</strong>單純遍歷執行副作用，<strong>無回傳值</strong>。</li>
+          <li><strong>map：</strong>回傳<strong>等長</strong>新陣列（轉換每個元素）。</li>
+          <li><strong>filter：</strong>回傳<strong>符合條件</strong>的新陣列（可能變短）。</li>
+          <li><strong>reduce：</strong>把陣列<strong>累積成單一值</strong>（加總、分組、攤平…）。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>如何自己實作 myMap()，功能和 map 一樣？</summary>
+      <div class="answer">
+        <pre><code>Array.prototype.myMap = function(callback, thisArg){
+  const result = [];
+  for(let i = 0; i &lt; this.length; i++){
+    if(i in this){ // 跳過稀疏陣列的空洞
+      result.push(callback.call(thisArg, this[i], i, this));
+    }
+  }
+  return result;
+};
+[1,2,3].myMap(x =&gt; x * 2); // [2,4,6]</code></pre>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 event bubbling？知道 bubbling 與 capture 的傳遞流程嗎？</summary>
+      <div class="answer">
+        <p><strong>事件冒泡（bubbling）：</strong>事件從觸發的目標元素，<strong>由內往外</strong>傳到父層、祖父層直到最頂層。</p>
+        <p>完整事件流三階段：<strong>1. 捕獲（capture）由外往內 → 2. 目標階段 → 3. 冒泡（bubble）由內往外</strong>。<code>addEventListener</code> 第三參數 <code>true</code> 表示在捕獲階段觸發，預設（false）為冒泡階段。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>請解釋 callback function？優缺點？</summary>
+      <div class="answer">
+        <p>把一個函式當參數傳入、在適當時機被呼叫，就是 callback。</p>
+        <p><strong>優點：</strong>提高彈性與重用性、方便處理非同步、不阻塞主流程。</p>
+        <p><strong>缺點：</strong>過度巢狀會造成<strong>回呼地獄</strong>、難讀難維護；錯誤處理需在每層各別處理，較繁瑣。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>知道 debounce 嗎？debounce 與 throttle 的差異？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>debounce（防抖）：</strong>事件停止觸發後等待 n 毫秒才執行；期間再觸發就重新計時。適合<strong>搜尋輸入、視窗 resize 結束後</strong>才動作。</li>
+          <li><strong>throttle（節流）：</strong>固定時間間隔內最多執行一次。適合<strong>scroll、滑鼠移動</strong>等高頻事件限速。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是淺比較和深比較？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>淺比較：</strong>只比第一層屬性；對巢狀物件只比<strong>引用</strong>是否相同。效率高，但可能漏掉內部變化（React 的 memo、PureComponent 就用淺比較）。</li>
+          <li><strong>深比較：</strong>遞迴比較所有層級的值，準確但效能較差。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>請解釋淺拷貝與深拷貝？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>淺拷貝：</strong>只複製第一層；巢狀物件仍共用同一引用。如 <code>Object.assign</code>、展開運算子 <code>{...obj}</code>。</li>
+          <li><strong>深拷貝：</strong>完整複製所有層級，互不影響。如 <code>structuredClone(obj)</code>、<code>JSON.parse(JSON.stringify(obj))</code>（有限制：丟失函式、undefined、Date 變字串等）、或 lodash 的 <code>cloneDeep</code>。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>請說出 JavaScript 所有的基本型別？</summary>
+      <div class="answer">
+        <p>共 7 種：<strong>String、Number、BigInt、Boolean、Undefined、Null、Symbol</strong>。其餘（Object、Array、Function…）皆屬物件型別。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>== 和 === 的差異？（順帶 Object.is）</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>==（鬆散比較）：</strong>比較前會<strong>強制轉型</strong>，如 <code>1 == '1'</code>、<code>null == undefined</code> 皆為 true。</li>
+          <li><strong>===（嚴格比較）：</strong>不轉型，型別不同直接 false。例外：<code>NaN === NaN</code> 為 false、<code>+0 === -0</code> 為 true。</li>
+          <li><strong>Object.is（同值比較）：</strong>修正上述兩個例外——<code>Object.is(NaN, NaN)</code> 為 true、<code>Object.is(+0, -0)</code> 為 false。判斷 NaN 也可用 <code>Number.isNaN</code>。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>使用過什麼方法處理 AJAX？</summary>
+      <div class="answer">
+        <p>主要用 <strong>Axios</strong> 與原生 <strong>Fetch API</strong>。Axios 提供攔截器、自動轉 JSON、取消請求等便利功能；簡單情境用 Fetch。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>普通函式與箭頭函式的區別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>this：</strong>箭頭函式沒有自己的 this，沿用外層；普通函式的 this 視呼叫方式而定。</li>
+          <li><strong>arguments：</strong>箭頭函式沒有 <code>arguments</code>（可用 rest 參數）。</li>
+          <li><strong>不能當建構函式：</strong>箭頭函式不能 <code>new</code>，也沒有 prototype。</li>
+          <li>不能用作 generator（無 yield）。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>同步與非同步的差異？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>同步：</strong>程式碼依序執行，會<strong>阻塞</strong>後續操作直到完成。</li>
+          <li><strong>非同步：</strong>可在等待操作完成的同時繼續執行，<strong>不阻塞</strong>，完成後再以 callback/Promise 回來處理。</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 9. TypeScript ============ -->
+  <section id="c-ts">
+    <h2 class="cat"><span class="ic"></span>TypeScript</h2>
+
+    <details class="qa">
+      <summary>any vs unknown 的差別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>any：</strong>完全關閉型別檢查，可任意操作，<strong>降低型別安全</strong>。</li>
+          <li><strong>unknown：</strong>更安全的 any——可以接收任何值，但<strong>使用前必須先縮小型別</strong>（type guard / 斷言），否則無法直接操作。</li>
+        </ul>
+        <p>實務上不確定型別時優先用 <code>unknown</code>，逼自己先檢查。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>type 跟 interface 的差別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>interface：</strong>可被<strong>重複宣告自動合併（declaration merging）</strong>、可被 <code>extends</code>，較適合描述物件／類別的形狀。</li>
+          <li><strong>type：</strong>更通用，可定義<strong>聯合型別、交集、元組、原始型別別名、條件型別</strong>等，不可重複宣告合併。</li>
+        </ul>
+        <p>實務：描述物件/可被擴充的公開 API 偏好 interface；需要聯合、工具型別等彈性時用 type。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>請說明泛型（generics）是什麼？</summary>
+      <div class="answer">
+        <p>泛型是「型別的參數化」，讓函式/型別能適用多種型別而不重複程式碼，同時保留型別安全。</p>
+        <pre><code>function identity&lt;T&gt;(value: T): T { return value; }
+identity&lt;string&gt;("hi"); // 型別被保留為 string</code></pre>
+        <p>好處：<strong>彈性、型別安全、可讀性</strong>（清楚表達輸入輸出的型別關係）。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>extends 在泛型中的用途？</summary>
+      <div class="answer">
+        <p><code>extends</code> 用來對型別參數<strong>施加約束</strong>，確保傳入型別滿足特定條件，提升安全與更好的提示。</p>
+        <pre><code>function getLength&lt;T extends { length: number }&gt;(x: T){ return x.length; }
+getLength("abc"); // OK
+getLength([1,2]);  // OK
+getLength(123);    // ❌ number 沒有 length</code></pre>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>enum 和 const 的差別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>enum：</strong>TS 特有，定義一組<strong>具名常數</strong>（數字型預設從 0 遞增，或字串型），可雙向對應，可讀性好。</li>
+          <li><strong>const：</strong>JS 的常數宣告，用於單一常數或物件，不會自動產生具名集合。</li>
+        </ul>
+        <p>實務上很多人改用 <code>as const</code> 物件 + union 取代 enum，避免 enum 編譯產物與 tree-shaking 問題。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>JS 與 TS 的區別？</summary>
+      <div class="answer">
+        <p>TS 是 JS 的<strong>超集</strong>，加上<strong>靜態型別系統</strong>（編譯期檢查）、介面、泛型、列舉等。最終會<strong>編譯成 JS</strong> 才能在瀏覽器/Node 執行。好處是把許多錯誤提前到編譯期、提升可維護性與工具提示。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>（實戰）你怎麼用 Zod / ts-rest 做型別安全？</summary>
+      <div class="answer">
+        <p><strong>Zod</strong> 是執行期 schema 驗證庫，能用 <code>z.infer</code> 從 schema 直接推導出 TS 型別——做到「<strong>一份 schema，同時管 runtime 驗證與靜態型別</strong>」。</p>
+        <p><strong>ts-rest</strong> 則把 API contract 定義成共享的型別來源，前後端都引用同一份合約：後端 schema 一改，前端在<strong>編譯期</strong>就會報錯。我在現職以 ts-rest + Zod 推行 Contract-first，串接錯誤明顯減少。</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 10. React ============ -->
+  <section id="c-react">
+    <h2 class="cat"><span class="ic"></span>React</h2>
+
+    <details class="qa">
+      <summary>React component 的生命週期？</summary>
+      <div class="answer">
+        <p><strong>Class：</strong>掛載 <code>constructor → render → componentDidMount</code>；更新 <code>render → componentDidUpdate</code>；卸載 <code>componentWillUnmount</code>。</p>
+        <p><strong>Function（Hooks）對應：</strong><code>useEffect(fn, [])</code> ≈ didMount；<code>useEffect(fn, [dep])</code> ≈ didUpdate；effect 內 return 的清理函式 ≈ willUnmount。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>哪些情況會造成 component re-render？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>state 改變</strong>（setState）。</li>
+          <li><strong>props 改變</strong>。</li>
+          <li><strong>父元件重新渲染</strong>（子元件預設跟著渲染，除非 memo）。</li>
+          <li><strong>使用的 Context 值改變</strong>（所有消費該 Context 的元件都會重渲染）。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>React key 的用途？</summary>
+      <div class="answer">
+        <p>key 讓 React 在 diff 時辨識哪些子元素被<strong>新增、移除或移動</strong>，避免與狀態相關的 bug，並提升更新效率。應使用<strong>穩定且唯一</strong>的值（如資料 id），<strong>避免用 index</strong>（列表會增刪/排序時易出錯）。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>用過 React Hook 嗎？它要解決什麼問題？</summary>
+      <div class="answer">
+        <p>用過。Hooks 解決了 class component 的幾個痛點：</p>
+        <ul>
+          <li>狀態相關邏輯在 class 間<strong>難以複用</strong>（以前靠 HOC / render props，易巢狀）→ 用 <strong>custom hook</strong> 抽離複用。</li>
+          <li>複雜元件邏輯散落在各生命週期，<strong>難理解</strong> → 用 effect 依關注點組織。</li>
+          <li><strong>class 的 this 對開發者不直覺</strong>。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>React Hook 的規則有哪些？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>只能在最頂層呼叫：</strong>不能放在 if/for/巢狀或 return 之後（要確保每次 render 的 Hook 呼叫順序一致）。</li>
+          <li><strong>只能在 React 函式中呼叫：</strong>function component 或 custom hook 裡，不能在一般 JS 函式中用。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>useState 給初始值 vs 給 function（惰性初始化）差別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>直接初始值：</strong>適合簡單、靜態的初始狀態。</li>
+          <li><strong>函式（惰性初始化）：</strong><code>useState(() =&gt; expensiveCompute())</code> 只在<strong>首次 render</strong> 執行一次，適合初始值需要昂貴計算時，避免每次 render 都重算。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>useState / setState 要注意什麼？是同步還是非同步？</summary>
+      <div class="answer">
+        <p>setState 是<strong>非同步（批次更新）</strong>的——呼叫後不會立即拿到新值。注意事項：</p>
+        <ul>
+          <li>需依前一狀態更新時，用<strong>函式形式</strong>：<code>setCount(c =&gt; c + 1)</code>。</li>
+          <li><strong>不可直接修改</strong> state 物件/陣列，要建立新的（展開運算子）。</li>
+          <li>同一輪多次 setState 會被合併批次處理。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>useState 放巢狀資料（array of objects）更新時要注意什麼？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>不可直接改</strong>原陣列/物件屬性。</li>
+          <li>用展開運算子<strong>建立新的陣列/物件</strong>，保留未變動的部分（保持 immutable）。</li>
+          <li>依舊狀態更新時用<strong>函式形式 setState</strong>。</li>
+        </ul>
+        <pre><code>setList(prev =&gt; prev.map(item =&gt;
+  item.id === id ? { ...item, done: true } : item
+));</code></pre>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>useEffect 怎麼用？第二個參數的作用？回傳的函式用途？</summary>
+      <div class="answer">
+        <p>useEffect 處理<strong>副作用</strong>（請求、訂閱、DOM 操作）。第二參數 dependency array：</p>
+        <ul>
+          <li><strong>空陣列 []：</strong>只在掛載時執行一次（≈ componentDidMount）。</li>
+          <li><strong>有依賴 [dep]：</strong>dep 改變時重新執行（≈ componentDidUpdate）。</li>
+          <li><strong>不傳：</strong>每次 render 都執行。</li>
+        </ul>
+        <p><strong>return 的清理函式：</strong>在元件卸載前、或下次 effect 執行前呼叫，用來清理訂閱/計時器，避免記憶體洩漏。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>useEffect 的 dependency array 放物件或陣列會怎樣？</summary>
+      <div class="answer">
+        <p>依賴比較用的是<strong>引用（reference）</strong>。物件/陣列每次 render 若是新建立的，引用就不同，會讓 effect <strong>每次都觸發</strong>；反之若引用沒變、即使內容變了也<strong>不會觸發</strong>。解法：用 <code>useMemo</code> 穩定引用，或在依賴中放<strong>原始值</strong>而非整個物件。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>用過 useLayoutEffect 嗎？跟 useEffect 差在哪？</summary>
+      <div class="answer">
+        <p>兩者參數相同，差在<strong>執行時機</strong>：<code>useLayoutEffect</code> 在瀏覽器<strong>重繪（paint）之前</strong>同步執行，適合需要量測 DOM 或避免畫面閃爍的情況；<code>useEffect</code> 在 paint 之後非同步執行，是預設選擇（不阻塞繪製）。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>useRef 怎麼用？跟 useState 差別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>useRef：</strong>回傳可變的 <code>.current</code>，<strong>改變不會觸發重渲染</strong>，跨 render 保持值。常用於取 DOM 節點、存計時器 id、保存不需呈現的可變值。</li>
+          <li><strong>useState：</strong>改變<strong>會觸發重渲染</strong>，用於要反映在畫面上的資料。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>useRef 的值改變會觸發 useEffect 嗎？放到 component 之外呢？</summary>
+      <div class="answer">
+        <p>不會。改 <code>ref.current</code> 不會觸發重渲染，因此 effect 也不會因它而執行（React 偵測不到 ref 變化）。把變數放在 component <strong>外（模組層級全域變數）</strong>同樣不會被 React 追蹤、也不會觸發 effect。要驅動畫面/effect 請用 state。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>memo 跟 useMemo 差別？useCallback vs useMemo？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>React.memo：</strong>包<strong>元件</strong>，props 淺比較未變就跳過重渲染。</li>
+          <li><strong>useMemo：</strong>快取<strong>計算結果</strong>，依賴未變就不重算，避免昂貴運算或穩定物件引用。</li>
+          <li><strong>useCallback：</strong>快取<strong>函式</strong>引用（<code>useCallback(fn, deps)</code> ≈ <code>useMemo(() =&gt; fn, deps)</code>），常用於傳給 memo 子元件的 callback。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>把所有變數都用 useMemo 包起來可以嗎？</summary>
+      <div class="answer">
+        <p>不建議。useMemo 本身有<strong>記憶與比較成本</strong>，對簡單或經常變動的值反而得不償失，也讓程式碼變複雜。最佳實踐：<strong>只在計算昂貴、或需要穩定引用避免子元件重渲染時</strong>才用，保持可讀性優先。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>下層元件的 state 要給上層用，怎麼做？</summary>
+      <div class="answer">
+        <p>常見做法：</p>
+        <ul>
+          <li><strong>狀態提升 + 回呼：</strong>把 state 放到上層，傳 callback 給下層，由下層呼叫回傳資料（最直接）。</li>
+          <li><strong>Context API：</strong>需要跨多層共享時。</li>
+          <li><strong>狀態管理庫：</strong>Redux/Zustand/Pinia 等，適合大型應用。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>聽過 React batch update 嗎？</summary>
+      <div class="answer">
+        <p>React 會把同一事件中的多次 state 更新<strong>合併成一次重渲染</strong>，減少不必要的渲染、提升效能。React 18 起，連 setTimeout、Promise 等非同步情境也<strong>自動批次（automatic batching）</strong>。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 prop drilling？如何避免？</summary>
+      <div class="answer">
+        <p>prop drilling 指資料需要<strong>層層往下傳</strong>經過許多中間元件（即使中間元件用不到），造成維護困難。避免方式：<strong>Context API</strong>、<strong>狀態管理庫</strong>、或<strong>重構元件結構</strong>（component composition、children）。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Context 和 Redux 的差別？可以用 Context 取代 Redux 嗎？</summary>
+      <div class="answer">
+        <p><strong>Context</strong> 是「依賴注入 / 傳值」機制，適合<strong>低頻變動</strong>的全域資料（主題、語系、登入者）。<strong>Redux</strong> 是完整狀態管理，提供可預測的更新流程、middleware、devtools、時間旅行除錯，適合<strong>大型、高頻、複雜</strong>的狀態。</p>
+        <p>簡單情境可用 Context 取代 Redux；但 Context 值一變，所有消費者都重渲染，<strong>高頻更新</strong>時效能與可維護性不如 Redux（或 Zustand / Jotai）。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>要寫出好維護的 React code，需要注意哪些？</summary>
+      <div class="answer">
+        <p>遵循 <strong>SOLID</strong> 原則的精神：</p>
+        <ul>
+          <li><strong>S 單一職責：</strong>元件/hook 只做一件事，過大就拆。</li>
+          <li><strong>O 開放封閉：</strong>用 props/composition 擴充，而非改既有元件。</li>
+          <li><strong>L 里氏替換、I 介面隔離、D 依賴反轉。</strong></li>
+        </ul>
+        <p>實務：抽共用邏輯成 custom hook、保持 immutable、合理 memo、明確的型別與資料流、避免 prop drilling。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>用過 Redux 嗎？它要解決什麼問題？</summary>
+      <div class="answer">
+        <p>用過（含 Redux Toolkit）。Redux 解決<strong>大型應用的狀態管理複雜性</strong>與<strong>跨元件/跨層級通訊</strong>——不必把資料一層層往下傳。它提供<strong>單一資料來源、可預測的單向資料流（action → reducer → store）</strong>，便於測試與除錯。代價是有些樣板程式碼（RTK 已大幅簡化）。</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 11. Vue ============ -->
+  <section id="c-vue">
+    <h2 class="cat"><span class="ic"></span>Vue</h2>
+
+    <details class="qa">
+      <summary>（實戰）Options API 重構成 Composition API 的經驗？</summary>
+      <div class="answer">
+        <p>我主導過把舊有 <strong>Options API 重構為 Composition API</strong>。Composition API 用 <code>setup</code> / <code>&lt;script setup&gt;</code> 把<strong>同一個關注點的邏輯聚在一起</strong>（不再散落在 data/methods/computed），並能抽成可複用的 <strong>composables（use 開頭函式）</strong>。重構後程式碼更清晰、邏輯複用更容易，團隊維護成本明顯下降。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>雙向數據綁定的原理？</summary>
+      <div class="answer">
+        <p><strong>Vue 2：</strong>用 <code>Object.defineProperty</code> 對 data 的每個屬性設 getter/setter，做依賴收集與派發更新。</p>
+        <p><strong>Vue 3：</strong>改用 <strong>Proxy</strong> 代理整個物件，能攔截屬性的新增/刪除、支援陣列與巢狀，效能與覆蓋度都更好。<code>v-model</code> 本質是 <code>:value</code> + <code>@input</code> 的語法糖。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Vue 2 給物件新增屬性會發生什麼？如何解決？$set 原理？</summary>
+      <div class="answer">
+        <p>Vue 2 因為用 <code>Object.defineProperty</code> 在初始化時才設 getter/setter，<strong>後加的新屬性不是響應式</strong>，畫面不會更新。解法：用 <code>Vue.set(obj, key, value)</code> / <code>this.$set(...)</code>，它會對新屬性<strong>補上響應式定義並觸發更新</strong>。Vue 3 用 Proxy 後此問題不存在。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Vue 打包優化方案？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>路由懶載入</strong>（動態 import）+ 程式碼分割。</li>
+          <li>元件按需載入、第三方 UI 庫 tree-shaking。</li>
+          <li>圖片壓縮、資源 CDN。</li>
+          <li>開啟 Gzip/Brotli 壓縮。</li>
+          <li>用 Vite/Rollup 做 build 分析（visualizer）找出大包。</li>
+          <li>避免重複打包（externals / 共用 chunk）。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>引用 Pinia 資料時前面的 <code>...</code> 是什麼意思？</summary>
+      <div class="answer">
+        <p>那是<strong>展開運算子</strong>，搭配 <code>storeToRefs(store)</code> 或 <code>mapState</code> 把 store 的多個 state/getter 一次展開到元件中使用。注意：解構 store 會<strong>失去響應式</strong>，所以要用 <code>storeToRefs</code> 保留響應性；而 actions（方法）則可直接解構。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Vuex 與 Pinia 的區別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>更簡潔：</strong>Pinia <strong>沒有 mutations</strong>，直接在 action 改 state；API 更貼近 Composition。</li>
+          <li><strong>TypeScript 友善：</strong>Pinia 型別推導開箱即用。</li>
+          <li><strong>模組化：</strong>Pinia 天生多 store、扁平，不需 Vuex 的 modules 巢狀。</li>
+          <li>Pinia 是 Vue 官方推薦、Vue 3 的預設狀態管理方案。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Vue 怎麼做權限管理？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>路由層：</strong>路由 meta 標記所需權限，搭配<strong>全域路由守衛（beforeEach）</strong>判斷是否放行；登入後依角色<strong>動態產生可存取路由（addRoute）</strong>。</li>
+          <li><strong>畫面層：</strong>用<strong>自訂指令 <code>v-permission</code></strong> 或條件渲染控制按鈕/選單顯示。</li>
+          <li><strong>後端把關：</strong>前端權限只是體驗，真正權限仍要後端驗證。</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 12. React + Vue 共同 ============ -->
+  <section id="c-frameworks">
+    <h2 class="cat"><span class="ic"></span>框架共通 / 選型</h2>
+
+    <details class="qa">
+      <summary>React 和 Vue 的區別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>模板：</strong>React 用 <strong>JSX</strong>（JS 為主）；Vue 用<strong>模板語法</strong>（也支援 JSX）。</li>
+          <li><strong>響應式：</strong>React 靠 setState + 重渲染 + diff；Vue 靠 Proxy/getter-setter 的細粒度響應式追蹤。</li>
+          <li><strong>心智模型：</strong>React「一切是函式、手動最佳化（memo）」；Vue 自動追蹤依賴、API 較規範。</li>
+          <li>兩者都用 Virtual DOM、元件化、單向資料流（Vue 的 v-model 是雙向語法糖）。</li>
+        </ul>
+        <p>我兩者都實際主導過專案，能依團隊與場景選型。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>為什麼選擇你現在用的框架？</summary>
+      <div class="answer">
+        <p>主要是<strong>生態圈完善、社群與人才多</strong>，遇到問題容易找到解法與資源；UI 庫、狀態管理、工具鏈都成熟。實務上我會依<strong>團隊既有技術棧與專案需求</strong>選擇——現職車隊系統用 Vue 3，先前後台多用 React。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>用過其他 JS 框架嗎？跟現在用的差別？</summary>
+      <div class="answer">
+        <p>用過 <strong>Vue（2 與 3）、React，以及一點 Angular</strong>。最大差別在於模板與心智模型：React 以 JSX/函式為核心、需手動最佳化；Vue 模板語法直覺、響應式自動追蹤；Angular 較完整框架、TypeScript 與 DI 為核心、學習曲線較陡。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary><code>&lt;Link&gt;</code> 和 <code>&lt;a&gt;</code> 有什麼區別？</summary>
+      <div class="answer">
+        <p><code>&lt;Link&gt;</code> 是 react-router-dom（Vue 是 <code>&lt;router-link&gt;</code>）的元件，<strong>頁面無刷新跳轉（SPA）</strong>；<code>&lt;a&gt;</code> 是原生標籤，會<strong>整頁刷新重載</strong>。<code>&lt;Link&gt;</code> 渲染後其實也是 <code>&lt;a&gt;</code>，但內部用 History API 跳轉並 <code>preventDefault()</code> 攔截了原生行為，避免刷新。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>有用過 Webpack 嗎？它解決什麼？</summary>
+      <div class="answer">
+        <p>用過。Webpack 是<strong>模組打包工具</strong>：把 JS/CSS/圖片等各種資源視為模組，依依賴關係打包，並透過 loader（轉譯，如 babel/sass-loader）與 plugin（額外功能，如壓縮、HMR）處理。解決了瀏覽器模組化、相依管理、轉譯與最佳化（code splitting、tree-shaking）等問題。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Vite 是什麼？為什麼要用？跟 Webpack 的區別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>開發伺服器：</strong>Vite 用瀏覽器原生 <strong>ES Module + esbuild</strong>，啟動幾乎即時、HMR 快；Webpack 需先打包整包，專案大時啟動慢。</li>
+          <li><strong>生產建置：</strong>Vite 用 Rollup 打包。</li>
+          <li><strong>設定：</strong>Vite 開箱即用、設定精簡；Webpack 彈性大但設定繁瑣。</li>
+        </ul>
+        <p>它解決了大型專案 dev server 啟動與熱更新慢的痛點。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>平常寫 code 有用 linter 嗎？用哪個？</summary>
+      <div class="answer">
+        <p>有。用 <strong>ESLint</strong> 檢查潛在 bug 與規範、<strong>Prettier</strong> 統一格式，並搭配 <strong>Husky</strong> 在 commit 前自動跑（lint-staged）。簡記：<strong>Prettier 管風格、ESLint 抓問題</strong>。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 SPA？優缺點？</summary>
+      <div class="answer">
+        <p>Single-Page Application：整個應用在<strong>單一頁面</strong>內以 JS 動態切換內容、不整頁重載。</p>
+        <p><strong>優點：</strong>體驗流暢、前後端分離、切頁快。</p>
+        <p><strong>缺點：</strong>首屏 JS 大、首次載入較慢；<strong>SEO 較差</strong>（解法見 SSR / 預渲染）。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 SSR？怎麼解決 SPA 的 SEO 與首屏問題？</summary>
+      <div class="answer">
+        <p><strong>SSR（伺服器端渲染）</strong>在伺服器產生完整 HTML 再送給瀏覽器，讓搜尋引擎能正確索引、首屏更快，之後再 hydration 接手互動（SSR + CSR）。框架如 Next.js（React）、Nuxt（Vue）。</p>
+        <p>SPA 的 JS 過大問題則用<strong>懶載入、code splitting、壓縮</strong>等技術改善。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Canvas 和 WebGL 的差異？有用過 Three.js 嗎？</summary>
+      <div class="answer">
+        <p><strong>Canvas</strong> 適合 2D 繪圖與簡單動畫；<strong>WebGL</strong> 是基於 GPU 的高效能 3D 渲染 API。<strong>Three.js</strong> 是封裝 WebGL 的 3D 函式庫，降低門檻。我目前在學 Three.js → React Three Fiber (R3F) → Drei，應用場景含 3D 資料視覺化、車隊路徑/倉儲視覺化、VR/AR、互動裝置。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>知道 WebRTC 嗎？</summary>
+      <div class="answer">
+        <p>WebRTC（Web Real-Time Communication）是開源技術，讓瀏覽器/App <strong>點對點即時傳輸音訊、視訊與資料</strong>，不需外掛。應用：視訊會議（Google Meet/Zoom）、語音通話、即時客服、線上遊戲資料交換、遠距教學。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>知道 WebAssembly 嗎？</summary>
+      <div class="answer">
+        <p>WebAssembly（Wasm）是一種可在瀏覽器執行的<strong>低階位元組碼</strong>，讓 C/C++/Rust 等語言編譯後在 Web 上<strong>接近原生效能</strong>執行。適用：遊戲、影像/影音編解碼、科學計算、大量運算的資料處理，以及把既有原生應用移植到 Web。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>styled-components vs CSS Modules？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>styled-components（CSS-in-JS）：</strong>樣式與邏輯緊密結合、支援<strong>動態樣式（依 props）</strong>、元件化開發。</li>
+          <li><strong>CSS Modules：</strong>樣式與邏輯<strong>清楚分離</strong>、用傳統 CSS、自動作用域避免命名衝突、無 runtime 成本。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>知道 Tailwind 嗎？優缺點？</summary>
+      <div class="answer">
+        <p><strong>優點：</strong>utility class 快速開發、設計一致、可由設定檔高度客製、易維護（樣式跟結構在一起）、內建 RWD 工具。</p>
+        <p><strong>缺點：</strong>初學有學習曲線、class 名冗長影響可讀性、需建置工具支援；複雜元件仍需自行抽象。</p>
+        <p>我在多個專案實際使用，後台與 POC 介面開發效率明顯提升。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>有用過哪些 CSS 框架 / UI 庫？</summary>
+      <div class="answer">
+        <p>CSS 框架：<strong>Bootstrap、Tailwind CSS</strong>。UI 元件庫：<strong>Ant Design 3/4/5（含 ProComponents）、Element UI / Element Plus、Mint UI</strong>。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 Monorepo？你怎麼用？</summary>
+      <div class="answer">
+        <p>Monorepo 是把多個關聯專案/套件放在<strong>同一個 repo</strong> 管理（用 pnpm workspace / Turborepo / Nx 等）。好處：<strong>共用型別與工具鏈、跨套件原子化提交、依賴一致</strong>。我在現職的車隊系統用 Monorepo 與 NestJS 後端共構，前後端共享 ts-rest 合約與型別，能<strong>同步迭代</strong>、不再因介面定義反覆對齊。</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 13. 版本控制 ============ -->
+  <section id="c-git">
+    <h2 class="cat"><span class="ic"></span>版本控制（Git）</h2>
+
+    <details class="qa">
+      <summary>請說明你使用 Git 版控的流程？</summary>
+      <div class="answer">
+        <p>開分支（feature / fix）→ 開發提交 → <strong>rebase</strong> 同步主幹、整理 commit → 開 <strong>PR</strong> → code review → <strong>merge</strong>。採 Git-flow 概念，commit 訊息語意化。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>最近在 Git 上學到什麼？rebase 與 squash？</summary>
+      <div class="answer">
+        <p>更熟練 <code>git rebase</code>（讓分支基於最新主幹、線性歷史）與<strong>壓縮 commit（squash）</strong>——把多個瑣碎 commit 合併成一個有意義的提交，讓歷史更乾淨、review 更好讀。也注意 rebase 不要對<strong>已共享的公開分支</strong>使用，避免改寫他人歷史。</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 14. 網路與瀏覽器 ============ -->
+  <section id="c-network">
+    <h2 class="cat"><span class="ic"></span>網路與瀏覽器</h2>
+
+    <details class="qa">
+      <summary>有實作過登入功能嗎？怎麼做的？</summary>
+      <div class="answer">
+        <p>有。流程大致：表單送出帳密 → 後端驗證後回傳 <strong>token（JWT）</strong> → 前端儲存（HttpOnly Cookie 較安全，或視情況 localStorage）→ 後續請求帶上 token（Axios 攔截器統一加 Authorization header）→ 路由守衛 / ProtectedRoute 控制未登入導向；token 過期用 <strong>refresh token</strong> 換新。前端權限只是體驗，最終仍由後端把關。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Cookie、localStorage、sessionStorage 的差別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>Cookie：</strong>容量小（~4KB），會<strong>自動隨 HTTP 請求夾帶</strong>，適合身分辨識；可設 Expires/Max-Age，預設關閉瀏覽器失效。</li>
+          <li><strong>localStorage：</strong>容量大（~5MB），<strong>永久保存</strong>直到手動/程式清除；適合長期、跨頁資料。</li>
+          <li><strong>sessionStorage：</strong>容量同 local，<strong>關閉分頁/瀏覽器即清除</strong>；適合單次工作階段的暫存（如表單暫存）。</li>
+        </ul>
+        <p>local/session 不會自動隨請求送出。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>知道哪些 HTTP methods？</summary>
+      <div class="answer">
+        <p>常見：<strong>GET</strong>（查詢）、<strong>POST</strong>（新增/提交）、<strong>PUT</strong>（整體替換）、<strong>PATCH</strong>（部分更新）、<strong>DELETE</strong>（刪除）。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>GET 與 POST 的差異？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>用途：</strong>GET 取得資料；POST 提交/建立資料。</li>
+          <li><strong>傳輸：</strong>GET 參數在 URL（可見、有長度限制）；POST 在 request body（適合大量/敏感資料）。</li>
+          <li><strong>安全/快取：</strong>GET 可被快取、留在歷史紀錄；POST 不會。</li>
+          <li><strong>冪等性：</strong>GET 冪等、無副作用、可安全重試；POST 非冪等，重送可能造成重複資料。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>PUT 與 PATCH 的差異？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>PUT：</strong><strong>整體替換</strong>資源，需提供完整欄位；<strong>冪等</strong>。</li>
+          <li><strong>PATCH：</strong><strong>部分更新</strong>，只傳要改的欄位；是否冪等視實作而定。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 CORS？如何解決跨域問題？</summary>
+      <div class="answer">
+        <p>瀏覽器的<strong>同源政策</strong>會阻擋不同源（協定/網域/埠不同）的資源存取。<strong>CORS（跨來源資源共用）</strong>是讓伺服器透過回應 HTTP header（如 <code>Access-Control-Allow-Origin</code>）告訴瀏覽器「允許某來源存取」。</p>
+        <p><strong>解法：</strong>最直接是請<strong>後端設定 CORS header</strong>；開發階段也可用 <strong>proxy（dev server 代理）</strong>繞過；或同源部署。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>HTTP 狀態碼 304 代表什麼？是好還是不好？</summary>
+      <div class="answer">
+        <p>304 Not Modified 表示資源<strong>未變更</strong>，瀏覽器可直接用<strong>快取</strong>，伺服器不需重傳內容。這是良好的<strong>效能最佳化</strong>，能減少頻寬與載入時間，通常是好事。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>請解釋事件委派（delegation）、捕獲、冒泡？</summary>
+      <div class="answer">
+        <p>事件流：<strong>捕獲（外→內）→ 目標 → 冒泡（內→外）</strong>。</p>
+        <p><strong>事件委派</strong>利用冒泡：把監聽器掛在<strong>共同父層</strong>，靠 <code>event.target</code> 判斷實際觸發的子元素。好處：少綁很多監聽器、<strong>動態新增的子元素也能被處理</strong>、省記憶體。</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 15. 效能優化 ============ -->
+  <section id="c-perf">
+    <h2 class="cat"><span class="ic"></span>效能優化</h2>
+
+    <details class="qa">
+      <summary>如何加快頁面載入速度？（總覽）</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>減少請求：</strong>合併檔案、用 sprite/icon font、移除不必要資源。</li>
+          <li><strong>壓縮：</strong>開啟 Gzip/Brotli；壓縮 JS/CSS/圖片（用 WebP、適配尺寸）。</li>
+          <li><strong>快取：</strong>瀏覽器快取（Cache-Control）、CDN、Service Worker。</li>
+          <li><strong>延後載入：</strong>圖片/元件 lazy loading、JS code splitting、按需載入。</li>
+          <li><strong>資源順序：</strong>CSS 放 <code>&lt;head&gt;</code>、JS 放底部或用 async/defer。</li>
+          <li><strong>協定：</strong>HTTP/2、HTTP/3 多路複用。</li>
+          <li><strong>預載：</strong><code>&lt;link rel="preload"&gt;</code> 關鍵資源。</li>
+          <li><strong>減少 DOM 複雜度</strong>、降低 reflow/repaint。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>後端有一大包資料（如 5MB 文字），如何縮短使用者等待？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>分頁（pagination）：</strong>分批請求，先顯示部分。</li>
+          <li><strong>懶載入 / 無限捲動：</strong>用 IntersectionObserver 按需載入。</li>
+          <li><strong>串流（streaming）：</strong>用 <code>fetch</code> 的 <code>response.body.getReader()</code> 邊收邊處理。</li>
+          <li><strong>壓縮：</strong>後端 Gzip 傳輸，前端解壓。</li>
+          <li><strong>虛擬列表（virtualization）：</strong>只渲染可視範圍。</li>
+          <li><strong>快取 / 背景預載 / 顯示進度條</strong>降低等待焦慮。</li>
+          <li>與後端協商<strong>精簡資料結構</strong>或用更緊湊格式。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>CSS 放前面、JS 放後面對效能的影響？</summary>
+      <div class="answer">
+        <p><strong>CSS 放 <code>&lt;head&gt;</code>：</strong>渲染前先備妥樣式，避免無樣式內容閃爍（FOUC），讓畫面正確、快速呈現。</p>
+        <p><strong>JS 放 <code>&lt;/body&gt;</code> 前：</strong>JS 載入/執行會<strong>阻塞 HTML 解析</strong>，放底部可讓內容先顯示；或用 <code>async</code>（下載完即執行）/ <code>defer</code>（HTML 解析完依序執行）。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>本機載入 JS 與 CDN 載入的差異？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>本機：</strong>穩定可控、易除錯與版本管理；但跨地區使用者載入可能較慢、無法共享快取。</li>
+          <li><strong>CDN：</strong>全球節點就近載入、頻寬大、熱門庫可能已被使用者快取（共享）；但依賴第三方（中斷/被封鎖風險）、控制與隱私需留意。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>打包成單一檔 vs 分開載入的差異與效能影響？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>打包單檔：</strong>請求數少、利於快取與壓縮（tree-shaking）；但首次需下載整包，<strong>首屏較慢</strong>，更新後整包失效。</li>
+          <li><strong>分開/按需載入：</strong>透過 code splitting + lazy loading，<strong>只載入當前所需</strong>，首屏快；但請求數增加、快取管理較細。</li>
+        </ul>
+        <p>實務上<strong>兩者結合</strong>：核心打包、其餘按路由/功能分割懶載入。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>遇到網頁效能問題，你有什麼策略？</summary>
+      <div class="answer">
+        <ol>
+          <li><strong>量測：</strong>用 Chrome DevTools / Lighthouse / WebPageTest，看 FCP、LCP、FID/INP、CLS。</li>
+          <li><strong>定位瓶頸：</strong>是網路、JS 執行、渲染（reflow/repaint）還是資源過大。</li>
+          <li><strong>對症優化：</strong>資源壓縮、快取、懶載入、減少請求、最佳化關鍵 CSS、減少重繪重排、用 CSS 動畫取代 JS 動畫。</li>
+          <li><strong>持續驗證：</strong>A/B 測試、定期 review，持續迭代。</li>
+        </ol>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>如何減少 reflow（重排）與 repaint（重繪）？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>批次 DOM 操作：</strong>用 DocumentFragment、一次性更新，避免在迴圈中讀寫交錯。</li>
+          <li><strong>避免逐項改 style：</strong>改用 class 切換。</li>
+          <li><strong>用 transform / opacity 做動畫</strong>（走合成層，不觸發 reflow）。</li>
+          <li>避免頻繁讀取會強制同步佈局的屬性（offsetWidth 等）。</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 16. 設計方法 / 模式 ============ -->
+  <section id="c-design">
+    <h2 class="cat"><span class="ic"></span>設計方法 / 設計模式</h2>
+
+    <details class="qa">
+      <summary>什麼是 OOP？</summary>
+      <div class="answer">
+        <p>物件導向程式設計，把現實實體建模成<strong>物件</strong>（屬性 + 方法）。四大特性：<strong>封裝、繼承、多型、抽象</strong>。優點是結構清晰、易維護與擴充，適合複雜系統。例如動物園系統用 <code>Animal</code> 基底類別，<code>Lion</code>、<code>Elephant</code> 繼承並覆寫各自行為。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 MVC？優勢？</summary>
+      <div class="answer">
+        <p>MVC = Model（資料/邏輯）、View（畫面）、Controller（協調輸入與更新）。把應用<strong>分層解耦</strong>，各司其職。優勢：關注點分離、易測試與維護、利於分工。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>聽過 functional programming 嗎？</summary>
+      <div class="answer">
+        <p>函式式程式設計強調<strong>純函式</strong>（相同輸入恆得相同輸出、無副作用）、<strong>不可變資料</strong>、與<strong>函式組合</strong>（高階函式）。好處是程式更可預測、易測試與除錯。例如 <code>add</code>、<code>multiply</code> 都是純函式，再用高階函式組合成複雜運算。React 的純元件與 Redux reducer 都受 FP 影響。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 immutable / immutability？</summary>
+      <div class="answer">
+        <p>immutable 指物件建立後<strong>不可被改變</strong>，要更新就<strong>建立新副本</strong>而非改原值。好處：狀態可預測、容易做淺比較（React/Redux 依此判斷是否更新）、避免意外副作用。實作上用展開運算子、<code>Object.freeze</code>、或 Immer 等。</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 17. 資料結構與演算法 ============ -->
+  <section id="c-ds">
+    <h2 class="cat"><span class="ic"></span>資料結構與演算法</h2>
+
+    <details class="qa">
+      <summary>解釋 Stack 與 Queue，差別與應用場景？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>Stack（堆疊）：</strong>後進先出（LIFO）。應用：函式呼叫堆疊、瀏覽器上一頁、復原（undo）、運算式求值。</li>
+          <li><strong>Queue（佇列）：</strong>先進先出（FIFO）。應用：任務排程、訊息佇列、BFS、請求排隊處理。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>字串處理 / 型別轉換常見題</summary>
+      <div class="answer">
+        <p>常見可準備：反轉字串、判斷回文、字元計數、去重、找最長不重複子字串等；型別轉換注意 <code>Number()</code> / <code>parseInt()</code> 差異、隱式轉型（<code>+</code> 與字串、truthy/falsy）、<code>String()</code> 與模板字串。建議實際手寫幾題並能說明時間複雜度。</p>
+        <p class="ref">參考：字串處理 / 型別轉換筆記（HackMD、Vocus）</p>
+      </div>
+    </details>
+  </section>
+
+  </div><!-- /qaroot -->
+
+  <div class="noresult" id="noresult">找不到符合「<span id="kw"></span>」的題目，換個關鍵字試試。</div>
+
+</div>
+
+<div class="toTop" id="toTop" title="回到頂端">↑</div>
+
+<script>
+(function(){
+  var details = Array.prototype.slice.call(document.querySelectorAll('details.qa'));
+  var sections = Array.prototype.slice.call(document.querySelectorAll('section[id]'));
+  var search = document.getElementById('search');
+  var noresult = document.getElementById('noresult');
+  var kwOut = document.getElementById('kw');
+  var countEl = document.getElementById('count');
+
+  // build category nav
+  var nav = document.getElementById('nav');
+  sections.forEach(function(sec){
+    var h = sec.querySelector('h2.cat');
+    if(!h) return;
+    var a = document.createElement('a');
+    a.href = '#' + sec.id;
+    a.textContent = h.textContent.trim();
+    nav.appendChild(a);
+  });
+
+  countEl.textContent = '共 ' + details.length + ' 題';
+
+  // expand / collapse
+  document.getElementById('expandAll').onclick = function(){
+    details.forEach(function(d){ if(d.style.display!=='none') d.open = true; });
+  };
+  document.getElementById('collapseAll').onclick = function(){
+    details.forEach(function(d){ d.open = false; });
+  };
+
+  // search filter
+  function normalize(s){ return (s||'').toLowerCase(); }
+  var timer;
+  search.addEventListener('input', function(){
+    clearTimeout(timer);
+    timer = setTimeout(doFilter, 120);
+  });
+  function doFilter(){
+    var q = normalize(search.value.trim());
+    var visible = 0;
+    details.forEach(function(d){
+      var txt = normalize(d.textContent);
+      var match = !q || txt.indexOf(q) !== -1;
+      d.style.display = match ? '' : 'none';
+      if(match){ visible++; if(q) d.open = true; if(!q) d.open = false; }
+    });
+    // hide empty sections
+    sections.forEach(function(sec){
+      var any = sec.querySelectorAll('details.qa');
+      var shown = Array.prototype.some.call(any, function(d){ return d.style.display !== 'none'; });
+      sec.style.display = shown ? '' : 'none';
+    });
+    noresult.style.display = (q && visible === 0) ? 'block' : 'none';
+    kwOut.textContent = search.value;
+    countEl.textContent = q ? ('找到 ' + visible + ' 題') : ('共 ' + details.length + ' 題');
+  }
+
+  // back to top
+  var toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){
+    toTop.classList.toggle('show', window.scrollY > 400);
+  });
+  toTop.onclick = function(){ window.scrollTo({top:0, behavior:'smooth'}); };
+})();
+</script>
+
+</body>
+</html>

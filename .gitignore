@@ -1,0 +1,7 @@
+# 預設忽略所有檔案，只白名單允許要公開的檔案
+/*
+
+# 允許的檔案
+!.gitignore
+!README.md
+!index.html

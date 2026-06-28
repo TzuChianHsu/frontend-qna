@@ -2096,6 +2096,45 @@ getLength(123);    // ❌ number 沒有 length</code></pre>
         <p>用過（含 Redux Toolkit）。Redux 解決<strong>大型應用的狀態管理複雜性</strong>與<strong>跨元件/跨層級通訊</strong>——不必把資料一層層往下傳。它提供<strong>單一資料來源、可預測的單向資料流（action → reducer → store）</strong>，便於測試與除錯。代價是有些樣板程式碼（RTK 已大幅簡化）。</p>
       </div>
     </details>
+
+    <details class="qa">
+      <summary>Redux 怎麼處理非同步？Thunk、Saga、Redux Toolkit 的關係？</summary>
+      <div class="answer">
+        <p>Redux 本身只處理同步的 action → reducer，非同步要靠 <strong>middleware</strong>：</p>
+        <ul>
+          <li><strong>Redux Thunk：</strong>讓 action 可以是函式，在裡面做 API 呼叫再 dispatch；簡單、最常用。</li>
+          <li><strong>Redux Saga：</strong>用 generator 管理複雜的非同步流程（多步驟、可取消、競態控制），學習曲線較高，適合大型系統。</li>
+          <li><strong>Redux Toolkit（RTK）：</strong>官方推薦，<strong>已內建 Thunk</strong>（<code>createAsyncThunk</code>），大幅減少樣板，新專案幾乎都用它。</li>
+        </ul>
+        <div class="tip"><b>對照 React Query：</b>React Query／SWR 本來就是為非同步資料設計，內建快取/重試/去重，所以用它取資料時通常<strong>不需要</strong>再寫 Thunk/Saga。</div>
+      </div>
+    </details>
+
+    <details class="qa" data-core="1">
+      <summary>React Query 與 SWR 差在哪？什麼時候各用哪個？</summary>
+      <div class="answer">
+        <p>兩者都在解決<strong>伺服器狀態（server state）</strong>的擷取與快取——自動處理 loading／error、重新驗證、視窗聚焦/重新連線時更新。差別在「完整度」：</p>
+        <ul>
+          <li><strong>SWR：</strong>輕量，核心是 stale-while-revalidate（先回快取、背景再驗證）。專注 GET，mutation／快取無效化要自己處理，無官方 DevTools。</li>
+          <li><strong>React Query（TanStack Query）：</strong>功能完整——內建 <code>useMutation</code>、<code>queryClient.invalidateQueries()</code> 快取無效化、樂觀更新、分頁/無限滾動、重試/輪詢，並有 DevTools 可視化快取。</li>
+        </ul>
+        <div class="tip"><b>怎麼選：</b>個人頁/簡單專案（尤其 Next.js）→ SWR 就夠；中大型後台、CRUD 多、要快取控制與除錯 → React Query。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>React Query／SWR、Zustand、Ahooks 各自定位是什麼？怎麼搭？</summary>
+      <div class="answer">
+        <p>關鍵是分清<strong>伺服器狀態</strong>與<strong>用戶端狀態</strong>，工具各司其職：</p>
+        <ul>
+          <li><strong>React Query / SWR（Server State）：</strong>管理來自後端 API 的資料——快取、重新抓取、mutation。不要把這類資料硬塞進全域 store 自己同步。</li>
+          <li><strong>Zustand（Client State）：</strong>管理前端本地 UI 狀態，如表單值、選單開關、計數器、彈窗；輕量、API 直覺。</li>
+          <li><strong>Ahooks：</strong>一組 React hooks 工具庫（<code>useRequest</code>、<code>useDebounce</code>、<code>useLocalStorage</code> 等），可搭配上面任一方案輔助。</li>
+        </ul>
+        <p>實務常見組合：<strong>React Query 管 server state + Zustand 管 UI state</strong>，兩者互不重疊，資料流最乾淨。</p>
+      </div>
+    </details>
+
     <details class="qa">
       <summary>遇過 Next.js 的 Hydration 問題嗎？成因與解法？</summary>
       <div class="answer">
@@ -2520,6 +2559,14 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
     </details>
 
     <details class="qa">
+      <summary>HMR（熱模組替換）是什麼？原理是什麼？</summary>
+      <div class="answer">
+        <p><strong>HMR（Hot Module Replacement）</strong>讓你改完程式碼後，<strong>不用整頁重整</strong>就能看到變更，且<strong>保留當前狀態</strong>（如表單輸入、元件 state 不會被重置）。</p>
+        <p><strong>原理：</strong>Dev Server 監聽檔案變化 → 只重新編譯變動的 module → 透過 WebSocket 通知瀏覽器 → 瀏覽器即時替換掉那個 module。Webpack Dev Server 與 Vite 都支援，Vite 因走原生 ESM，HMR 更快。</p>
+      </div>
+    </details>
+
+    <details class="qa">
       <summary>平常寫 code 有用 linter 嗎？用哪個？</summary>
       <div class="answer">
         <p>有。用 <strong>ESLint</strong> 檢查潛在 bug 與規範、<strong>Prettier</strong> 統一格式，並搭配 <strong>Husky</strong> 在 commit 前自動跑（lint-staged）。簡記：<strong>Prettier 管風格、ESLint 抓問題</strong>。</p>
@@ -2540,6 +2587,21 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
       <div class="answer">
         <p><strong>SSR（伺服器端渲染）</strong>在伺服器產生完整 HTML 再送給瀏覽器，讓搜尋引擎能正確索引、首屏更快，之後再 hydration 接手互動（SSR + CSR）。框架如 Next.js（React）、Nuxt（Vue）。</p>
         <p>SPA 的 JS 過大問題則用<strong>懶載入、code splitting、壓縮</strong>等技術改善。</p>
+      </div>
+    </details>
+
+    <details class="qa" data-core="1">
+      <summary>前後端分離的好處是什麼？有什麼缺點？</summary>
+      <div class="answer">
+        <p>前端專注畫面與互動、後端專注資料與邏輯，雙方透過 <strong>API（REST／GraphQL）</strong> 溝通。</p>
+        <p><strong>好處：</strong></p>
+        <ul>
+          <li><strong>開發效率：</strong>可並行開發（前端先用 mock API），不互相卡；各自獨立部署。</li>
+          <li><strong>維護性：</strong>責任分離、問題好定位；前後端技術棧可各自升級。</li>
+          <li><strong>重用與擴展：</strong>同一套 API 可同時供 Web、App、後台使用，適合微服務。</li>
+          <li><strong>體驗：</strong>搭配 SPA + 前端快取（SWR／React Query）切換更流暢。</li>
+        </ul>
+        <p><strong>缺點與解法：</strong>需先定義 API 規格（用 Swagger／OpenAPI）、會有 CORS（設 proxy 或 header）、部署多一層（CI/CD 自動化）、API 需驗證（JWT／OAuth）。</p>
       </div>
     </details>
 

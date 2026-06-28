@@ -1296,6 +1296,36 @@ fn(); // 2  ← a 的狀態被記住</code></pre>
         <p>早期用 <code>XMLHttpRequest</code>，現在多用 <code>fetch</code> 或 <strong>Axios</strong>；傳輸格式雖名為 XML，實務上幾乎都用 <strong>JSON</strong>。</p>
       </div>
     </details>
+    <details class="qa">
+      <summary>多個非同步任務有不同延遲，如何「依原本順序」印出結果並處理錯誤？</summary>
+      <div class="answer">
+        <p>題目：每個 task 用 <code>setTimeout</code> 模擬不同延遲，<code>shouldError</code> 為 true 時要 reject。要求<strong>不論誰先完成，都依陣列原順序輸出</strong>，且錯誤的那筆印成 <code>error</code>。</p>
+        <pre><code>const tasks = [
+  { id: "1", delay: 100 },
+  { id: "2", delay: 50 },
+  { id: "3", delay: 30, shouldError: true },
+];</code></pre>
+        <p><strong>陷阱：</strong>若直接並行、誰先完成就先印，會變成依「完成順序」＝ <code>3, 2, 1</code>（30ms 最先回來）。而且<strong>把會 reject 的 promise 先發出去、卻還沒 await 到它</strong>（還在等 100ms 的 task1），那 30ms 的 rejection 在中間會變成 <strong>unhandled rejection</strong>，Node 會直接終止。</p>
+        <p><strong>正解：</strong>用 <code>Promise.allSettled</code> —— 並行執行（總耗時≈最大 delay 100ms，非序列 180ms），<strong>結果陣列保持輸入順序</strong>，且每筆成敗都被收進結果、不會有 unhandled rejection。</p>
+        <pre><code>function run(task) {
+  return new Promise((res, rej) =&gt;
+    setTimeout(() =&gt; task.shouldError ? rej() : res(), task.delay));
+}
+
+async function runInOrder(tasks) {
+  const results = await Promise.allSettled(tasks.map(run)); // 並行，結果保序
+  results.forEach((r, i) =&gt; {
+    const t = tasks[i];
+    if (r.status === 'fulfilled')
+      console.log(`task ${t.id}, delay time ${t.delay}ms`);
+    else
+      console.log(`task ${t.id} error, delay time ${t.delay}ms`);
+  });
+}
+// 輸出：task 1, delay time 100ms / task 2, delay time 50ms / task 3 error, delay time 30ms</code></pre>
+        <div class="tip"><b>延伸：</b>若要「序列執行」（前一個完成才跑下一個）則用 <code>for...of</code> + <code>await run(t)</code>，但總耗時會是各 delay 相加（180ms）。要並行又保序就用 <code>allSettled</code>；若硬要「先全部發出再依序 await」，記得<strong>立刻為每個 promise 接上 <code>.catch</code></strong>，否則同樣會 unhandled rejection。</div>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 9. TypeScript ============ -->
@@ -2242,9 +2272,41 @@ document.querySelectorAll('img[data-src]').forEach(img =&gt; io.observe(img));</
         <p class="ref">參考：字串處理 / 型別轉換筆記（HackMD、Vocus）</p>
       </div>
     </details>
+    <details class="qa">
+      <summary>攤平巢狀陣列（flatten）：<code>[1,[2,[3,[4]]]]</code> → <code>[1,2,3,4]</code></summary>
+      <div class="answer">
+        <p>把任意深度的巢狀陣列攤平成一維。幾種寫法：</p>
+        <pre><code>const arr = [1, [2, [3, [4]]]];
+
+// 1) 原生最簡單：深度給 Infinity
+arr.flat(Infinity);                    // [1,2,3,4]
+
+// 2) 遞迴（reduce）：遇到陣列就遞迴攤平再 concat
+const flatten = a =&gt; a.reduce(
+  (acc, x) =&gt; acc.concat(Array.isArray(x) ? flatten(x) : x), []);
+
+// 3) 迭代（用 stack）：避免遞迴過深爆 stack
+function flattenIter(arr) {
+  const stack = [...arr], res = [];
+  while (stack.length) {
+    const next = stack.pop();
+    if (Array.isArray(next)) stack.push(...next); // 攤一層再丟回去
+    else res.push(next);
+  }
+  return res.reverse();                 // pop 是從尾端，最後要反轉
+}</code></pre>
+        <p>LeetCode 原題（<em>Flatten Deeply Nested Array</em>）其實多一個 <code>depth</code> 參數，只攤平到第 n 層：</p>
+        <pre><code>function flat(arr, depth) {
+  return arr.reduce((acc, x) =&gt;
+    acc.concat(Array.isArray(x) &amp;&amp; depth &gt; 0 ? flat(x, depth - 1) : x), []);
+}
+// flat([1,[2,[3,[4]]]], 1) → [1, 2, [3, [4]]]</code></pre>
+        <div class="tip"><b>面試重點：</b>能講出「原生 <code>flat(Infinity)</code> / 遞迴 / 迭代(stack)」三種，並說明<strong>遞迴在超深陣列可能爆 call stack</strong>、迭代版較安全；以及 <code>depth</code> 控制攤平層數，就很完整。</div>
+      </div>
+    </details>
   </section>
 
-  <!-- ============ 17. SEO ============ -->
+  <!-- ============ 18. SEO ============ -->
   <section id="c-seo">
     <h2 class="cat"><span class="ic"></span>SEO</h2>
 

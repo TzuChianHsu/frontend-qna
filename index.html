@@ -979,7 +979,7 @@ watchEffect(() =&gt; console.log(count.value, name.value));</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>為什麼要使用 HTML 語意化標籤？優點是什麼？</summary>
       <div class="answer">
         <p>語意化標籤（如 <code>&lt;header&gt;</code>、<code>&lt;nav&gt;</code>、<code>&lt;main&gt;</code>、<code>&lt;article&gt;</code>）能<strong>正確表達網頁內容的含義</strong>。優點：</p>
@@ -1050,7 +1050,7 @@ watchEffect(() =&gt; console.log(count.value, name.value));</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>&lt;script&gt; 的 async 與 defer 有什麼不同？</summary>
       <div class="answer">
         <p>三種載入方式影響「下載」與「執行」時機（HTML 解析是否被阻塞）：</p>
@@ -1093,7 +1093,7 @@ watchEffect(() =&gt; console.log(count.value, name.value));</code></pre>
   <section id="c-css">
     <h2 class="cat"><span class="ic"></span>CSS</h2>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>CSS Specificity（優先級）怎麼算？</summary>
       <div class="answer">
         <p>由高到低大致為：</p>
@@ -1102,7 +1102,7 @@ watchEffect(() =&gt; console.log(count.value, name.value));</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>box-sizing 的 content-box 和 border-box 差別？預設值？</summary>
       <div class="answer">
         <ul>
@@ -1169,7 +1169,7 @@ watchEffect(() =&gt; console.log(count.value, name.value));</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>Flexbox 怎麼使用？常用哪些屬性？</summary>
       <div class="answer">
         <p>容器設 <code>display:flex</code>，常用屬性：</p>
@@ -1180,7 +1180,7 @@ watchEffect(() =&gt; console.log(count.value, name.value));</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>水平垂直置中的不同方法？</summary>
       <div class="answer">
         <ul>
@@ -1192,7 +1192,7 @@ watchEffect(() =&gt; console.log(count.value, name.value));</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>position 有哪些屬性值？</summary>
       <div class="answer">
         <ul>
@@ -1263,7 +1263,7 @@ watchEffect(() =&gt; console.log(count.value, name.value));</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>display:none、visibility:hidden、opacity:0 差在哪？</summary>
       <div class="answer">
         <ul>
@@ -1287,14 +1287,14 @@ watchEffect(() =&gt; console.log(count.value, name.value));</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>什麼是 hoisting（提升）？</summary>
       <div class="answer">
         <p>JS 在執行前會把<strong>宣告</strong>提升到作用域頂端。<code>var</code> 宣告會被提升並初始化為 <code>undefined</code>；函式宣告（function declaration）整個被提升、可在定義前呼叫。<code>let</code>/<code>const</code> 雖也被提升，但會進入<strong>暫時死區（TDZ）</strong>，宣告前使用會報錯。</p>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>什麼是 event loop？微任務 vs 宏任務？</summary>
       <div class="answer">
         <p>JS 是<strong>單執行緒</strong>，靠 event loop 處理非同步。執行順序：<strong>同步程式碼</strong> → 清空所有<strong>微任務（microtask）</strong> → 取一個<strong>宏任務（macrotask）</strong> → 再清微任務…循環。</p>
@@ -1306,7 +1306,7 @@ watchEffect(() =&gt; console.log(count.value, name.value));</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>setTimeout、Promise、同步 console.log 的輸出順序？</summary>
       <div class="answer">
         <ul>
@@ -1372,7 +1372,7 @@ console.log('7');
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>不同情況下 this 的指向？</summary>
       <div class="answer">
         <ul>
@@ -1417,14 +1417,14 @@ bound('Hi'); // 'Hi, Alex'</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>什麼是原型鏈（prototype chain）？</summary>
       <div class="answer">
         <p>原型本身也是物件、也有自己的原型。存取物件屬性時，若自身沒有，會往它的原型找，找不到再往上一層原型找，直到找到或到達 <code>null</code> 為止——這條路徑就是<strong>原型鏈</strong>，終點是 null。它是 JS 繼承的核心機制。</p>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>什麼是閉包（closure）？用途是什麼？</summary>
       <div class="answer">
         <p>閉包是「<strong>函式 + 其被宣告時的詞法作用域環境</strong>」的組合。白話說：內部函式能存取並<strong>記住</strong>外部函式的變數，即使外部函式已執行完畢。</p>
@@ -1439,7 +1439,7 @@ fn(); // 2  ← a 的狀態被記住</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>Promise 熟不熟？Promise vs async/await 差別？有什麼是其中一個做得到另一個做不到的？</summary>
       <div class="answer">
         <p>async/await 本質是 Promise 的<strong>語法糖</strong>，讓非同步用同步邏輯書寫、更易讀，並用 try/catch 處理錯誤。</p>
@@ -1465,7 +1465,7 @@ fn(); // 2  ← a 的狀態被記住</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>var、let、const 的差別？</summary>
       <div class="answer">
         <ul>
@@ -1505,7 +1505,7 @@ fn(); // 2  ← a 的狀態被記住</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>什麼是 event bubbling？知道 bubbling 與 capture 的傳遞流程嗎？</summary>
       <div class="answer">
         <p><strong>事件冒泡（bubbling）：</strong>事件從觸發的目標元素，<strong>由內往外</strong>傳到父層、祖父層直到最頂層。</p>
@@ -1522,7 +1522,7 @@ fn(); // 2  ← a 的狀態被記住</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>知道 debounce 嗎？debounce 與 throttle 的差異？</summary>
       <div class="answer">
         <ul>
@@ -1542,7 +1542,7 @@ fn(); // 2  ← a 的狀態被記住</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>請解釋淺拷貝與深拷貝？</summary>
       <div class="answer">
         <ul>
@@ -1559,7 +1559,7 @@ fn(); // 2  ← a 的狀態被記住</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>== 和 === 的差異？（順帶 Object.is）</summary>
       <div class="answer">
         <ul>
@@ -1577,7 +1577,7 @@ fn(); // 2  ← a 的狀態被記住</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>普通函式與箭頭函式的區別？</summary>
       <div class="answer">
         <ul>
@@ -1819,7 +1819,7 @@ fn('Hey');                  // 'Hey, Amy'</code></pre>
   <section id="c-ts">
     <h2 class="cat"><span class="ic"></span>TypeScript</h2>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>any vs unknown 的差別？</summary>
       <div class="answer">
         <ul>
@@ -1830,7 +1830,7 @@ fn('Hey');                  // 'Hey, Amy'</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>type 跟 interface 的差別？</summary>
       <div class="answer">
         <ul>
@@ -1841,7 +1841,7 @@ fn('Hey');                  // 'Hey, Amy'</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>請說明泛型（generics）是什麼？</summary>
       <div class="answer">
         <p>泛型是「型別的參數化」，讓函式/型別能適用多種型別而不重複程式碼，同時保留型別安全。</p>
@@ -1901,7 +1901,7 @@ getLength(123);    // ❌ number 沒有 length</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>哪些情況會造成 component re-render？</summary>
       <div class="answer">
         <ul>
@@ -1913,7 +1913,7 @@ getLength(123);    // ❌ number 沒有 length</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>React key 的用途？</summary>
       <div class="answer">
         <p>key 讓 React 在 diff 時辨識哪些子元素被<strong>新增、移除或移動</strong>，避免與狀態相關的 bug，並提升更新效率。應使用<strong>穩定且唯一</strong>的值（如資料 id），<strong>避免用 index</strong>（列表會增刪/排序時易出錯）。</p>
@@ -1932,7 +1932,7 @@ getLength(123);    // ❌ number 沒有 length</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>React Hook 的規則有哪些？</summary>
       <div class="answer">
         <ul>
@@ -1952,7 +1952,7 @@ getLength(123);    // ❌ number 沒有 length</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>useState / setState 要注意什麼？是同步還是非同步？</summary>
       <div class="answer">
         <p>setState 是<strong>非同步（批次更新）</strong>的——呼叫後不會立即拿到新值。注意事項：</p>
@@ -1978,7 +1978,7 @@ getLength(123);    // ❌ number 沒有 length</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>useEffect 怎麼用？第二個參數的作用？回傳的函式用途？</summary>
       <div class="answer">
         <p>useEffect 處理<strong>副作用</strong>（請求、訂閱、DOM 操作）。第二參數 dependency array：</p>
@@ -2022,7 +2022,7 @@ getLength(123);    // ❌ number 沒有 length</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>memo 跟 useMemo 差別？useCallback vs useMemo？</summary>
       <div class="answer">
         <ul>
@@ -2204,7 +2204,7 @@ getLength(123);    // ❌ number 沒有 length</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>為什麼更新 React state 要用 immutable 的寫法？</summary>
       <div class="answer">
         <p>React 判斷 state 是否改變是用 <strong>Object.is 做淺比較（比參考）</strong>。若<strong>原地修改</strong>物件／陣列，參考沒變，React 會<strong>認為沒更新而不重新渲染</strong>。</p>
@@ -2233,7 +2233,7 @@ setState(prev =&gt; ({ ...prev, count: prev.count + 1 }));</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>Vue 3 的生命週期 hooks／Composition API 常用函式有哪些？</summary>
       <div class="answer">
         <p><strong>響應式核心：</strong></p>
@@ -2264,7 +2264,7 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>雙向數據綁定的原理？</summary>
       <div class="answer">
         <p><strong>Vue 2：</strong>用 <code>Object.defineProperty</code> 對 data 的每個屬性設 getter/setter，做依賴收集與派發更新。</p>
@@ -2300,7 +2300,7 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>Vuex 與 Pinia 的區別？</summary>
       <div class="answer">
         <ul>
@@ -2337,7 +2337,7 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>Vue 3 的響應式底層原理？跟 Vue 2 的 Object.defineProperty 有什麼本質差別？</summary>
       <div class="answer">
         <ul>
@@ -2413,7 +2413,7 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>ref 與 reactive 的差異與使用時機？</summary>
       <div class="answer">
         <ul>
@@ -2425,7 +2425,7 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>Vue 3 的 Composables 跟 Vue 2 的 Mixins 有什麼不同？</summary>
       <div class="answer">
         <ul>
@@ -2463,7 +2463,7 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
   <section id="c-frameworks">
     <h2 class="cat"><span class="ic"></span>框架共通 / 選型</h2>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>React 和 Vue 的區別？</summary>
       <div class="answer">
         <ul>
@@ -2504,7 +2504,7 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>Vite 是什麼？為什麼要用？跟 Webpack 的區別？</summary>
       <div class="answer">
         <ul>
@@ -2523,7 +2523,7 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>什麼是 SPA？優缺點？</summary>
       <div class="answer">
         <p>Single-Page Application：整個應用在<strong>單一頁面</strong>內以 JS 動態切換內容、不整頁重載。</p>
@@ -2532,7 +2532,7 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>什麼是 SSR？怎麼解決 SPA 的 SEO 與首屏問題？</summary>
       <div class="answer">
         <p><strong>SSR（伺服器端渲染）</strong>在伺服器產生完整 HTML 再送給瀏覽器，讓搜尋引擎能正確索引、首屏更快，之後再 hydration 接手互動（SSR + CSR）。框架如 Next.js（React）、Nuxt（Vue）。</p>
@@ -2785,7 +2785,7 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>Cookie、localStorage、sessionStorage 的差別？</summary>
       <div class="answer">
         <ul>
@@ -2804,7 +2804,7 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>GET 與 POST 的差異？</summary>
       <div class="answer">
         <ul>
@@ -2826,7 +2826,7 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>什麼是 CORS？如何解決跨域問題？</summary>
       <div class="answer">
         <p>瀏覽器的<strong>同源政策</strong>會阻擋不同源（協定/網域/埠不同）的資源存取。<strong>CORS（跨來源資源共用）</strong>是讓伺服器透過回應 HTTP header（如 <code>Access-Control-Allow-Origin</code>）告訴瀏覽器「允許某來源存取」。</p>
@@ -2902,7 +2902,7 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
         <div class="tip"><b>注意：</b>Web SQL 已廢棄勿用；敏感資料/token 別放 localStorage（易受 XSS），優先用 <code>HttpOnly</code> + <code>Secure</code> + <code>SameSite</code> Cookie。</div>
       </div>
     </details>
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>在瀏覽器輸入網址到看到網頁，中間發生了什麼？</summary>
       <div class="answer">
         <ol>
@@ -2976,7 +2976,7 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>HTTP 快取機制？強快取 vs 協商快取？</summary>
       <div class="answer">
         <p>瀏覽器快取分兩層，<strong>先看強快取、未命中再走協商快取</strong>：</p>
@@ -3037,7 +3037,7 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
   <section id="c-perf">
     <h2 class="cat"><span class="ic"></span>效能優化</h2>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>如何加快頁面載入速度？（總覽）</summary>
       <div class="answer">
         <ul>
@@ -3109,7 +3109,7 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>如何減少 reflow（重排）與 repaint（重繪）？</summary>
       <div class="answer">
         <ul>
@@ -3158,7 +3158,7 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>Lazy loading 的原理是什麼？</summary>
       <div class="answer">
         <p>核心是<strong>延後載入目前用不到的資源，直到它即將被需要（通常是快進入視口）才載</strong>，縮短首屏時間、省頻寬。三種層次：</p>
@@ -3509,7 +3509,7 @@ hasAllDigits('01234567890'); // true</code></pre>
   <section id="c-auth">
     <h2 class="cat"><span class="ic"></span>認證 / 資安</h2>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>JWT 的實現方式（結構與驗證流程）？</summary>
       <div class="answer">
         <p>JWT 由三段用 <code>.</code> 連接、各自 <strong>Base64URL</strong> 編碼：<code>header.payload.signature</code>。</p>
@@ -3561,7 +3561,7 @@ hasAllDigits('01234567890'); // true</code></pre>
         <div class="tip"><b>重要前提：</b>iframe 寫的是 B 站的 cookie ＝<strong>第三方 cookie</strong>，現代瀏覽器（SameSite 預設、Safari ITP、Chrome 逐步封鎖第三方 cookie）會擋，<strong>可靠性越來越差</strong>。正式系統建議走 <strong>OIDC/OAuth 的重導流程</strong>，而非靠網址帶參數或偷寫第三方 cookie。</div>
       </div>
     </details>
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>什麼是 XSS（跨站腳本）攻擊？怎麼防？</summary>
       <div class="answer">
         <p><strong>XSS：</strong>攻擊者把惡意 JavaScript 注入頁面，在<strong>其他使用者的瀏覽器</strong>執行，藉此偷 cookie/token、冒充操作。類型：</p>
@@ -3575,7 +3575,7 @@ hasAllDigits('01234567890'); // true</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>什麼是 CSRF（跨站請求偽造）？怎麼防？</summary>
       <div class="answer">
         <p><strong>CSRF：</strong>誘使<strong>已登入</strong>使用者的瀏覽器，對目標網站發出<strong>非預期的請求</strong>——因為瀏覽器會自動帶上該站 cookie，伺服器以為是本人操作（如偷偷轉帳、改密碼）。</p>
@@ -3981,7 +3981,7 @@ hasAllDigits('01234567890'); // true</code></pre>
   <section id="c-coding">
     <h2 class="cat"><span class="ic"></span>手寫題 (Coding)</h2>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>實作 curry（柯里化）函數</summary>
       <div class="answer">
         <p>把 <code>fn(a,b,c)</code> 變成可以 <code>fn(a)(b)(c)</code> 或 <code>fn(a,b)(c)</code> 分次帶入；參數收滿（達到 <code>fn.length</code>）才真正執行。</p>
@@ -3997,7 +3997,7 @@ add(1, 2)(3);   // 6</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>實作 debounce（防抖）</summary>
       <div class="answer">
         <p>事件停止觸發後過了 <code>delay</code> 才執行一次；每次觸發都重設計時器。用於搜尋輸入、resize。</p>
@@ -4012,7 +4012,7 @@ add(1, 2)(3);   // 6</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>實作 throttle（節流）</summary>
       <div class="answer">
         <p>固定時間內最多執行一次，不論觸發多頻繁。用於 scroll、滑鼠移動、頻繁送 request。</p>
@@ -4045,7 +4045,7 @@ add(1, 2)(3);   // 6</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>手寫 Promise.all</summary>
       <div class="answer">
         <p>全部成功才 resolve（結果<strong>依輸入順序</strong>），任一失敗就立刻 reject。</p>
@@ -4173,7 +4173,7 @@ chunk([1, 2, 3, 4, 5], 2);   // [[1,2],[3,4],[5]]</code></pre>
       </div>
     </details>
 
-    <details class="qa">
+    <details class="qa" data-core="1">
       <summary>手寫深拷貝（處理巢狀與循環引用）</summary>
       <div class="answer">
         <p>遞迴複製物件／陣列；用 <code>WeakMap</code> 記住「已複製過的物件」來<strong>避免循環引用無限遞迴</strong>。</p>

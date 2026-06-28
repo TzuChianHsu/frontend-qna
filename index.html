@@ -233,6 +233,29 @@
         <p>不會排斥。我本來就習慣跨域協作——目前工作就需要與硬體／韌體團隊對接，也曾擔任團建負責人、主動把 AI 工具導入團隊。只要任務有助於專案或團隊，我很樂意支援；唯一會留意的是<strong>排序與時程</strong>，會先跟 PM 確認優先級，避免影響本來該交付的關鍵工作。</p>
       </div>
     </details>
+
+    <details class="qa">
+      <summary>為什麼想做前端？</summary>
+      <div class="answer">
+        <p>我喜歡前端的原因是它<strong>「成果看得見、回饋很即時」</strong>——寫的東西馬上能在畫面上互動，直接影響使用者體驗。它又同時需要<strong>邏輯（資料流、狀態、效能）與細節（互動、版面、體驗）</strong>，兩種能力都用得到。加上前端技術迭代快、生態活躍，永遠有新東西可學，很符合我喜歡持續學習的個性。</p>
+        <div class="script"><span class="lbl">🎤 口頭講稿（約 25 秒）</span>我喜歡前端是因為成果看得見、回饋很即時——寫完馬上能在畫面上互動，直接影響使用者體驗。它又同時需要邏輯跟細節：資料流、狀態、效能要顧，互動跟版面體驗也要顧，這種兩邊都要兼顧的感覺我很喜歡。加上前端技術更新很快、生態很活躍，永遠有新東西可以學，剛好符合我喜歡持續學習的個性。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>請說明你會的前端技術？</summary>
+      <div class="answer">
+        <p>建議依「框架 → 語言／型別 → 樣式 → 資料層 → 工具」分層講，避免變流水帳：</p>
+        <ul>
+          <li><strong>框架：</strong>React（Hooks）、Vue 3（Composition API／Pinia）、Vue 2、Nuxt。</li>
+          <li><strong>語言／型別：</strong>JavaScript（ES6+）、TypeScript，搭配 Zod、ts-rest 做型別契約。</li>
+          <li><strong>樣式：</strong>HTML5／CSS3、SCSS、Tailwind、Styled-components、RWD。</li>
+          <li><strong>資料層：</strong>Redux、Pinia、Zustand、React Query、ahooks、Axios／Fetch。</li>
+          <li><strong>工具：</strong>Webpack／Vite、ESLint／Prettier、Jest／Vitest／Cypress、Git、Storybook。</li>
+        </ul>
+        <div class="script"><span class="lbl">🎤 口頭講稿（約 30 秒）</span>我主力是 React 跟 Vue 3，搭配 TypeScript；狀態管理 React 端用 Redux、React Query，Vue 端用 Pinia。樣式我用 SCSS 跟 Tailwind，也熟切版跟 RWD。型別安全的部分我會用 Zod 跟 ts-rest 做前後端契約。工具鏈像 Vite、ESLint、Jest、Cypress、Git 都是日常。簡單說，從框架、型別、樣式到測試跟工具我都能獨立 cover。</div>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 2. 經歷與行為面試題 ============ -->
@@ -387,6 +410,47 @@
           <li>現在也會用 AI 工具加速理解與排錯。</li>
         </ul>
         <p>例如最近學 Three.js，就是從基礎 → React Three Fiber (R3F) → Drei 一路實作上來。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>你用過哪些前端套件／特效？需要客製化你會怎麼做？</summary>
+      <div class="answer">
+        <p>常見如：輪播（Swiper）、UI 元件（Ant Design、Element Plus）、日期（dayjs）、表單（React Hook Form）、動畫（CSS transition／animation、Framer Motion、react-spring）、圖表（ECharts）、3D（Three.js／R3F）。</p>
+        <p><strong>客製化的做法：</strong>先看套件有沒有開放 props／slot／API 可調，能調就用設定達成；要更深的客製，我會<strong>讀原始碼或文件</strong>、覆蓋它的 class／CSS 變數，或包一層 wrapper 元件對外提供我們要的介面；真的不合用才<strong>自己手刻</strong>（例如用 CSS transition 做滑過 highlight、用 SVG／Canvas 做互動地圖）。原則是<strong>先評估 ROI</strong>，不重造輪子、但也不被套件綁死。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>看得懂別人寫的程式碼／接手不熟的舊文件，你有把握嗎？</summary>
+      <div class="answer">
+        <p>有把握。我接手過別人留下、結構較亂的專案，方法是：<strong>先從進入點與路由抓整體架構 → 跟著一條資料流／一個功能讀完整鏈路 → 邊讀邊做筆記或補註解</strong>；看不懂的地方善用 Git 紀錄看當初為什麼這樣寫、必要時直接問原作者或用 AI 輔助理解。舊文件不齊時，我也習慣<strong>邊看邊把它補成可操作的結構化文件</strong>，讓下一個人更好接手。</p>
+        <div class="script"><span class="lbl">🎤 口頭講稿（約 30 秒）</span>有把握。我自己就接手過別人留下、結構比較亂的專案。做法是先從進入點跟路由抓整體架構，再跟著一個功能、一條資料流從頭讀到尾，邊讀邊做筆記。看不懂的地方我會看 Git 歷史了解當初為什麼這樣寫，必要時直接問原作者，現在也會用 AI 幫忙理解。如果舊文件不齊，我會順手邊看邊補成結構化文件，讓下一個接手的人更輕鬆。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>會排斥用沒接觸過的技術（例如 Vue）嗎？</summary>
+      <div class="answer">
+        <p>完全不會。我本來就 React、Vue 雙棧都做過，框架對我而言是工具，核心觀念（元件化、狀態管理、資料流、效能）是相通的，換框架主要是熟悉語法與生態。我反而樂見接觸新技術——這正是我選擇前端的原因之一。唯一會留意的是<strong>學習期間先確認交付節奏</strong>，必要時請團隊給一點 ramp-up 時間。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>HR 動機題：對公司了解嗎／適合這份職務嗎／意願度打幾分？<span class="badge">需替換公司</span></summary>
+      <div class="answer">
+        <p><strong>對公司／產品的了解：</strong>面試前務必看過官網、產品、徵才頁與技術棧，講出 1~2 個<strong>具體觀察</strong>（產品方向、技術選型、團隊文化），表示你有備而來。</p>
+        <p><strong>適合這份職務嗎：</strong>把 <strong>JD 的關鍵需求</strong>對應到自己的具體經驗（JD 要 Vue → 我主導過 Vue 3 專案），用「需求 ↔ 我的證據」一一扣。</p>
+        <p><strong>意願度打分（1~10）：</strong>建議給<strong>偏高但留空間</strong>（如 8）。理由講正向（團隊／技術／產品吸引我），保留的分數說成「想更了解 X 再確認」，別給太低顯得沒誠意、也別滿分顯得不真誠。</p>
+        <div class="tip"><b>面試提醒：</b>被追問「為什麼不是更高分」時，聚焦在「想了解的資訊」（團隊分工、發展性…），而不是抱怨或疑慮。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>期望薪資？最快報到日？</summary>
+      <div class="answer">
+        <p><strong>期望薪資：</strong>先做功課（人力銀行、薪資情報）抓合理區間，回答<strong>區間而非單一數字</strong>，並表示「可依職責與整體福利再談」；若對方先問，可反問該職位的預算範圍。</p>
+        <p><strong>最快報到日：</strong>在職者回「需依勞基法／合約交接，約需 X 週」；待業者可回「可盡快，約 1 週內」。誠實但展現彈性。</p>
       </div>
     </details>
   </section>
@@ -727,6 +791,39 @@ watchEffect(() =&gt; console.log(count.value, name.value));</code></pre>
         <p><strong><code>&lt;link&gt;</code>（CSS）放在 <code>&lt;head&gt;</code> 內：</strong>確保渲染前已載入樣式，避免使用者看到「無樣式內容閃爍（FOUC）」。</p>
       </div>
     </details>
+
+    <details class="qa">
+      <summary>什麼是 DOM？</summary>
+      <div class="answer">
+        <p>DOM（Document Object Model，文件物件模型）是瀏覽器把 HTML／XML 解析後，在記憶體中建立的<strong>樹狀結構</strong>，每個標籤、屬性、文字都是一個<strong>節點（node）</strong>。它是 HTML 與 JavaScript 之間的橋樑——JS 透過 DOM API（<code>getElementById</code>、<code>querySelector</code>、<code>createElement</code>、<code>addEventListener</code>…）讀取與操作頁面的內容、結構與樣式。</p>
+        <p>補充：頻繁直接操作 DOM 成本高（易觸發 reflow／repaint），所以 React／Vue 用 <strong>Virtual DOM</strong> 先在記憶體 diff，再批次更新真實 DOM。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>&lt;span&gt; 與 &lt;div&gt; 有什麼差異？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>&lt;div&gt;：區塊元素（block）</strong>，預設獨佔一行、可設寬高與上下 margin，常當版面區塊容器。</li>
+          <li><strong>&lt;span&gt;：行內元素（inline）</strong>，不換行、寬高由內容決定，常用來包一小段文字做局部樣式。</li>
+        </ul>
+        <p>兩者都是<strong>無語意</strong>的通用容器；需要語意時應改用 <code>&lt;header&gt;</code>、<code>&lt;nav&gt;</code>、<code>&lt;article&gt;</code> 等標籤。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 Meta Tags？</summary>
+      <div class="answer">
+        <p>放在 <code>&lt;head&gt;</code> 裡、描述網頁<strong>中繼資料（metadata）</strong>的標籤，本身不顯示在畫面上，而是提供給瀏覽器、搜尋引擎與社群平台使用。常見：</p>
+        <ul>
+          <li><code>&lt;meta charset="UTF-8"&gt;</code>：文字編碼。</li>
+          <li><code>&lt;meta name="viewport" ...&gt;</code>：行動裝置寬度與縮放（RWD 必備）。</li>
+          <li><code>&lt;meta name="description"&gt;</code>：SEO 摘要。</li>
+          <li><strong>Open Graph</strong>（<code>og:title</code>、<code>og:image</code>…）：分享到 FB／LINE 的預覽卡片。</li>
+          <li><code>robots</code>：是否讓搜尋引擎索引。</li>
+        </ul>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 7. CSS ============ -->
@@ -852,6 +949,43 @@ watchEffect(() =&gt; console.log(count.value, name.value));</code></pre>
         <pre><code>$primary: #1aa71b;
 @mixin flex-center { display:flex; justify-content:center; align-items:center; }
 .box { color:$primary; @include flex-center; }</code></pre>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>class 選擇器與 ID 選擇器差在哪？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>語法：</strong>class 用 <code>.name</code>，id 用 <code>#name</code>。</li>
+          <li><strong>重用性：</strong>class <strong>可重複</strong>用在多個元素；id 在一頁中應<strong>唯一</strong>。</li>
+          <li><strong>優先級（specificity）：</strong>id <strong>高於</strong> class。</li>
+          <li><strong>用途：</strong>樣式重用、多元素同風格 → class；JS 定位單一元素、錨點 → id（但樣式仍建議用 class，避免 specificity 太高難覆蓋）。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>要怎麼根據不同尺寸套用特定的 CSS 樣式？（RWD）</summary>
+      <div class="answer">
+        <p>主要用<strong>媒體查詢（media query）</strong>，依視窗寬度套不同樣式，並建議採<strong>行動優先（mobile-first）</strong>：</p>
+        <pre><code>/* 預設：手機 */
+.card { font-size: 14px; }
+/* 平板以上 */
+@media (min-width: 768px) { .card { font-size: 16px; } }
+/* 桌機以上 */
+@media (min-width: 1024px) { .card { font-size: 18px; } }</code></pre>
+        <p>搭配技巧：相對單位（<code>rem</code>/<code>%</code>/<code>vw</code>）、彈性版面（Flexbox／Grid）、<code>clamp()</code> 做流體字級、圖片用 <code>srcset</code>／<code>&lt;picture&gt;</code>，以及 <code>&lt;meta name="viewport"&gt;</code>。框架如 Tailwind 用 <code>md:</code>、<code>lg:</code> 前綴達成同效果。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Pseudo-classes 與 Pseudo-elements 差在哪？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>偽類（pseudo-class，單冒號 <code>:</code>）：</strong>依元素的<strong>狀態或位置</strong>套樣式。如 <code>:hover</code>、<code>:focus</code>、<code>:active</code>、<code>:first-child</code>、<code>:nth-child()</code>、<code>:disabled</code>。</li>
+          <li><strong>偽元素（pseudo-element，雙冒號 <code>::</code>）：</strong>建立／選取元素的<strong>一部分或虛擬內容</strong>。如 <code>::before</code>、<code>::after</code>（搭配 <code>content</code>）、<code>::first-line</code>、<code>::placeholder</code>、<code>::selection</code>。</li>
+        </ul>
+        <p>一句話：偽類選「處於某狀態的元素」，偽元素選／造「元素的某個部分」。</p>
       </div>
     </details>
   </section>
@@ -1152,6 +1286,14 @@ fn(); // 2  ← a 的狀態被記住</code></pre>
           <li><strong>同步：</strong>程式碼依序執行，會<strong>阻塞</strong>後續操作直到完成。</li>
           <li><strong>非同步：</strong>可在等待操作完成的同時繼續執行，<strong>不阻塞</strong>，完成後再以 callback/Promise 回來處理。</li>
         </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 AJAX？</summary>
+      <div class="answer">
+        <p>AJAX（Asynchronous JavaScript and XML）是一種在<strong>不重新整理整頁</strong>的情況下，用 JavaScript <strong>非同步</strong>向伺服器要資料、再局部更新畫面的技術。它讓網頁能像 App 一樣即時互動（搜尋建議、無限捲動、表單即時驗證…）。</p>
+        <p>早期用 <code>XMLHttpRequest</code>，現在多用 <code>fetch</code> 或 <strong>Axios</strong>；傳輸格式雖名為 XML，實務上幾乎都用 <strong>JSON</strong>。</p>
       </div>
     </details>
   </section>
@@ -1536,6 +1678,20 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
         </ul>
       </div>
     </details>
+
+    <details class="qa">
+      <summary>說明 Vue.js 的特色？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>響應式資料綁定：</strong>資料變動自動更新畫面（Vue 3 用 Proxy）；<code>v-model</code> 提供雙向綁定。</li>
+          <li><strong>宣告式模板：</strong>直覺的模板語法 + 指令（<code>v-if</code>、<code>v-for</code>、<code>v-bind</code>、<code>v-on</code>）。</li>
+          <li><strong>元件化 + SFC：</strong>單檔元件（<code>.vue</code>）把 template／script／style 收在一起。</li>
+          <li><strong>漸進式框架：</strong>可從一個 script 標籤漸進導入，也能搭 Vue Router／Pinia／Nuxt 做大型應用。</li>
+          <li><strong>效能與複用：</strong>Virtual DOM + 編譯期最佳化；<strong>Composition API</strong> 讓邏輯易抽離複用。</li>
+          <li><strong>上手快、生態完整、官方文件友善。</strong></li>
+        </ul>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 12. React + Vue 共同 ============ -->
@@ -1784,6 +1940,28 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
       <div class="answer">
         <p>事件流：<strong>捕獲（外→內）→ 目標 → 冒泡（內→外）</strong>。</p>
         <p><strong>事件委派</strong>利用冒泡：把監聽器掛在<strong>共同父層</strong>，靠 <code>event.target</code> 判斷實際觸發的子元素。好處：少綁很多監聽器、<strong>動態新增的子元素也能被處理</strong>、省記憶體。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>PUT 與 POST 的差異？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>用途：</strong>POST 多用於<strong>新增</strong>資源（由伺服器決定位置／ID）；PUT 用於<strong>建立或整體替換指定位置</strong>的資源。</li>
+          <li><strong>冪等性：</strong>POST <strong>非冪等</strong>（重送會重複建立）；PUT <strong>冪等</strong>（同請求送幾次結果一致）。</li>
+          <li><strong>目標：</strong>POST 通常打集合端點（<code>/users</code>）；PUT 打特定資源（<code>/users/123</code>）。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>XML 與 JSON 的差異？有串接過嗎？</summary>
+      <div class="answer">
+        <p>兩者都是資料交換格式。我實務上幾乎都用 <strong>JSON</strong> 串 API（<code>fetch</code>／Axios 直接解析），少數對接舊系統或 SOAP 服務時會遇到 XML。</p>
+        <ul>
+          <li><strong>JSON：</strong>輕量、與 JavaScript 物件幾乎一致、<code>JSON.parse</code>／<code>stringify</code> 即可，可讀性高，是現代 API 主流。</li>
+          <li><strong>XML：</strong>用標籤包裹、較冗長，但支援屬性、命名空間與 schema 驗證（XSD），常見於 SOAP、RSS、舊企業系統。</li>
+        </ul>
       </div>
     </details>
   </section>

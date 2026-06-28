@@ -66,6 +66,9 @@
     vertical-align:-1px;transition:transform .1s,color .15s;-webkit-user-select:none;user-select:none}
   .fav-star:hover{transform:scale(1.25)}
   .fav-star.on{color:#f5b301}
+  .core-badge{display:inline-block;margin-left:8px;padding:1px 7px;border-radius:10px;
+    background:#fff3e0;color:#d2691e;border:1px solid #f3c98b;font-size:11px;font-weight:700;
+    vertical-align:middle;white-space:nowrap}
   #favOnly.on{background:#fff7df;border-color:#f5b301;color:#a9760a}
   #favCount{font-weight:700}
   .answer{padding:2px 18px 16px;border-top:1px solid #f0f0f0;color:#333}
@@ -149,6 +152,7 @@
       <button class="btn" id="expandAll">展開全部</button>
       <button class="btn" id="collapseAll">收合全部</button>
       <button class="btn" id="favOnly">⭐ 只看收藏 <span id="favCount">0</span></button>
+      <button class="btn" id="coreOnly">🔥 只看必考 <span id="coreCount">0</span></button>
     </div>
     <span class="count" id="count"></span>
   </div>
@@ -4363,6 +4367,9 @@ async redirects() {
     for (var i = 0; i < saved.length; i++) favMap[saved[i]] = 1;
   } catch (e) {}
   var favMode = false;
+  var coreMode = false;
+  var coreCountEl = document.getElementById('coreCount');
+  coreCountEl.textContent = document.querySelectorAll('details.qa[data-core="1"]').length;
   function isFav(k){ return favMap[k] === 1; }
   function favCount(){ return Object.keys(favMap).length; }
   function saveFavs(){ try{ localStorage.setItem(FAV_KEY, JSON.stringify(Object.keys(favMap))); }catch(e){} }
@@ -4386,12 +4393,24 @@ async redirects() {
       if(favMode) doFilter();                    // 收藏模式下取消收藏即時隱藏
     });
     sum.insertBefore(star, sum.firstChild);
+    if (d.getAttribute('data-core') === '1') {
+      var badge = document.createElement('span');
+      badge.className = 'core-badge';
+      badge.textContent = '🔥 必考';
+      sum.appendChild(badge);
+    }
   });
   updateFavCount();
 
   favBtn.onclick = function(){
     favMode = !favMode;
     favBtn.classList.toggle('on', favMode);
+    doFilter();
+  };
+  var coreBtn = document.getElementById('coreOnly');
+  coreBtn.onclick = function(){
+    coreMode = !coreMode;
+    coreBtn.classList.toggle('on', coreMode);
     doFilter();
   };
 
@@ -4426,7 +4445,8 @@ async redirects() {
       var txt = normalize(d.textContent);
       var matchSearch = !q || txt.indexOf(q) !== -1;
       var matchFav = !favMode || isFav(d.getAttribute('data-favkey'));
-      var match = matchSearch && matchFav;
+      var matchCore = !coreMode || d.getAttribute('data-core') === '1';
+      var match = matchSearch && matchFav && matchCore;
       d.style.display = match ? '' : 'none';
       if(match){ visible++; if(q) d.open = true; if(!q) d.open = false; }
     });
@@ -4439,7 +4459,9 @@ async redirects() {
     noresult.style.display = ((q || favMode) && visible === 0) ? 'block' : 'none';
     kwOut.textContent = q ? search.value : '收藏';
     countEl.textContent = q ? ('找到 ' + visible + ' 題')
-                          : (favMode ? ('收藏 ' + visible + ' 題') : ('共 ' + details.length + ' 題'));
+                          : (favMode ? ('收藏 ' + visible + ' 題')
+                          : (coreMode ? ('必考 ' + visible + ' 題')
+                          : ('共 ' + details.length + ' 題')));
   }
 
   // back to top

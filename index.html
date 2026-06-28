@@ -296,9 +296,22 @@
     <details class="qa">
       <summary>請分享你做過技術上最困難的專案？</summary>
       <div class="answer">
-        <p>有兩個代表性的：</p>
-        <p><strong>1. CMS 後台重構（多語系 + 多層級）：</strong>接手一個結構複雜、含多語系與多層級權限的後台。難點在於既有狀態管理混亂、重複請求多。我評估 SWR / React Query 後選用 <strong>ahooks</strong> 強化快取與狀態，並逐步把舊邏輯抽成共用元件，採「新舊並存、慢慢全轉」的策略，最後不只完成重構，也把先前積壓的需求一併補完。</p>
-        <p><strong>2. 智能車隊系統的 Contract-first 串接：</strong>在 Monorepo 下與 NestJS 後端共構，用 <strong>ts-rest + Zod</strong> 把前後端型別契約收斂到單一來源。難點在於前後端要同步迭代、且 AMR/AGV 的定位資料格式常變動；Contract-first 讓 schema 改動能在編譯期被攔截，大幅減少串接錯誤。</p>
+        <p>我用 <strong>STAR</strong> 拆解兩個代表性專案：</p>
+        <p><strong>專案一：CMS 後台重構（多語系 + 多層級權限）</strong></p>
+        <ul>
+          <li><strong>情境（S）：</strong>接手一個結構複雜、含多語系與多層級權限的後台，既有狀態管理混亂、重複請求多。</li>
+          <li><strong>任務（T）：</strong>在不中斷既有需求交付的前提下完成重構、清掉技術債。</li>
+          <li><strong>行動（A）：</strong>評估 SWR / React Query 後選用 <strong>ahooks</strong> 強化快取與狀態；把舊邏輯逐步抽成共用元件；採「新舊並存、分批切換」策略降低風險。</li>
+          <li><strong>結果（R）：</strong>不只完成重構，還把先前積壓的需求一併補完；團隊後續開發更順，新人能依共用元件快速上手。</li>
+        </ul>
+        <p><strong>專案二：智能車隊系統 Contract-first 串接</strong></p>
+        <ul>
+          <li><strong>情境（S）：</strong>Monorepo 下與 NestJS 後端共構，AMR/AGV 定位資料格式常變動，前後端需同步迭代。</li>
+          <li><strong>任務（T）：</strong>降低前後端串接錯誤與溝通成本。</li>
+          <li><strong>行動（A）：</strong>用 <strong>ts-rest + Zod</strong> 把型別契約收斂到單一來源，推行 Contract-first。</li>
+          <li><strong>結果（R）：</strong>後端 schema 一改動、前端編譯期即被攔截，大幅減少 runtime 錯誤與來回溝通。</li>
+        </ul>
+        <div class="script"><span class="lbl">🎤 口頭講稿（約 40 秒）</span>我講兩個。第一個是接手一個多語系、多層級權限的 CMS 後台，狀態很亂、重複請求多。我評估過 SWR 跟 React Query，最後選 ahooks 強化快取，再用「新舊並存、分批切換」把舊邏輯抽成共用元件，最後重構完成、積壓需求也補完。第二個是智能車隊系統，在 Monorepo 下跟 NestJS 共構，AMR 定位資料格式常變，我用 ts-rest 加 Zod 做 Contract-first，把型別契約收斂到單一來源，後端一改 schema 前端編譯期就擋下來，串接錯誤大幅下降。</div>
       </div>
     </details>
 

@@ -4456,8 +4456,8 @@ async redirects() {
       var shown = Array.prototype.some.call(any, function(d){ return d.style.display !== 'none'; });
       sec.style.display = shown ? '' : 'none';
     });
-    noresult.style.display = ((q || favMode) && visible === 0) ? 'block' : 'none';
-    kwOut.textContent = q ? search.value : '收藏';
+    noresult.style.display = ((q || favMode || coreMode) && visible === 0) ? 'block' : 'none';
+    kwOut.textContent = q ? search.value : (coreMode ? '必考' : '收藏');
     countEl.textContent = q ? ('找到 ' + visible + ' 題')
                           : (favMode ? ('收藏 ' + visible + ' 題')
                           : (coreMode ? ('必考 ' + visible + ' 題')

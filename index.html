@@ -863,6 +863,63 @@ watchEffect(() =&gt; console.log(count.value, name.value));</code></pre>
     </details>
   </section>
 
+  <!-- ============ FUNDAY 業務情境 ============ -->
+  <section id="c-funday">
+    <h2 class="cat"><span class="ic"></span>FUNDAY 業務情境</h2>
+
+    <details class="qa">
+      <summary>（FUNDAY）如果要做語言學習用的影音播放器，你會怎麼設計成共用元件？</summary>
+      <div class="answer">
+        <p>我會把它拆成「<strong>狀態邏輯（composable）</strong>」與「<strong>UI（元件）</strong>」兩層，而不是把所有東西塞進一個肥大的 <code>&lt;video&gt;</code> 包裝。</p>
+        <ul>
+          <li><strong>狀態層 <code>useMediaPlayer</code>：</strong>統一管理 <code>isPlaying</code>、<code>currentTime</code>、<code>duration</code>、<code>playbackRate</code>（語速 0.5x~1.5x，對學語言很關鍵）、AB 段落循環的 <code>loopStart/loopEnd</code>，並處理音檔載入失敗的 error 狀態。</li>
+          <li><strong>UI 層 <code>&lt;LanguagePlayer&gt;</code>：</strong>用 <strong>Provide/Inject</strong> 把播放器狀態提供給子區塊（進度條、字幕區、控制列），讓子元件解耦、各自訂閱需要的狀態，而不是 props 一層層往下傳。</li>
+          <li><strong>介面設計：</strong>Props 收 <code>src</code>、<code>subtitles</code>（雙語字幕檔）；Emits 發 <code>onSegmentComplete</code>、<code>onSpeedChange</code>，方便外層接學習進度。</li>
+          <li><strong>務實做法：</strong>底層相容性不自己硬幹，評估用成熟 media 套件或 VueUse 的 <code>useMediaControls</code> 打底，自己只封裝「語速／AB 循環／雙語字幕」這些業務專屬邏輯。</li>
+        </ul>
+        <div class="tip"><b>面試提醒：</b>強調「基礎播放能力用成熟方案，我把心力花在 FUNDAY 真正的差異化——語速微調與雙語字幕」，展現資深取捨思維。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>（FUNDAY）文章「選字查字典」的功能，你會怎麼拆成共用？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong><code>useTextSelection</code>：</strong>監聽 <code>mouseup</code>／<code>selectionchange</code>，用 <code>window.getSelection()</code> 拿選取字串，再用 <code>range.getBoundingClientRect()</code> 算出彈窗座標，回傳 <code>{ text, rect }</code>。</li>
+          <li><strong><code>&lt;InteractiveArticle&gt;</code>（Dumb 元件）：</strong>只收 <code>content</code> props 渲染文章，並開一個 <strong>Slot</strong> 讓外部決定「查到的翻譯 tooltip 長什麼樣」。</li>
+          <li><strong>業務層：</strong>拿到選字後打字典 API，加上 <strong>debounce + 快取</strong>，避免使用者連續選字時重複查同一個字。</li>
+        </ul>
+        <div class="tip"><b>面試提醒：</b>tooltip 用 <strong>Teleport</strong> 掛到 <code>body</code>，避免被文章容器的 <code>overflow:hidden</code> 裁切；並提到選取事件頻繁、要顧效能。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>（FUNDAY）即時課堂／聊天的即時通訊，你會怎麼處理？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong><code>useWebSocket</code> 封裝：</strong>連線建立、<strong>斷線自動重連</strong>（指數退避）、<strong>心跳 heartbeat</strong>（定時 ping 維持連線並偵測斷線），並把收到的訊息轉成<strong>響應式</strong>資料讓 UI 即時更新。</li>
+          <li><strong>業務事件：</strong>聊天訊息、老師舉手點名、出題推送等，用事件型別區分後分派。</li>
+          <li><strong>清理：</strong>在 <code>onScopeDispose</code>／<code>onUnmounted</code> 關閉連線、清掉 timer，避免 memory leak。</li>
+          <li><strong>務實做法：</strong>可用 VueUse 的 <code>useWebSocket</code> 打底，自己加上業務協定層。</li>
+        </ul>
+        <div class="tip"><b>面試提醒：</b>強調「連線穩定性（重連／心跳）是即時課堂體驗的命脈」。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>（FUNDAY）「記住使用者看到哪裡」的學習進度同步，你會怎麼設計？</summary>
+      <div class="answer">
+        <p><strong>痛點：</strong>頻繁打 API 存進度會塞爆後端；只存前端又怕使用者重整後遺失。</p>
+        <ul>
+          <li><strong><code>useSyncProgress</code>：</strong>監聽滾動／影片 <code>timeupdate</code> 記錄進度 → 經過 <strong>debounce</strong>（停止幾秒才送）→ 先寫進 <strong>localStorage</strong> 暫存 → 再同步到後端。</li>
+          <li><strong>斷線／重整：</strong>進場時先讀 localStorage 還原進度，並與後端進度取較新的那一個。</li>
+          <li><strong>務實做法：</strong>debounce 用 VueUse 的 <code>useDebounceFn</code>、暫存用響應式的 <code>useLocalStorage</code>。</li>
+        </ul>
+        <div class="tip"><b>面試提醒：</b>展現你同時考慮了「效能（防抖）」與「極端狀態（斷網／重整）」，這是資深的防禦性思維。</div>
+      </div>
+    </details>
+  </section>
+
   <!-- ============ 6. HTML ============ -->
   <section id="c-html">
     <h2 class="cat"><span class="ic"></span>HTML</h2>

@@ -61,6 +61,13 @@
     font-weight:700;transition:transform .15s}
   details.qa[open]>summary::after{content:"–"}
   details.qa>summary:hover{background:#fafdfa}
+  /* 收藏星號 */
+  .fav-star{display:inline-block;cursor:pointer;color:#c9ccd6;font-size:17px;line-height:1;margin-right:9px;
+    vertical-align:-1px;transition:transform .1s,color .15s;-webkit-user-select:none;user-select:none}
+  .fav-star:hover{transform:scale(1.25)}
+  .fav-star.on{color:#f5b301}
+  #favOnly.on{background:#fff7df;border-color:#f5b301;color:#a9760a}
+  #favCount{font-weight:700}
   .answer{padding:2px 18px 16px;border-top:1px solid #f0f0f0;color:#333}
   .answer p{margin:8px 0}
   .answer ul,.answer ol{margin:8px 0 8px 22px}
@@ -141,6 +148,7 @@
     <div class="controls">
       <button class="btn" id="expandAll">展開全部</button>
       <button class="btn" id="collapseAll">收合全部</button>
+      <button class="btn" id="favOnly">⭐ 只看收藏 <span id="favCount">0</span></button>
     </div>
     <span class="count" id="count"></span>
   </div>
@@ -3957,6 +3965,48 @@ async redirects() {
 
   countEl.textContent = '共 ' + details.length + ' 題';
 
+  // ===== 收藏功能（localStorage，以題目文字為 key）=====
+  var favBtn = document.getElementById('favOnly');
+  var favCountEl = document.getElementById('favCount');
+  var FAV_KEY = 'fe-qa-favs';
+  var favMap = {};
+  try {
+    var saved = JSON.parse(localStorage.getItem(FAV_KEY) || '[]');
+    for (var i = 0; i < saved.length; i++) favMap[saved[i]] = 1;
+  } catch (e) {}
+  var favMode = false;
+  function isFav(k){ return favMap[k] === 1; }
+  function favCount(){ return Object.keys(favMap).length; }
+  function saveFavs(){ try{ localStorage.setItem(FAV_KEY, JSON.stringify(Object.keys(favMap))); }catch(e){} }
+  function updateFavCount(){ favCountEl.textContent = favCount(); }
+
+  // 為每題注入星號（不更動現有題目 HTML）
+  details.forEach(function(d){
+    var sum = d.querySelector('summary');
+    if(!sum) return;
+    var key = sum.textContent.trim();          // 在插入星號前取文字當 key
+    d.setAttribute('data-favkey', key);
+    var star = document.createElement('span');
+    star.className = 'fav-star' + (isFav(key) ? ' on' : '');
+    star.textContent = isFav(key) ? '★' : '☆';
+    star.setAttribute('title', '收藏 / 取消收藏');
+    star.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();   // 只收藏，不展開/收合題目
+      if(isFav(key)){ delete favMap[key]; star.classList.remove('on'); star.textContent='☆'; }
+      else { favMap[key]=1; star.classList.add('on'); star.textContent='★'; }
+      saveFavs(); updateFavCount();
+      if(favMode) doFilter();                    // 收藏模式下取消收藏即時隱藏
+    });
+    sum.insertBefore(star, sum.firstChild);
+  });
+  updateFavCount();
+
+  favBtn.onclick = function(){
+    favMode = !favMode;
+    favBtn.classList.toggle('on', favMode);
+    doFilter();
+  };
+
   // 依置頂列實際高度設定錨點偏移（手機/電腦自動適配，跳轉不被遮住）
   var topbar = document.querySelector('.topbar');
   function setSticky(){
@@ -3986,7 +4036,9 @@ async redirects() {
     var visible = 0;
     details.forEach(function(d){
       var txt = normalize(d.textContent);
-      var match = !q || txt.indexOf(q) !== -1;
+      var matchSearch = !q || txt.indexOf(q) !== -1;
+      var matchFav = !favMode || isFav(d.getAttribute('data-favkey'));
+      var match = matchSearch && matchFav;
       d.style.display = match ? '' : 'none';
       if(match){ visible++; if(q) d.open = true; if(!q) d.open = false; }
     });
@@ -3996,9 +4048,10 @@ async redirects() {
       var shown = Array.prototype.some.call(any, function(d){ return d.style.display !== 'none'; });
       sec.style.display = shown ? '' : 'none';
     });
-    noresult.style.display = (q && visible === 0) ? 'block' : 'none';
-    kwOut.textContent = search.value;
-    countEl.textContent = q ? ('找到 ' + visible + ' 題') : ('共 ' + details.length + ' 題');
+    noresult.style.display = ((q || favMode) && visible === 0) ? 'block' : 'none';
+    kwOut.textContent = q ? search.value : '收藏';
+    countEl.textContent = q ? ('找到 ' + visible + ' 題')
+                          : (favMode ? ('收藏 ' + visible + ' 題') : ('共 ' + details.length + ' 題'));
   }
 
   // back to top

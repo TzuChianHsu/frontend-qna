@@ -553,6 +553,32 @@
         <div class="tip"><b>提醒：</b>金流安全重點在後端——<strong>金額與簽章一定在後端產生與驗證</strong>，且以非同步 notify 為準（不能只信前端導回的結果），避免被竄改。</div>
       </div>
     </details>
+    <details class="qa">
+      <summary>請分享一次你主導大型環境／架構遷移的經驗？怎麼評估相容性風險、又怎麼讓多團隊不互相卡住？</summary>
+      <div class="answer">
+        <p>用 STAR 講一個真實案例（以全端系統遷移為例）：</p>
+        <ul>
+          <li><strong>情境：</strong>整套系統——前端（Vue 3 / Quasar）＋後端 API（Flask、Java）——要遷到 Ubuntu 22.04（Python 3.10 / Node 18），同時還有 Web 團隊與 ROS 團隊得<strong>並行開發</strong>，不能互相等。</li>
+          <li><strong>任務：</strong>主導相容性評估與遷移計畫，把「會卡很多人」的大遷移拆成可預演、可回退、可並行的步驟。</li>
+          <li><strong>行動：</strong>先盤點相容性風險（Python／Node 大版本的 breaking change、相依套件、第三方服務）；設計「<strong>WSL 預演 → IPC 正式部署</strong>」兩階段，用 <strong>Docker 隔離環境</strong>讓 Web 與 ROS 團隊各自開發互不污染；規劃同機部署的 <strong>Nginx 反向代理</strong>路由，梳理 HTTP／Redis／WebSocket(rosbridge) 的聯調時序，並<strong>預先建立 Rollback 容錯</strong>。</li>
+          <li><strong>結果：</strong>消除跨團隊等待瓶頸、上線風險可控、出事能回退。</li>
+        </ul>
+        <div class="tip"><b>面試官想看：</b>不是「你會裝環境」，而是<strong>風險意識 ＋ 系統思維 ＋ 協作</strong>——你怎麼把一個牽動很多人的遷移，設計成不互卡、能預演、能回退。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>講一次你查到「很底層、別人不太查得出來」的問題？</summary>
+      <div class="answer">
+        <p>挑一個展現「排錯方法論」的故事（以一次系統層效能問題為例）：</p>
+        <ul>
+          <li><strong>現象：</strong>某系統在 <strong>WSL</strong>（Windows Subsystem for Linux）上運行時，記憶體佔用<strong>異常飆高</strong>，連帶讓跨平台編譯環境不穩定。</li>
+          <li><strong>怎麼收斂：</strong>先確認是「誰」在吃記憶體——是 WSL 本身（vmmem）還是該系統程序；再觀察記憶體成長曲線、<strong>隔離變因、逐步縮小範圍</strong>，把一堆可能性收斂到根因。</li>
+          <li><strong>結果：</strong>定位後修正，恢復跨平台編譯環境的穩定度——而且是<strong>獨立追查</strong>完成。</li>
+        </ul>
+        <div class="tip"><b>重點在「方法論」不是「結果」：</b>講你怎麼從模糊現象用二分法／隔離變因／看監控數據逼近根因。這題也順便證明你不只懂前端，能往系統層挖。</div>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 3. 開發流程與團隊協作 ============ -->
@@ -627,6 +653,19 @@
           <li><strong>FAQ／常見問題</strong>與聯絡窗口，降低來回打擾。</li>
         </ul>
         <div class="tip"><b>重點：</b>文件要「<strong>以讀者為中心</strong>」——假設對方沒有背景知識也能照著做；尤其同時交給多位兼職時，清楚的 SOP 與驗收標準能大幅降低溝通成本與錯誤。</div>
+      </div>
+    </details>
+    <details class="qa">
+      <summary>大型重構又要多人／多分支並行時，你怎麼降低 merge 衝突？</summary>
+      <div class="answer">
+        <p>先點出衝突的根因：多人同時改到同一塊、長命分支太久沒同步、模組邊界不清。對應做法（重點是「預防 &gt; 解決」）：</p>
+        <ul>
+          <li><strong>先講清楚邊界：</strong>開工前主動跟團隊對接，講定「誰負責哪個模組／檔案」，減少多人同檔互踩——這正是我在重構期間主動做的事。</li>
+          <li><strong>小步、勤同步：</strong>小顆 commit、頻繁 rebase／merge 主線，別讓分支活太久（分支越老越難合）。</li>
+          <li><strong>先抽結構再分頭做：</strong>大重構先把介面抽出來、模組化，必要時先合一個「純結構調整」的 PR，讓大家在穩定基礎上接著開發。</li>
+          <li><strong>改動集中：</strong>讓單次改動落在少數檔案，衝突面自然變小。</li>
+        </ul>
+        <div class="tip"><b>面試官想看：</b>衝突最好在開工前用<strong>溝通與邊界切割避免</strong>，而不是事後硬解 conflict。這題能展現你重構期間的協作主動性，不只是技術。</div>
       </div>
     </details>
   </section>
@@ -2642,6 +2681,59 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
         <p>對比：npm/yarn 會把依賴<strong>扁平化複製</strong>到每個專案，重複又佔空間。pnpm 也天然適合 monorepo。</p>
       </div>
     </details>
+    <details class="qa">
+      <summary>一個大型程式碼重構，你怎麼安全進行、不一次爆炸？</summary>
+      <div class="answer">
+        <p>原則三個字：<strong>小步、可回退、行為不變</strong>。</p>
+        <ul>
+          <li><strong>先有安全網：</strong>重構前先補測試（特性測試／snapshot）鎖住「現有行為」，改完跑一遍確認行為沒變。</li>
+          <li><strong>可回退：</strong>用 <strong>feature flag</strong>／分支切換讓新舊並存，出事能立刻關掉切回舊路徑。</li>
+          <li><strong>漸進式（Strangler Fig）：</strong>一塊一塊換掉，<strong>不要一次重寫</strong>；每次改動範圍小，也順便降低 merge 衝突。</li>
+          <li><strong>善用 AI 工具</strong>輔助大量機械式改寫，但每段都自己讀懂、跑測試、為正確性負責。</li>
+        </ul>
+        <div class="tip"><b>面試官怕的是「重構＝失控大爆炸」。</b>你要展現有<strong>安全網（測試）＋可回退（flag）＋漸進</strong>，把風險拆小、隨時能停。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>升級 Node／相依套件大版本（major）時，你怎麼評估相容性風險？</summary>
+      <div class="answer">
+        <p>major 版號就代表有 <strong>breaking change</strong>（API 被移除、預設值改、行為變），不能 <code>npm install</code> 完就上。步驟：</p>
+        <ul>
+          <li><strong>讀 CHANGELOG／migration guide：</strong>列出這次的 breaking changes。</li>
+          <li><strong>盤點影響面：</strong>專案用到哪些受影響的 API？相依套件的 <code>peerDependency</code> 跟得上嗎？</li>
+          <li><strong>隔離環境先試：</strong>開分支／用 Docker 或 WSL 預演環境先升，跑<strong>完整測試與 build</strong>。</li>
+          <li><strong>鎖版本、分批升、留回退：</strong>用 lockfile 固定，不要一次升一堆。</li>
+        </ul>
+        <div class="tip"><b>實戰連結：</b>可以講「我遷移全端環境到 Node 18／Python 3.10 時就是這樣評估相容性的」——證明你處理過真實的大版本遷移，不只是更新個小套件。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Jest（單元測試）和 Cypress（E2E）差在哪？各自測什麼？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>Jest：</strong>單元／整合測試，跑在 Node（jsdom）裡、<strong>不開真瀏覽器</strong>，所以快；適合測純函式、邏輯、元件邏輯（常搭 Testing Library）。</li>
+          <li><strong>Cypress：</strong>端對端（E2E），<strong>開真瀏覽器</strong>跑整個 app，模擬使用者點擊／輸入／導頁；慢但最接近真實，測「整條流程到底通不通」。</li>
+          <li><strong>測試金字塔：</strong>大量單元測試（Jest）＋中間整合＋<strong>少量</strong>關鍵流程 E2E（Cypress）。</li>
+        </ul>
+        <div class="tip"><b>關鍵是「分層」不是二選一：</b>Jest 顧邏輯正確、Cypress 顧關鍵流程不掛。能講出「為什麼不全寫 E2E（太慢、太脆、易 flaky）」是加分。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>一個完全沒有測試的舊專案，你會怎麼開始導入測試？</summary>
+      <div class="answer">
+        <p>務實、漸進，<strong>不要一開始就追求 100% 覆蓋率</strong>：</p>
+        <ul>
+          <li><strong>先止血：</strong>對最常壞／最高風險／接下來要動到的模組，先補「特性測試」鎖住現有行為（即使是 legacy code，也先 freeze 行為再改）。</li>
+          <li><strong>讓覆蓋率自然長：</strong>新功能、修 bug 一律附測試（防回歸），覆蓋率隨開發累積。</li>
+          <li><strong>進 CI 把關：</strong>建 CI 自動跑，PR 沒過測試不能合。</li>
+          <li><strong>選工具：</strong>純邏輯用 Jest＋Testing Library，幾條關鍵流程用 Cypress 補 E2E。</li>
+        </ul>
+        <div class="tip"><b>面試官想看「務實＋漸進」</b>，不是「我要先寫到滿」。強調<strong>先顧關鍵路徑、隨開發長覆蓋率</strong>，並用 CI 防止退步。</div>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 13. 版本控制 ============ -->
@@ -2912,6 +3004,27 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
           <li><strong>UDP：</strong><strong>無連線</strong>，不保證送達或順序，<strong>速度快、延遲低</strong>、開銷小。用於即時影音、線上遊戲、DNS、WebRTC。</li>
         </ul>
         <p>一句話：<strong>TCP 求穩、UDP 求快</strong>。（HTTP/3 的 QUIC 建在 UDP 之上、自行實作可靠性。）</p>
+      </div>
+    </details>
+    <details class="qa">
+      <summary>WebSocket 是什麼？跟 HTTP／SSE／輪詢差在哪？走 Nginx 反向代理要注意什麼？</summary>
+      <div class="answer">
+        <p><strong>WebSocket：</strong>在一條 TCP 連線上做<strong>全雙工、長連線</strong>的即時通訊。先用一個 HTTP 請求做 <code>Upgrade</code> 握手，成功後升級協定（<code>ws://</code>／<code>wss://</code>）。適合聊天室、即時看板、機器人座標即時推送。</p>
+        <p><strong>幾種即時方案對比：</strong></p>
+        <ul>
+          <li><strong>輪詢（polling）：</strong>定時打 API 問「有沒有新資料」。簡單，但延遲高、大量無效請求。</li>
+          <li><strong>SSE：</strong>伺服器<strong>單向</strong>推給瀏覽器（<code>text/event-stream</code>），瀏覽器原生 <code>EventSource</code>、會自動重連；但只能 server → client。</li>
+          <li><strong>WebSocket：</strong><strong>雙向</strong>、低延遲；但要自己處理重連與心跳（heartbeat）。</li>
+        </ul>
+        <p><strong>走 Nginx 反向代理的實戰坑（很多人卡在這）：</strong>反向代理預設不會幫你升級協定，必須明確轉發升級標頭，否則握手失敗、連線升不上去：</p>
+        <pre><code>location /ws/ {
+  proxy_pass http://backend;
+  proxy_http_version 1.1;
+  proxy_set_header Upgrade $http_upgrade;
+  proxy_set_header Connection "upgrade";
+  proxy_read_timeout 3600s;   # 不拉長，閒置會被代理切斷
+}</code></pre>
+        <div class="tip"><b>延伸：</b>機器人系統常用的 <strong>rosbridge</strong>，本質就是把 ROS 訊息透過一條 WebSocket 橋接給前端——所以上面那組 <code>Upgrade／Connection／timeout</code> 設定一模一樣適用。我在規劃同機部署的 Nginx 路由時就踩過這塊。</div>
       </div>
     </details>
   </section>
@@ -3519,6 +3632,24 @@ hasAllDigits('01234567890'); // true</code></pre>
         <p>記法：<strong>編碼求相容、加密求保密（可解）、雜湊求驗證（不可解）</strong>。</p>
       </div>
     </details>
+    <details class="qa">
+      <summary>多層級 RBAC 的資料模型怎麼設計？權限驗證前端、後端怎麼分工？（進階）</summary>
+      <div class="answer">
+        <p>（前一題談「前端怎麼實作」，這題談<strong>資料模型與前後端分工</strong>。）</p>
+        <p><strong>資料模型——核心是「使用者 ↔ 角色 ↔ 權限」的多對多：</strong></p>
+        <ul>
+          <li>三張主表：<code>User</code>、<code>Role</code>、<code>Permission</code>；加兩張關聯表 <code>User_Role</code>、<code>Role_Permission</code>。</li>
+          <li><strong>「多層級」的做法：</strong>給 <code>Role</code> 加 <code>parent_role</code> 做角色繼承（上層自動含下層權限），或加 <code>scope</code>（部門／站別／專案）讓同一角色能限定作用範圍。</li>
+        </ul>
+        <p><strong>前後端分工（最常被追問的重點）：</strong></p>
+        <ul>
+          <li><strong>登入後：</strong>後端回傳該使用者的角色／權限清單，前端存進全域狀態。</li>
+          <li><strong>前端：</strong>用清單做 UI 控制（藏按鈕、route guard、disable）——這只是 <strong>UX，可被繞過</strong>。</li>
+          <li><strong>後端：</strong>每支 API 進來都要<strong>再查一次</strong>「這個 user 有沒有這個 permission」，這才是真正的安全關卡。</li>
+        </ul>
+        <div class="tip"><b>一句話收尾：</b>「前端做體驗、後端做關卡」。面試官最愛追問「那使用者自己改前端把按鈕打開呢？」——答案就是<strong>後端 API 會再擋一次</strong>，前端權限永遠不是安全邊界。</div>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 20. 系統設計 / 後端 ============ -->
@@ -3751,6 +3882,32 @@ hasAllDigits('01234567890'); // true</code></pre>
           <li><strong>優點：</strong>職責分離、伺服器集中管理資料與權限、多客戶端共用同一服務。</li>
           <li><strong>相對的：</strong>P2P（節點對等、無中心，如 BitTorrent）。</li>
         </ul>
+      </div>
+    </details>
+    <details class="qa">
+      <summary>要把服務安全地上線／更新，你會怎麼做？Rollback、藍綠、灰度、staging→prod 差在哪？</summary>
+      <div class="answer">
+        <p>核心目標：<strong>降低上線風險、出事能快速恢復</strong>。常見手段：</p>
+        <ul>
+          <li><strong>staging → prod（預演 → 正式）：</strong>先在與正式相近的環境跑過一遍再上（我的做法是「WSL 預演 → IPC 正式部署」兩階段）。</li>
+          <li><strong>Rollback（回退）：</strong>上線前就準備好「壞了能立刻退回上一版」——保留舊版本／映像檔、DB migration 設計成可逆。</li>
+          <li><strong>藍綠部署：</strong>同時跑藍（舊）綠（新）兩套，流量一次切到新版；有問題就切回去，停機幾乎為零。</li>
+          <li><strong>灰度／金絲雀（canary）：</strong>先放一小部分流量到新版，觀察沒事再逐步擴大到全量。</li>
+        </ul>
+        <div class="tip"><b>面試加分：</b>能講「我會<strong>預留 Rollback、先小範圍驗證再全量</strong>」就贏一半——展現你把「上線」當成有風險的事在管理，而不是 push 上去就好。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Docker 是什麼？容器跟虛擬機（VM）差在哪？跟 WSL 又是什麼關係？解決什麼問題？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>Docker／容器：</strong>把應用＋相依＋環境打包成映像檔，<strong>共用主機 OS 核心</strong>，啟動快、輕量。解決經典的「在我電腦會動、在你那不會動」環境不一致問題。</li>
+          <li><strong>VM（虛擬機）：</strong>模擬整台機器、各自帶完整 OS，隔離強但<strong>重、啟動慢</strong>。</li>
+          <li><strong>差異：</strong>容器共用核心 ＝ 輕快但隔離較弱；VM 各帶一套 OS ＝ 重但隔離強。</li>
+          <li><strong>WSL：</strong>在 Windows 上跑 Linux 核心的相容層，常拿來當「本機跑 Linux／Docker 的環境」。我用「WSL 預演 → 正式機」來隔離與預演部署，也曾排查過 WSL 記憶體佔用異常的問題。</li>
+        </ul>
+        <div class="tip"><b>一句話：</b>容器解決「<strong>環境一致性與隔離</strong>」，讓多團隊／多服務能在同一台機器上並行而互不污染——這正是我做兩階段部署時用 Docker 隔離 Web 與 ROS 開發的原因。</div>
       </div>
     </details>
   </section>

@@ -2552,8 +2552,21 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
     </details>
 
     <details class="qa">
+      <summary>Vue 生態有哪些知名的 composable／資料層套件？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>VueUse：</strong>由 Vue 核心成員 Anthony Fu 發起，幾乎是現代 Vue 3 專案的標配，提供上百個實用 composable（<code>useLocalStorage</code>、<code>useClickOutside</code>、<code>useIntersectionObserver</code> 等）。重點是它底層都處理好了 memory leak 與 SSR 支援。</li>
+          <li><strong>TanStack Query（Vue Query）：</strong>處理複雜非同步狀態——背景自動重抓、分頁、樂觀更新（Optimistic Updates）、快取機制。</li>
+          <li><strong>ahooks：</strong>React 社群對應的知名 Hook 函式庫，面試提到能展現技術廣度。</li>
+        </ul>
+        <div class="tip"><b>面試亮點：</b>展現「不重複造輪子」的資深思維——直接用社群驗證過的方案，把精力專注在核心業務邏輯。</div>
+      </div>
+    </details>
+
+    <details class="qa">
       <summary>如果要做一個共用元件，你會怎麼設計？</summary>
       <div class="answer">
+        <p>先講策略再講細節：<strong>基礎 UI 元件（Button／Modal／DatePicker）我傾向引入成熟框架（Element Plus／Headless UI／VueUse）客製樣式，而不是從零刻</strong>——那是重複造輪子。我認為真正值得花心力「切成共用」的，是與公司核心業務高度綁定、且頻繁出現的<strong>領域邏輯（Domain-specific Logic）</strong>。在這個前提下，我設計共用元件的思路是：</p>
         <p>我的思路大致是「<strong>先確認真正共用的部分 → 設計好 API → 保留彈性 → 補文件與測試</strong>」：</p>
         <ol>
           <li><strong>釐清需求與情境：</strong>先盤點哪些頁面要用、共同點與差異點，抽出真正共用的部分，<strong>避免過早抽象</strong>（只有一處用就先不抽）。</li>

@@ -2422,6 +2422,21 @@ onUnmounted(() =&gt; clearInterval(timer))  // 清理，避免記憶體洩漏
         <p>更熟練 <code>git rebase</code>（讓分支基於最新主幹、線性歷史）與<strong>壓縮 commit（squash）</strong>——把多個瑣碎 commit 合併成一個有意義的提交，讓歷史更乾淨、review 更好讀。也注意 rebase 不要對<strong>已共享的公開分支</strong>使用，避免改寫他人歷史。</p>
       </div>
     </details>
+
+    <details class="qa">
+      <summary>Git 與 Git Flow 是什麼？如何應用？</summary>
+      <div class="answer">
+        <p><strong>Git</strong> 是分散式版本控制；<strong>Git Flow</strong> 是一套<strong>分支管理策略</strong>：</p>
+        <ul>
+          <li><strong>main／master：</strong>正式上線版本。</li>
+          <li><strong>develop：</strong>開發主線，整合各功能。</li>
+          <li><strong>feature/*：</strong>從 develop 開、開發單一功能，完成併回 develop。</li>
+          <li><strong>release/*：</strong>準備發布、只修 bug，完成併回 main 與 develop。</li>
+          <li><strong>hotfix/*：</strong>從 main 開、緊急修線上問題，併回 main 與 develop。</li>
+        </ul>
+        <p>適合有明確版本發布週期的專案；持續部署的團隊則常用更輕量的 <strong>GitHub Flow</strong>（main + feature + PR）或 <strong>trunk-based</strong>。</p>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 14. 網路與瀏覽器 ============ -->
@@ -2910,6 +2925,33 @@ requestAnimationFrame(loop);</code></pre>
         <p>Vue、Angular 是 MVVM 思想代表（<code>data</code> ↔ 畫面自動同步）；React 嚴格說偏單向資料流，不算典型 MVVM。MVVM 好處是<strong>關注點分離、View 與邏輯解耦、好測試</strong>。</p>
       </div>
     </details>
+
+    <details class="qa">
+      <summary>SOLID 原則是什麼？</summary>
+      <div class="answer">
+        <p>物件導向設計的五個原則，目的是讓程式<strong>好維護、好擴展、低耦合</strong>：</p>
+        <ul>
+          <li><strong>S - 單一職責：</strong>一個類別／模組只負責一件事、只有一個改動理由。</li>
+          <li><strong>O - 開放封閉：</strong>對擴展開放、對修改封閉——加功能用新增而非改舊碼。</li>
+          <li><strong>L - 里氏替換：</strong>子類別要能無痛替換父類別、不破壞行為。</li>
+          <li><strong>I - 介面隔離：</strong>用多個小介面，別逼使用者依賴用不到的方法。</li>
+          <li><strong>D - 依賴反轉：</strong>依賴抽象（介面）而非具體實作（利於注入、測試）。</li>
+        </ul>
+        <p>前端也適用：元件單一職責、用 props／介面解耦、邏輯抽 hook。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>為什麼要重構？怎麼重構？</summary>
+      <div class="answer">
+        <p><strong>重構：</strong>在<strong>不改變外部行為</strong>的前提下改善內部結構。</p>
+        <ul>
+          <li><strong>好處：</strong>提升可讀性與可維護性、降低耦合、減少 bug、讓後續開發更快。</li>
+          <li><strong>怎麼做：</strong>先<strong>有測試保護</strong>→ <strong>小步快跑</strong>（每次只改一點、隨時可回退）→ 常見手法：抽函式／元件、改名、消除重複（DRY）、拆大函式、用早返回減少巢狀。</li>
+          <li><strong>時機：</strong>「三次法則」、加新功能前先整理、Code Review 發現壞味道時。</li>
+        </ul>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 17. 資料結構與演算法 ============ -->
@@ -3034,6 +3076,77 @@ hasAllDigits('01234567890'); // true</code></pre>
         <div class="tip"><b>補充：</b>若只要 type 的字串陣列（非物件），可直接用點記法 <code>roles: "$roles.type"</code>（得 <code>["admin","user"]</code>）；<code>$map</code> 則保留 <code>{ type }</code> 物件結構。記得加 <code>_id: 0</code> 才不會多回傳 <code>_id</code>。</div>
       </div>
     </details>
+
+    <details class="qa">
+      <summary>ACID 是什麼？請解釋四個特性</summary>
+      <div class="answer">
+        <p>關聯式資料庫<strong>交易（transaction）</strong>的四個保證：</p>
+        <ul>
+          <li><strong>Atomicity 原子性：</strong>交易內所有操作「全做或全不做」，中途失敗就 rollback。</li>
+          <li><strong>Consistency 一致性：</strong>交易前後資料都符合約束（外鍵、唯一鍵等）。</li>
+          <li><strong>Isolation 隔離性：</strong>並行交易互不干擾（靠鎖或 MVCC），有不同隔離級別（讀未提交～可序列化）。</li>
+          <li><strong>Durability 持久性：</strong>commit 後即使當機資料也不遺失（寫入磁碟／log）。</li>
+        </ul>
+        <p>MySQL、PostgreSQL 等強調 ACID；NoSQL 多走最終一致（見 BASE）。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>SQL 與 NoSQL 的差別？資料庫有哪些類型？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>SQL（關聯式）：</strong>表格結構、固定 schema、強一致（ACID）、用 JOIN 處理關聯。如 MySQL、PostgreSQL。適合交易、關聯複雜的資料（金流、訂單）。</li>
+          <li><strong>NoSQL（非關聯式）：</strong>schema 彈性、易水平擴展、多為最終一致。類型：<strong>文件型</strong>（MongoDB）、<strong>鍵值型</strong>（Redis）、<strong>欄族型</strong>（Cassandra）、<strong>圖型</strong>（Neo4j）。適合海量、結構多變、高寫入。</li>
+        </ul>
+        <p><strong>選型：</strong>需要強一致與複雜關聯 → SQL；需要彈性與大規模水平擴展 → NoSQL。實務常兩者並用。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>資料庫正規化是什麼？為什麼要正規化？</summary>
+      <div class="answer">
+        <p>把資料拆成多張表、消除重複，讓每個事實只存一份（1NF → 2NF → 3NF 逐步消除冗餘與部分／傳遞相依）。</p>
+        <ul>
+          <li><strong>好處：</strong>減少冗餘、避免更新／插入／刪除異常、節省空間、資料一致。</li>
+          <li><strong>代價：</strong>查詢常需多表 JOIN，讀取較慢。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>反正規化是什麼？優缺點？</summary>
+      <div class="answer">
+        <p>刻意保留／複製冗餘資料（或預先 JOIN 好）以加速查詢，是正規化的反向取捨。</p>
+        <ul>
+          <li><strong>優點：</strong>減少 JOIN、讀取快，適合讀多寫少、報表、首頁聚合。</li>
+          <li><strong>缺點：</strong>資料冗餘、更新要同步多處、易不一致。</li>
+        </ul>
+        <p>常見於快取層、資料倉儲、NoSQL 的「以查詢為導向」設計。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>ORM 是什麼？優缺點？</summary>
+      <div class="answer">
+        <p>Object-Relational Mapping：用<strong>物件／程式語法操作資料庫</strong>，框架自動轉成 SQL。如 Prisma、TypeORM、Sequelize。</p>
+        <ul>
+          <li><strong>優點：</strong>開發快、型別安全、可跨資料庫、預設參數化查詢可防 SQL injection。</li>
+          <li><strong>缺點：</strong>複雜查詢表達力有限、可能產生低效 SQL（如 <strong>N+1 query</strong> 問題）、多一層學習與效能成本。</li>
+        </ul>
+        <p>實務：一般 CRUD 用 ORM，效能關鍵查詢改用 raw SQL／query builder。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>資料庫分片 (Sharding) 與複寫 (Replication) 是什麼？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>Replication 複寫：</strong>把同一份資料複製到多台（主從）。<strong>主寫從讀</strong>，提升讀取吞吐與可用性（主掛了從頂上）；缺點是主從同步延遲、寫入仍集中在主。</li>
+          <li><strong>Sharding 分片：</strong>把資料<strong>水平切分</strong>到多台，每台只存一部分（依分片鍵如 user_id 切）。提升寫入與容量；缺點是跨分片查詢／交易困難、分片鍵選不好會產生<strong>熱點</strong>。</li>
+        </ul>
+        <p>常一起用：先用 replication 擴讀，量再大用 sharding 擴寫。</p>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 19. 認證 / 資安 ============ -->
@@ -3155,6 +3268,18 @@ hasAllDigits('01234567890'); // true</code></pre>
         <p>前端能做的有限，主要靠後端與網路層；但前端可避免設計出易被放大的昂貴請求。</p>
       </div>
     </details>
+
+    <details class="qa">
+      <summary>加密、編碼、雜湊的區別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>編碼 (Encoding)：</strong>為了<strong>格式轉換</strong>，可逆、無祕密。如 Base64、URL encode。<strong>不是</strong>保護機制。</li>
+          <li><strong>加密 (Encryption)：</strong>為了<strong>保密</strong>，<strong>可逆</strong>（有金鑰才能解）。對稱（AES）共用金鑰；非對稱（RSA）公鑰加密、私鑰解密。</li>
+          <li><strong>雜湊 (Hashing)：</strong><strong>單向不可逆</strong>，把任意輸入轉成固定長度摘要。用於驗證完整性與存密碼。密碼要用<strong>慢雜湊 + 加鹽</strong>（bcrypt、argon2），別用 MD5／SHA-1。</li>
+        </ul>
+        <p>記法：<strong>編碼求相容、加密求保密（可解）、雜湊求驗證（不可解）</strong>。</p>
+      </div>
+    </details>
   </section>
 
   <!-- ============ 20. 系統設計 / 後端 ============ -->
@@ -3201,6 +3326,253 @@ hasAllDigits('01234567890'); // true</code></pre>
           <li><strong>佇列：</strong>把同一商品的下單請求序列化處理。</li>
         </ul>
         <div class="tip"><b>核心觀念：</b>不要「先 SELECT 查庫存、再 UPDATE 扣」（中間有空檔會超賣），而是用<strong>單一原子操作</strong>（條件式 UPDATE／鎖／Redis 原子指令）讓兩個並發請求只有一個能成功。</div>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 RESTful API？</summary>
+      <div class="answer">
+        <p>一種以<strong>資源（resource）為中心</strong>的 API 設計風格：</p>
+        <ul>
+          <li>資源用 URL 表示（<code>/users/1</code>），動作用 HTTP method（GET 讀、POST 建、PUT/PATCH 改、DELETE 刪）。</li>
+          <li><strong>無狀態（stateless）：</strong>每個請求自帶所需資訊，伺服器不存 session 狀態。</li>
+          <li>用 HTTP 狀態碼表達結果（200/201/400/404/500）、可快取、統一介面。</li>
+        </ul>
+        <p>優點：簡單、通用、好快取；缺點：可能 <strong>over-fetching／under-fetching</strong>、多次往返（GraphQL 即為此而生）。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 GraphQL？跟 REST 差在哪？</summary>
+      <div class="answer">
+        <p>Facebook 推出的 API 查詢語言，<strong>由 client 指定要哪些欄位</strong>：</p>
+        <ul>
+          <li><strong>單一 endpoint</strong>，用 query／mutation／subscription。</li>
+          <li>解決 REST 的 over-fetching（拿太多）與 under-fetching（要打很多支）——一次拿到剛好需要的巢狀資料。</li>
+          <li>強型別 schema、自帶文件。</li>
+        </ul>
+        <p>缺點：快取較複雜、後端解析成本、容易寫出昂貴查詢（N+1）、學習曲線。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>SOAP 與 REST 該怎麼選？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>SOAP：</strong>嚴格的<strong>協定</strong>，基於 XML、內建安全與交易（WS-*）。笨重但嚴謹，適合銀行／企業級、需嚴格合約的場景。</li>
+          <li><strong>REST：</strong>輕量的<strong>架構風格</strong>，多用 JSON、易用、可快取，適合 Web／行動 API。</li>
+        </ul>
+        <p>選擇：高安全／交易嚴謹／既有企業系統 → SOAP；一般 Web 服務、追求簡單彈性 → REST（現代多數）。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>CI/CD 是什麼？為什麼要 CI/CD？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>CI 持續整合：</strong>開發者頻繁把程式碼合併到主線，每次合併自動跑 <strong>build + 測試 + lint</strong>，及早抓出整合問題。</li>
+          <li><strong>CD 持續交付／部署：</strong>通過測試後自動打包，交付到「可隨時發布」狀態（持續交付）或直接自動部署到環境（持續部署）。</li>
+        </ul>
+        <p>好處：減少整合衝突、快速回饋、降低發布風險、可頻繁小量上線。工具：GitHub Actions、GitLab CI、Jenkins。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Nginx 是什麼？反向代理又是什麼？</summary>
+      <div class="answer">
+        <p>Nginx 是高效能 Web 伺服器，常見用途：<strong>反向代理、負載平衡、靜態檔服務、SSL 終止、快取、Gzip</strong>。</p>
+        <ul>
+          <li><strong>反向代理：</strong>擋在後端前面，代客戶端轉發請求到後端服務，client 不直接接觸後端（可隱藏後端、分流、加防護、做快取）。</li>
+          <li><strong>vs 正向代理：</strong>正向代理代「客戶端」（如 VPN）；反向代理代「伺服器」。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>負載平衡 (Load Balancing) 是什麼？</summary>
+      <div class="answer">
+        <p>把進來的流量<strong>分散到多台伺服器</strong>，避免單機過載、提升吞吐與可用性（某台掛了流量導到其他台）。</p>
+        <ul>
+          <li><strong>演算法：</strong>Round Robin（輪詢）、最少連線、加權、IP Hash（同一 user 固定到同一台）。</li>
+          <li><strong>層級：</strong>L4（傳輸層，看 IP/port）、L7（應用層，看 URL/header，可做更聰明的路由）。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>CDN 是什麼？優缺點？</summary>
+      <div class="answer">
+        <p>內容傳遞網路：把靜態資源（圖片／JS／CSS／影片）<strong>快取到全球各地的邊緣節點（edge）</strong>，使用者就近取得。</p>
+        <ul>
+          <li><strong>優點：</strong>降低延遲、減輕源站負載、抗流量尖峰、部分抗 DDoS。</li>
+          <li><strong>缺點：</strong>動態內容效益低；快取更新要處理（用檔名 hash／版本）；有成本。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>水平擴展與垂直擴展的差別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>垂直擴展 (Scale Up)：</strong>把單台機器升級（更多 CPU／RAM）。簡單，但有硬體上限、單點故障。</li>
+          <li><strong>水平擴展 (Scale Out)：</strong>加更多機器分攤。可近乎無限擴展、容錯佳，但要處理負載平衡、資料一致與<strong>無狀態化</strong>。</li>
+        </ul>
+        <p>雲端時代多走水平擴展。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>後端快取機制與常見策略？</summary>
+      <div class="answer">
+        <p>把熱資料放在更快的層（記憶體／Redis），減少 DB 壓力、加快回應。</p>
+        <ul>
+          <li><strong>Cache-Aside（最常見）：</strong>讀時先找快取，沒有再查 DB 並寫回快取。</li>
+          <li><strong>Write-Through：</strong>寫時同時更新快取與 DB；<strong>Write-Back：</strong>先寫快取、稍後批次寫 DB（快但有遺失風險）。</li>
+          <li>要處理：TTL 過期、LRU 淘汰、一致性，以及<strong>快取雪崩／穿透／擊穿</strong>。</li>
+        </ul>
+        <p>工具：Redis、Memcached。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>限流器 (Rate Limiter) 是什麼？有哪些策略？</summary>
+      <div class="answer">
+        <p>限制單位時間內的請求量，保護後端、防濫用與 DDoS；超過就回 <code>429 Too Many Requests</code>。</p>
+        <ul>
+          <li><strong>固定視窗 / 滑動視窗：</strong>計數法，滑動視窗較平滑、無邊界突刺問題。</li>
+          <li><strong>Token Bucket（令牌桶）：</strong>定速發令牌，允許一定<strong>突發</strong>。</li>
+          <li><strong>Leaky Bucket（漏桶）：</strong>固定速率流出，<strong>平滑</strong>輸出。</li>
+        </ul>
+        <p>維度可依 IP／使用者／API key；分散式環境常用 Redis 計數。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>CAP 定理是什麼？</summary>
+      <div class="answer">
+        <p>分散式系統的<strong>一致性 (C)、可用性 (A)、分區容錯 (P)</strong> 三者無法同時滿足。網路分區（P）在分散式中必然存在，所以實務是在 <strong>C 與 A 間取捨</strong>：</p>
+        <ul>
+          <li><strong>CP：</strong>分區時為保一致性而拒絕部分請求（如銀行、ZooKeeper、etcd）。</li>
+          <li><strong>AP：</strong>分區時仍回應但可能讀到舊資料（如購物車、Cassandra、DynamoDB）。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>BASE 特性是什麼？跟 ACID 的關係？</summary>
+      <div class="answer">
+        <p>NoSQL／分散式系統常採的取捨，與 ACID 相對：</p>
+        <ul>
+          <li><strong>Basically Available：</strong>基本可用（即使部分故障）。</li>
+          <li><strong>Soft state：</strong>狀態可暫時不同步。</li>
+          <li><strong>Eventually consistent：</strong>最終一致——過一段時間會收斂一致。</li>
+        </ul>
+        <p>用犧牲「即時強一致」換取「高可用與擴展性」。ACID 求嚴謹、BASE 求彈性。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>可用性與一致性怎麼提升？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>提升可用性：</strong>多副本／複寫、負載平衡、故障轉移（failover）、消除單點、自動擴展、健康檢查。用「幾個 9」衡量（99.99% ≈ 一年約 52 分鐘 downtime）。</li>
+          <li><strong>提升一致性：</strong>同步複寫、共識演算法（Paxos／Raft）、分散式交易、quorum 讀寫（R + W &gt; N）。</li>
+        </ul>
+        <p>兩者常需取捨（見 CAP）。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>延遲 (Latency) 與吞吐量 (Throughput) 的差別？</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>延遲：</strong>單一請求從發出到收到回應的時間（越低越好，如 ms）。</li>
+          <li><strong>吞吐量：</strong>單位時間能處理的請求量（越高越好，如 QPS）。</li>
+        </ul>
+        <p>兩者不一定正相關：批次處理可提高吞吐但增加單筆延遲。最佳化目標看場景——即時互動重延遲、大數據處理重吞吐。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>儲存有哪些類型？（Block / File / Object）</summary>
+      <div class="answer">
+        <ul>
+          <li><strong>Block storage 區塊：</strong>把資料切成固定區塊，像硬碟，低延遲高效能。適合資料庫、VM 磁碟。如 AWS EBS。</li>
+          <li><strong>File storage 檔案：</strong>階層式目錄、可共享掛載（NAS）。</li>
+          <li><strong>Object storage 物件：</strong>以物件（資料 + metadata + 唯一 ID）平面儲存，海量、可擴展、有 HTTP API。適合圖片／影片／備份。如 AWS S3。</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>什麼是 Client-Server 模型？</summary>
+      <div class="answer">
+        <p>網路架構：<strong>客戶端（發請求）</strong>與<strong>伺服器（提供資源／服務、回應）</strong>分離，透過網路（通常 HTTP）溝通。</p>
+        <ul>
+          <li><strong>優點：</strong>職責分離、伺服器集中管理資料與權限、多客戶端共用同一服務。</li>
+          <li><strong>相對的：</strong>P2P（節點對等、無中心，如 BitTorrent）。</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 20.5 系統設計實戰 ============ -->
+  <section id="c-sdcase">
+    <h2 class="cat"><span class="ic"></span>系統設計實戰 (Case Studies)</h2>
+
+    <details class="qa">
+      <summary>設計一個 URL 短網址服務（如 bit.ly）</summary>
+      <div class="answer">
+        <p><strong>需求：</strong>長網址 → 短碼、點短碼導回長網址；高可用、低延遲、短碼不重複。讀遠多於寫（約 100:1）。</p>
+        <p><strong>核心設計：</strong></p>
+        <ul>
+          <li><strong>產生短碼：</strong>用全域<strong>發號器</strong>產唯一 ID 再轉 base62；或對長網址做 hash 取前幾碼（要處理碰撞）。7 碼 base62 ≈ 3.5 兆組，夠用。</li>
+          <li><strong>儲存：</strong>KV 映射「短碼 → 長網址」，Redis 快取 + 持久化 DB。</li>
+          <li><strong>讀取流程：</strong>查快取 → 沒有再查 DB → 回傳 <strong>301/302 轉址</strong>。</li>
+        </ul>
+        <p><strong>擴展：</strong>熱門短碼快取、DB 依短碼分片。<strong>重點：</strong>301（永久，可被快取省流量）vs 302（臨時，可統計點擊量）。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>設計一個 News Feed（如 Twitter／FB 動態牆）</summary>
+      <div class="answer">
+        <p><strong>需求：</strong>發文、追蹤、首頁顯示「追蹤對象」的貼文（時間／排名排序）。</p>
+        <p><strong>核心 — Fan-out 兩種策略：</strong></p>
+        <ul>
+          <li><strong>Push（寫擴散）：</strong>發文時就寫進每個追蹤者的 feed（預先算好）。讀很快；但大 V（千萬粉）發文會造成寫入爆量。</li>
+          <li><strong>Pull（讀擴散）：</strong>讀 feed 時即時拉所有追蹤對象的最新貼文。寫便宜但讀很慢。</li>
+          <li><strong>混合（實務）：</strong>一般人用 push、大 V 用 pull，讀時合併，兼顧兩者。</li>
+        </ul>
+        <p><strong>儲存：</strong>貼文存 DB、feed 存快取（Redis list）。<strong>擴展：</strong>分片、媒體走 CDN、用訊息佇列做非同步 fan-out。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>設計一個即時聊天系統（如 WhatsApp）</summary>
+      <div class="answer">
+        <p><strong>需求：</strong>一對一／群組即時收發、上線狀態、已讀、離線訊息。</p>
+        <p><strong>核心設計：</strong></p>
+        <ul>
+          <li><strong>連線：</strong>用 <strong>WebSocket</strong>（長連線、雙向）維持 client 與 gateway 的連線。</li>
+          <li><strong>送訊息：</strong>A → gateway → 訊息服務 → 查 B 連到哪台 gateway → 推給 B；B 離線則存 DB，上線再拉。</li>
+          <li><strong>狀態：</strong>用 Redis 存「user → 連線 server」映射與 presence（心跳）。</li>
+        </ul>
+        <p><strong>儲存：</strong>訊息存 DB（可依 chat_id 分片），近期訊息快取。<strong>擴展：</strong>多 gateway + 連線管理、訊息佇列、ACK 確保送達順序與不漏訊。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>設計一個影音串流服務（如 Netflix／YouTube）</summary>
+      <div class="answer">
+        <p><strong>需求：</strong>上傳並轉碼影片、全球低延遲播放、依網速自適應畫質。讀（觀看）遠大於寫（上傳）。</p>
+        <p><strong>核心設計：</strong></p>
+        <ul>
+          <li><strong>轉碼（transcoding）：</strong>上傳後非同步轉成多種解析度／位元率，切成<strong>小分段</strong>（HLS／DASH）。</li>
+          <li><strong>儲存與傳遞：</strong>影片放 <strong>object storage</strong>，經 <strong>CDN</strong> 推到邊緣節點就近供應。</li>
+          <li><strong>播放：</strong><strong>自適應位元率（ABR）</strong>依當下頻寬切換畫質，避免卡頓。</li>
+        </ul>
+        <p><strong>重點：</strong>CDN 是核心（大部分流量在邊緣），可預先把熱門內容推到邊緣；metadata／推薦另用服務與 DB。</p>
       </div>
     </details>
   </section>
